@@ -1,4 +1,4 @@
-package com.example.housewareecommerce.Controller;
+package com.example.housewareecommerce.Controller.Admin;
 
 public class bao {
 }
