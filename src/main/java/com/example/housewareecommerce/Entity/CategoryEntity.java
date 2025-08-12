@@ -19,6 +19,8 @@ public class CaterogyEntity {
     @Column(name = "created")
     private Date created;
 
+    @OneToMany
+
     public Long getId() {
         return id;
     }
