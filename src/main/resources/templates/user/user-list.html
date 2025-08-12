@@ -1,0 +1,386 @@
+<div>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #5a6fbf;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover {
+      background-color: #eef3ff;
+    }
+
+    .role-admin {
+      color: #fff;
+      background-color: #4a5ba8;
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .role-customer {
+      color: #333;
+      background-color: #ffd700;
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .action-btn {
+      text-decoration: none;
+      margin: 0 5px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .edit-btn {
+      color: #4CAF50;
+    }
+
+    .delete-btn {
+      color: #f44336;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.2);
+      opacity: 0.8;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      max-width: 400px;
+      width: 90%;
+      animation: slideIn 0.3s ease;
+    }
+
+    .modal h3 {
+      margin: 0 0 15px 0;
+      color: #f44336;
+      font-size: 18px;
+    }
+
+    .modal p {
+      margin: 0 0 20px 0;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cancel {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .btn-cancel:hover {
+      background-color: #5a6268;
+    }
+
+    .btn-confirm {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .btn-confirm:hover {
+      background-color: #d32f2f;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      z-index: 1001;
+      min-width: 300px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      animation: slideInRight 0.5s ease;
+    }
+
+    .notification.success {
+      background-color: #4CAF50;
+    }
+
+    .notification.error {
+      background-color: #f44336;
+    }
+
+    .notification.warning {
+      background-color: #ff9800;
+    }
+
+    .notification .close-btn {
+      float: right;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+  </style>
+
+  <h2>Danh sách người dùng</h2>
+  <table>
+    <tr>
+      <th>STT</th>
+      <th>Tên</th>
+      <th>Email</th>
+      <th>Vai trò</th>
+      <th>Thao tác</th>
+    </tr>
+    <tr th:each="user, stat : ${users}">
+      <td th:text="${stat.index + 1}"></td>
+      <td th:text="${user.name}"></td>
+      <td th:text="${user.email}"></td>
+      <td>
+        <span th:if="${user.role == 1}" class="role-admin">Quản trị viên</span>
+        <span th:if="${user.role == 2}" class="role-customer">Khách hàng</span>
+      </td>
+      <td>
+        <a th:href="@{/users/edit/{id}(id=${user.id})}" class="action-btn edit-btn" title="Chỉnh sửa">&#9998;</a>
+        <a href="javascript:void(0)" class="action-btn delete-btn" th:attr="data-user-id=${user.id},data-user-name=${user.name}" onclick="showDeleteModal(this.getAttribute('data-user-id'), this.getAttribute('data-user-name'))" title="Xóa">&#128465;</a>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Popup xác nhận xóa -->
+  <div id="deleteModal" class="modal-overlay">
+    <div class="modal">
+      <h3>⚠️ Xác nhận xóa</h3>
+      <p id="deleteMessage">Bạn có chắc chắn muốn xóa người dùng này không?</p>
+      <div class="modal-buttons">
+        <button class="btn btn-cancel" onclick="hideDeleteModal()">Hủy</button>
+        <button class="btn btn-confirm" id="confirmDeleteBtn" onclick="confirmDelete()">Xóa</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentUserId = null;
+    let currentUserName = null;
+
+    // Hiển thị popup xác nhận xóa
+    function showDeleteModal(userId, userName) {
+      currentUserId = userId;
+      currentUserName = userName;
+      document.getElementById('deleteMessage').innerHTML =
+              `Bạn có chắc chắn muốn xóa người dùng <strong>"${userName}"</strong> không?<br>
+         <small style="color: #999;">Hành động này không thể hoàn tác.</small>`;
+      document.getElementById('deleteModal').style.display = 'block';
+      document.body.style.overflow = 'hidden'; // Ngăn scroll
+    }
+
+    // Ẩn popup xác nhận xóa
+    function hideDeleteModal() {
+      document.getElementById('deleteModal').style.display = 'none';
+      document.body.style.overflow = 'auto'; // Khôi phục scroll
+      currentUserId = null;
+      currentUserName = null;
+      const confirmBtn = document.getElementById('confirmDeleteBtn');
+      confirmBtn.innerHTML = 'Xóa';
+      confirmBtn.disabled = false;
+    }
+
+    // Xác nhận xóa người dùng
+    async function confirmDelete() {
+      if (!currentUserId) return;
+
+      const confirmBtn = document.getElementById('confirmDeleteBtn');
+      confirmBtn.innerHTML = '<div class="loading"></div>Đang xóa...';
+      confirmBtn.disabled = true;
+
+      try {
+        const response = await fetch(`/admin/user/delete/${currentUserId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          showNotification('success', result.message || 'Xóa người dùng thành công!');
+          setTimeout(() => {
+            removeUserRow(currentUserId);
+            hideDeleteModal();
+          }, 1000);
+        } else {
+          showNotification('error', result.message || 'Có lỗi xảy ra khi xóa người dùng!');
+          hideDeleteModal();
+        }
+      } catch (error) {
+        console.error('Lỗi khi xóa người dùng:', error);
+        showNotification('error', 'Lỗi kết nối! Vui lòng thử lại sau.');
+        hideDeleteModal();
+      }
+    }
+
+    // Hiển thị thông báo
+    function showNotification(type, message) {
+      const existingNotification = document.querySelector('.notification');
+      if (existingNotification) {
+        existingNotification.remove();
+      }
+
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.innerHTML = `
+        ${message}
+        <button class="close-btn" onclick="this.parentElement.remove()">&times;</button>
+      `;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        if (notification && notification.parentElement) {
+          notification.remove();
+        }
+      }, 5000);
+    }
+
+    // Xóa hàng khỏi bảng
+    function removeUserRow(userId) {
+      const rows = document.querySelectorAll('table tr');
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length > 0) {
+          const deleteBtn = row.querySelector('.delete-btn');
+          if (deleteBtn && deleteBtn.getAttribute('data-user-id') == userId) {
+            row.style.animation = 'fadeOut 0.5s ease';
+            setTimeout(() => {
+              row.remove();
+              updateRowNumbers();
+            }, 500);
+          }
+        }
+      });
+    }
+
+    // Cập nhật lại số thứ tự
+    function updateRowNumbers() {
+      const rows = document.querySelectorAll('table tr');
+      let index = 1;
+      rows.forEach((row, i) => {
+        if (i > 0) {
+          const firstCell = row.querySelector('td');
+          if (firstCell) {
+            firstCell.textContent = index++;
+          }
+        }
+      });
+    }
+
+    // Đóng modal khi click bên ngoài
+    document.getElementById('deleteModal').addEventListener('click', function (e) {
+      if (e.target === this) {
+        hideDeleteModal();
+      }
+    });
+
+    // Xử lý phím ESC
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        hideDeleteModal();
+      }
+    });
+  </script>
+</div>
