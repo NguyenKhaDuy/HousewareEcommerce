@@ -2,16 +2,18 @@ package com.example.housewareecommerce.Entity;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "category")
-public class CaterogyEntity {
+public class CategoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "namecaterogy")
-    private String nameCaterogy;
+    @Column(name = "namecategory")
+    private String nameCategory;
     @Column(name = "description")
     private String description;
     @Column(name = "status")
@@ -19,7 +21,8 @@ public class CaterogyEntity {
     @Column(name = "created")
     private Date created;
 
-    @OneToMany
+    @OneToMany(mappedBy = "categoryEntity", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<ProductEntity> productEntityList = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -29,12 +32,12 @@ public class CaterogyEntity {
         this.id = id;
     }
 
-    public String getNameCaterogy() {
-        return nameCaterogy;
+    public String getNameCategory() {
+        return nameCategory;
     }
 
-    public void setNameCaterogy(String nameCaterogy) {
-        this.nameCaterogy = nameCaterogy;
+    public void setNameCategory(String nameCategory) {
+        this.nameCategory = nameCategory;
     }
 
     public String getDescription() {
@@ -59,5 +62,13 @@ public class CaterogyEntity {
 
     public void setCreated(Date created) {
         this.created = created;
+    }
+
+    public List<ProductEntity> getProductEntityList() {
+        return productEntityList;
+    }
+
+    public void setProductEntityList(List<ProductEntity> productEntityList) {
+        this.productEntityList = productEntityList;
     }
 }
