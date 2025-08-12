@@ -3,7 +3,9 @@ package com.example.housewareecommerce.Entity;
 import jakarta.persistence.*;
 
 import javax.naming.Name;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -25,10 +27,27 @@ public class UserEntity {
     private String gender;
     @Column(name = "created")
     private Date created;
-    @Column(name = "status")
-    private Long status;
     @Column(name = "role")
     private Long role;
+
+    @ManyToOne
+    @JoinColumn(name = "statusid")
+    private StatusEntity statusEntity;
+
+    @OneToMany(mappedBy = "userEntity", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<FavoriteProductEntity> favoriteProductEntities = new ArrayList<>();
+
+    @OneToOne(mappedBy = "userEntity", fetch = FetchType.LAZY,cascade = {CascadeType.MERGE, CascadeType.PERSIST},orphanRemoval = true)
+    private CartEntity cartEntity;
+
+    @OneToMany(mappedBy = "userEntity", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<EvaluateEntity> evaluateEntities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "userEntity", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<CommentEntity> commentEntities = new ArrayList<>();
+
+    @OneToMany(mappedBy = "userEntity", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private List<OrderEntity> orderEntities = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -94,19 +113,59 @@ public class UserEntity {
         this.created = created;
     }
 
-    public Long getStatus() {
-        return status;
-    }
-
-    public void setStatus(Long status) {
-        this.status = status;
-    }
-
     public Long getRole() {
         return role;
     }
 
     public void setRole(Long role) {
         this.role = role;
+    }
+
+    public StatusEntity getStatusEntity() {
+        return statusEntity;
+    }
+
+    public void setStatusEntity(StatusEntity statusEntity) {
+        this.statusEntity = statusEntity;
+    }
+
+    public List<FavoriteProductEntity> getFavoriteProductEntities() {
+        return favoriteProductEntities;
+    }
+
+    public void setFavoriteProductEntities(List<FavoriteProductEntity> favoriteProductEntities) {
+        this.favoriteProductEntities = favoriteProductEntities;
+    }
+
+    public CartEntity getCartEntity() {
+        return cartEntity;
+    }
+
+    public void setCartEntity(CartEntity cartEntity) {
+        this.cartEntity = cartEntity;
+    }
+
+    public List<EvaluateEntity> getEvaluateEntities() {
+        return evaluateEntities;
+    }
+
+    public void setEvaluateEntities(List<EvaluateEntity> evaluateEntities) {
+        this.evaluateEntities = evaluateEntities;
+    }
+
+    public List<CommentEntity> getCommentEntities() {
+        return commentEntities;
+    }
+
+    public void setCommentEntities(List<CommentEntity> commentEntities) {
+        this.commentEntities = commentEntities;
+    }
+
+    public List<OrderEntity> getOrderEntities() {
+        return orderEntities;
+    }
+
+    public void setOrderEntities(List<OrderEntity> orderEntities) {
+        this.orderEntities = orderEntities;
     }
 }
