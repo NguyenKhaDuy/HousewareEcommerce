@@ -13,6 +13,9 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "tsdcsdc")
+    String sdcsdcsdc;
+
     @Column(name = "totalprice")
     private Float totalPrice;
 
