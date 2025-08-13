@@ -1,6 +1,6 @@
 package com.example.housewareecommerce.Model.DTO;
 
-import jakarta.persistence.Column;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,11 +13,12 @@ public class ProductDTO {
     private Float price;
     private Long quantity;
     private Float importPrice;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
     private Date created;
     private String categoryName;
     private String statusCode;
 
-    List<String> images = new ArrayList<>();
+    List<byte[]> images = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -91,11 +92,11 @@ public class ProductDTO {
         this.statusCode = statusCode;
     }
 
-    public List<String> getImages() {
+    public List<byte[]> getImages() {
         return images;
     }
 
-    public void setImages(List<String> images) {
+    public void setImages(List<byte[]> images) {
         this.images = images;
     }
 }

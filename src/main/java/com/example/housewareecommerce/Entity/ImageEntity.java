@@ -8,8 +8,9 @@ public class ImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "imageurl")
-    private String imageUrl;
+    @Column(name = "imageurl", columnDefinition = "LONGBLOB")
+    @Lob
+    private byte[] imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "productid")
@@ -23,11 +24,11 @@ public class ImageEntity {
         this.id = id;
     }
 
-    public String getImageUrl() {
+    public byte[] getImageUrl() {
         return imageUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
+    public void setImageUrl(byte[] imageUrl) {
         this.imageUrl = imageUrl;
     }
 

@@ -1,5 +1,6 @@
 package com.example.housewareecommerce.Model.Request;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -12,9 +13,11 @@ public class ProductRequest {
     private Float price;
     private Long quantity;
     private Float importPrice;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date created;
-    private Long categoryId;
-    private Long statusId;
+    private Long categoryCode;
+    private Long statusCode;
 
     private List<MultipartFile> images = new ArrayList<>();
 
@@ -66,20 +69,20 @@ public class ProductRequest {
         this.created = created;
     }
 
-    public Long getCategoryId() {
-        return categoryId;
+    public Long getCategoryCode() {
+        return categoryCode;
     }
 
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
+    public void setCategoryCode(Long categoryCode) {
+        this.categoryCode = categoryCode;
     }
 
-    public Long getStatusId() {
-        return statusId;
+    public Long getStatusCode() {
+        return statusCode;
     }
 
-    public void setStatusId(Long statusId) {
-        this.statusId = statusId;
+    public void setStatusCode(Long statusCode) {
+        this.statusCode = statusCode;
     }
 
     public List<MultipartFile> getImages() {

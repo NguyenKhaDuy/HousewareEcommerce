@@ -37,7 +37,7 @@ public class ProductController {
     }
 
     @PostMapping(value = "/admin/product")
-    public  ResponseEntity<?> createProduct(@RequestBody ProductRequest productRequest){
+    public  ResponseEntity<?> createProduct(@ModelAttribute ProductRequest productRequest){
         MessageDTO messageDTO = productService.createProduct(productRequest);
 
         if(messageDTO.getHttpStatus() == HttpStatus.INTERNAL_SERVER_ERROR){
