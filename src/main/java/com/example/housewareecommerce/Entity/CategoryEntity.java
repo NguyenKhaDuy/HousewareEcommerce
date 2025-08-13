@@ -17,8 +17,6 @@ public class CategoryEntity {
     private String nameCategory;
     @Column(name = "description")
     private String description;
-    @Column(name = "status")
-    private Long status;
     @Column(name = "created")
     private LocalDateTime created;
 

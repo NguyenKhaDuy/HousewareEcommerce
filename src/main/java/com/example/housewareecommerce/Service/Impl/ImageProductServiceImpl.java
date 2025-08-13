@@ -1,8 +1,9 @@
 package com.example.housewareecommerce.Service.Impl;
 
 import com.example.housewareecommerce.Entity.ImageEntity;
-import com.example.housewareecommerce.Model.DTO.ImageProductDTO;
-import com.example.housewareecommerce.Model.DTO.MessageDTO;
+import com.example.housewareecommerce.Entity.ProductEntity;
+import com.example.housewareecommerce.Model.DTO.*;
+import com.example.housewareecommerce.Model.Request.ImageRequest;
 import com.example.housewareecommerce.Repository.ImageProductRepository;
 import com.example.housewareecommerce.Repository.ProductRepository;
 import com.example.housewareecommerce.Service.ImageProductService;
@@ -11,10 +12,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
 @Service
 public class ImageProductServiceImpl implements ImageProductService {
@@ -28,20 +31,109 @@ public class ImageProductServiceImpl implements ImageProductService {
     public Page<ImageProductDTO> getAll(Integer pageNo) {
         Pageable pageable = PageRequest.of(pageNo - 1, 5);
         Page<ImageEntity> imageEntities = imageProductRepository.findAll(pageable);
+
         List<ImageProductDTO> results = new ArrayList<>();
+
         for(ImageEntity imageEntity : imageEntities){
             ImageProductDTO imageProductDTO = new ImageProductDTO();
             imageProductDTO.setId(imageEntity.getId());
+            imageProductDTO.setProductId(imageEntity.getProductEntity().getId());
             imageProductDTO.setNameProduct(imageEntity.getProductEntity().getNameProduct());
-            imageProductDTO.getImages().add(imageEntity.getImageUrl());
+            imageProductDTO.setImage(imageEntity.getImageUrl());
             results.add(imageProductDTO);
         }
-        return new PageImpl<>(results, imageEntities.getPageable(), imageEntities.getTotalElements());
+
+
+        return new PageImpl<>(results, pageable, imageEntities.getTotalElements());
     }
+
 
     @Override
     public MessageDTO getById(Long id) {
         MessageDTO messageDTO = new MessageDTO();
-        return null;
+        try{
+            ProductEntity productEntity = productRepository.findById(id).get();
+
+            List<ImageEntity> imageEntities = imageProductRepository.findByProductEntity(productEntity);
+            List<ImageDTO> imageDTOS = new ArrayList<>();
+            ImageProductByIdDTO imageProductByIdDTO = new ImageProductByIdDTO();
+            imageProductByIdDTO.setProductId(productEntity.getId());
+            imageProductByIdDTO.setNameProduct(productEntity.getNameProduct());
+
+            for(ImageEntity imageEntity: imageEntities){
+                ImageDTO imageDTO = new ImageDTO();
+                imageDTO.setId(imageEntity.getId());
+                imageDTO.setImage(imageEntity.getImageUrl());
+                imageDTOS.add(imageDTO);
+            }
+
+            imageProductByIdDTO.setImages(imageDTOS);
+
+            messageDTO.setMessage("Success");
+            messageDTO.setHttpStatus(HttpStatus.OK);
+            messageDTO.setData(imageProductByIdDTO);
+
+        }catch (NoSuchElementException e){
+            messageDTO.setMessage("Không tìm thấy");
+            messageDTO.setHttpStatus(HttpStatus.NOT_FOUND);
+            messageDTO.setData(null);
+        }
+        return messageDTO;
+    }
+
+    @Override
+    public MessageDTO createImage(ImageRequest imageRequest) {
+        MessageDTO messageDTO = new MessageDTO();
+        try {
+            ProductEntity productEntity = productRepository.findById(imageRequest.getProductId()).get();
+
+            if (imageRequest.getImages() != null && !imageRequest.getImages().isEmpty()) {
+                for (MultipartFile file : imageRequest.getImages()) {
+                    try {
+                        ImageEntity imageEntity = new ImageEntity();
+                        imageEntity.setImageUrl(file.getBytes());
+                        imageEntity.setProductEntity(productEntity);
+                        productEntity.getImageEntities().add(imageEntity);
+                    } catch (IOException e) {
+                        messageDTO.setMessage("Lỗi xử lý ảnh");
+                        messageDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
+                        messageDTO.setData(null);
+                        return messageDTO;
+                    }
+                }
+            }
+
+            productRepository.save(productEntity);
+
+            messageDTO.setMessage("Thêm ảnh thành công");
+            messageDTO.setHttpStatus(HttpStatus.OK);
+            messageDTO.setData(null);
+
+        }catch (NoSuchElementException e){
+            messageDTO.setMessage("Không tìm thấy sản phẩm");
+            messageDTO.setHttpStatus(HttpStatus.NOT_FOUND);
+            messageDTO.setData(null);
+        }
+        return messageDTO;
+    }
+
+    @Override
+    public MessageDTO deleteImage(Long id) {
+        MessageDTO messageDTO = new MessageDTO();
+        try{
+            ImageEntity imageEntity = imageProductRepository.findById(id).get();
+
+            imageProductRepository.deleteById(id);
+
+            messageDTO.setMessage("Xóa thành công");
+            messageDTO.setHttpStatus(HttpStatus.OK);
+            messageDTO.setData(null);
+
+        }catch (NoSuchElementException e){
+            messageDTO.setMessage("Không tìm thấy");
+            messageDTO.setHttpStatus(HttpStatus.NOT_FOUND);
+            messageDTO.setData(null);
+        }
+        return messageDTO;
     }
 }

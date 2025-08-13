@@ -1,13 +1,11 @@
 package com.example.housewareecommerce.Model.DTO;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class ImageProductDTO {
-    private Long id;
+public class ImageProductByIdDTO {
     private Long productId;
     private String nameProduct;
-    private byte[] image;
+    private List<ImageDTO> images;
 
     public Long getProductId() {
         return productId;
@@ -25,19 +23,11 @@ public class ImageProductDTO {
         this.nameProduct = nameProduct;
     }
 
-    public Long getId() {
-        return id;
+    public List<ImageDTO> getImages() {
+        return images;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
+    public void setImages(List<ImageDTO> images) {
+        this.images = images;
     }
 }
