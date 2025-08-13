@@ -1,32 +1,25 @@
-package com.example.housewareecommerce.Model.DTO;
+package com.example.housewareecommerce.Model.Request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ProductDTO {
-    private Long id;
+public class ProductRequest {
     private String nameProduct;
     private String description;
     private Float price;
     private Long quantity;
     private Float importPrice;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date created;
-    private String categoryName;
-    private String statusCode;
+    private Long categoryCode;
+    private Long statusCode;
 
-    List<byte[]> images = new ArrayList<>();
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private List<MultipartFile> images = new ArrayList<>();
 
     public String getNameProduct() {
         return nameProduct;
@@ -76,27 +69,27 @@ public class ProductDTO {
         this.created = created;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public Long getCategoryCode() {
+        return categoryCode;
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public void setCategoryCode(Long categoryCode) {
+        this.categoryCode = categoryCode;
     }
 
-    public String getStatusCode() {
+    public Long getStatusCode() {
         return statusCode;
     }
 
-    public void setStatusCode(String statusCode) {
+    public void setStatusCode(Long statusCode) {
         this.statusCode = statusCode;
     }
 
-    public List<byte[]> getImages() {
+    public List<MultipartFile> getImages() {
         return images;
     }
 
-    public void setImages(List<byte[]> images) {
+    public void setImages(List<MultipartFile> images) {
         this.images = images;
     }
 }
