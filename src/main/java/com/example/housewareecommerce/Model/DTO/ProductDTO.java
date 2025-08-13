@@ -2,6 +2,7 @@ package com.example.housewareecommerce.Model.DTO;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,7 +15,7 @@ public class ProductDTO {
     private Long quantity;
     private Float importPrice;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
-    private Date created;
+    private LocalDateTime created;
     private String categoryName;
     private String statusCode;
 
@@ -68,11 +69,11 @@ public class ProductDTO {
         this.importPrice = importPrice;
     }
 
-    public Date getCreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(LocalDateTime created) {
         this.created = created;
     }
 

@@ -2,6 +2,7 @@ package com.example.housewareecommerce.Entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +24,7 @@ public class ProductEntity {
     @Column(name = "importprice")
     private Float importPrice;
     @Column(name = "created")
-    private Date created;
+    private LocalDateTime created;
 
     @ManyToOne
     @JoinColumn(name = "statusid")
@@ -99,11 +100,11 @@ public class ProductEntity {
         this.importPrice = importPrice;
     }
 
-    public Date getCreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(LocalDateTime created) {
         this.created = created;
     }
 
