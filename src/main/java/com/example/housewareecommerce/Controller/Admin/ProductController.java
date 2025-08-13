@@ -47,4 +47,39 @@ public class ProductController {
         }
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }
+
+    @PutMapping(value = "/admin/product")
+    public ResponseEntity<?> updateProduct(@RequestBody ProductRequest productRequest){
+        MessageDTO messageDTO = productService.updateProduct(productRequest);
+
+        if(messageDTO.getHttpStatus() == HttpStatus.BAD_REQUEST){
+            return new ResponseEntity<>(messageDTO, HttpStatus.BAD_REQUEST);
+        }else if(messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){
+            return new ResponseEntity<>(messageDTO, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/admin/product/{id}")
+    public ResponseEntity deleteProduct(@PathVariable Long id){
+        MessageDTO messageDTO = productService.deleteProduct(id);
+
+        if(messageDTO.getHttpStatus() == HttpStatus.BAD_REQUEST){
+            return new ResponseEntity<>(messageDTO, HttpStatus.BAD_REQUEST);
+        }else if(messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){
+            return new ResponseEntity<>(messageDTO, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/admin/product/search")
+    public ResponseEntity<?> searchProduct(@RequestParam(name = "page", defaultValue = "1") Integer pageNo, @RequestParam(name = "nameproduct", required = true) String nameproduct){
+        Page<ProductDTO> productDTOS = productService.searchProduct(pageNo, nameproduct);
+        Integer totalPage = productDTOS.getTotalPages();
+        ListDTO listDTO = new ListDTO();
+        listDTO.setCurrentPage(pageNo);
+        listDTO.setTotalPage(totalPage);
+        listDTO.setData(productDTOS.getContent());
+        return new ResponseEntity<>(listDTO, HttpStatus.OK);
+    }
 }

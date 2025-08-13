@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ProductRequest {
+    private Long id;
     private String nameProduct;
     private String description;
     private Float price;
@@ -20,6 +21,14 @@ public class ProductRequest {
     private Long statusCode;
 
     private List<MultipartFile> images = new ArrayList<>();
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getNameProduct() {
         return nameProduct;

@@ -11,4 +11,8 @@ public interface ProductService {
     Page<ProductDTO> getAll(Integer pageNo);
     MessageDTO findById(Long id);
     MessageDTO createProduct(ProductRequest productRequest);
+    MessageDTO updateProduct(ProductRequest productRequest);
+    MessageDTO deleteProduct(Long id);
+
+    Page<ProductDTO> searchProduct(Integer pageNo, String nameProduct);
 }
