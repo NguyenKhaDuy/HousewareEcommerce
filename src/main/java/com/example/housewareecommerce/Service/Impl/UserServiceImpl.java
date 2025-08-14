@@ -8,8 +8,10 @@ import com.example.housewareecommerce.Repository.UserRepository;
 import com.example.housewareecommerce.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -26,8 +28,8 @@ public class UserServiceImpl implements UserService {
     private StatusRepository statusRepository;
 
     @Override
-    public List<UserEntity> getAllUsers() {
-        return userRepository.findAll();
+    public Page<UserEntity> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     @Transactional
@@ -62,5 +64,10 @@ public class UserServiceImpl implements UserService {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public Optional<UserEntity> getUserById(Long id) {
+        return userRepository.findById(id);
     }
 }

@@ -1,5 +1,24 @@
 <div>
   <style>
+
+    .active a {
+      font-weight: bold;
+      background-color: #5a6fbf;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 5px;
+    }
+    ul li a {
+      text-decoration: none;
+      padding: 4px 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      color: #333;
+    }
+    ul li a:hover {
+      background-color: #eef3ff;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -236,11 +255,27 @@
         <span th:if="${user.role == 2}" class="role-customer">Khách hàng</span>
       </td>
       <td>
-        <a th:href="@{/users/edit/{id}(id=${user.id})}" class="action-btn edit-btn" title="Chỉnh sửa">&#9998;</a>
+        <a th:href="@{/admin/user/edit/{id}(id=${user.id})}" class="action-btn edit-btn" title="Chỉnh sửa">&#9998;</a>
         <a href="javascript:void(0)" class="action-btn delete-btn" th:attr="data-user-id=${user.id},data-user-name=${user.name}" onclick="showDeleteModal(this.getAttribute('data-user-id'), this.getAttribute('data-user-name'))" title="Xóa">&#128465;</a>
       </td>
     </tr>
   </table>
+
+  <div style="margin-top: 20px; text-align: center;">
+    <ul style="list-style: none; padding: 0; display: inline-flex; gap: 5px;">
+      <li th:if="${currentPage > 0}">
+        <a th:href="@{/admin/user/getAll(page=${currentPage - 1})}">« Trước</a>
+      </li>
+      <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+          th:classappend="${i == currentPage} ? 'active'">
+        <a th:href="@{/admin/user/getAll(page=${i})}"
+           th:text="${i + 1}"></a>
+      </li>
+      <li th:if="${currentPage < totalPages - 1}">
+        <a th:href="@{/admin/user/getAll(page=${currentPage + 1})}">Sau »</a>
+      </li>
+    </ul>
+  </div>
 
   <!-- Popup xác nhận xóa -->
   <div id="deleteModal" class="modal-overlay">
