@@ -46,27 +46,27 @@ public class UserController {
         return new ResponseEntity<>(response, response.getHttpStatus());
     }
 
-//    // Chỉnh sửa user
-//    @PutMapping("edit/{id}")
-//    public ResponseEntity<MessageDTO<UserEntity>> updateUser(
-//            @PathVariable Long id,
-//            @RequestBody UserDTO updatedUser) {
-//
-//        MessageDTO<UserEntity> response = new MessageDTO<>();
-//        try {
-//            UserEntity user = userService.updateUserById(id, updatedUser);
-//            if (user != null) {
-//                response.setMessage("Cập nhật người dùng thành công");
-//                response.setHttpStatus(HttpStatus.OK);
-//                response.setData(user);
-//            } else {
-//                response.setMessage("Không tìm thấy người dùng");
-//                response.setHttpStatus(HttpStatus.NOT_FOUND);
-//            }
-//        } catch (Exception e) {
-//            response.setMessage("Lỗi khi cập nhật người dùng: " + e.getMessage());
-//            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//        return new ResponseEntity<>(response, response.getHttpStatus());
-//    }
+    // Chỉnh sửa user
+    @PutMapping("edit/{id}")
+    public ResponseEntity<MessageDTO<UserEntity>> updateUser(
+            @PathVariable Long id,
+            @RequestBody UserDTO updatedUser) {
+
+        MessageDTO<UserEntity> response = new MessageDTO<>();
+        try {
+            UserEntity user = userService.updateUserById(id, updatedUser);
+            if (user != null) {
+                response.setMessage("Cập nhật người dùng thành công");
+                response.setHttpStatus(HttpStatus.OK);
+                response.setData(user);
+            } else {
+                response.setMessage("Không tìm thấy người dùng");
+                response.setHttpStatus(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            response.setMessage("Lỗi khi cập nhật người dùng: " + e.getMessage());
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(response, response.getHttpStatus());
+    }
 }
