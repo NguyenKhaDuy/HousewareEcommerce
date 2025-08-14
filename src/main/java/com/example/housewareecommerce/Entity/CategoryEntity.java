@@ -47,14 +47,6 @@ public class CategoryEntity {
         this.description = description;
     }
 
-    public Long getStatus() {
-        return status;
-    }
-
-    public void setStatus(Long status) {
-        this.status = status;
-    }
-
     public LocalDateTime getCreated() {
         return created;
     }

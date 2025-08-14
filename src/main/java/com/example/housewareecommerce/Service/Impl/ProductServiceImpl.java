@@ -97,48 +97,55 @@ public class ProductServiceImpl implements ProductService {
         ProductEntity productEntity = new ProductEntity();
         MessageDTO messageDTO = new MessageDTO();
         modelMapper.map(productRequest, productEntity);
-        StatusEntity statusEntity  = statusRepository.findById(productRequest.getStatusCode()).get();
-        CategoryEntity categoryEntity = categoryRepository.findById(productRequest.getCategoryCode()).get();
-        productEntity.setCategoryEntity(categoryEntity);
-        productEntity.setStatusEntity(statusEntity);
-        productEntity.setCreated(LocalDateTime.now());
-        if (productRequest.getImages() != null && !productRequest.getImages().isEmpty()) {
-            for (MultipartFile file : productRequest.getImages()) {
-                try {
-                    ImageEntity imageEntity = new ImageEntity();
-                    imageEntity.setImageUrl(file.getBytes());
-                    imageEntity.setProductEntity(productEntity);
-                    productEntity.getImageEntities().add(imageEntity);
-                } catch (IOException e) {
-                    messageDTO.setMessage("Lỗi xử lý ảnh");
-                    messageDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
-                    messageDTO.setData(null);
-                    return messageDTO;
+        try{
+            StatusEntity statusEntity  = statusRepository.findById(productRequest.getStatusCode()).get();
+            CategoryEntity categoryEntity = categoryRepository.findById(productRequest.getCategoryCode()).get();
+            productEntity.setCategoryEntity(categoryEntity);
+            productEntity.setStatusEntity(statusEntity);
+            productEntity.setCreated(LocalDateTime.now());
+            if (productRequest.getImages() != null && !productRequest.getImages().isEmpty()) {
+                for (MultipartFile file : productRequest.getImages()) {
+                    try {
+                        ImageEntity imageEntity = new ImageEntity();
+                        imageEntity.setImageUrl(file.getBytes());
+                        imageEntity.setProductEntity(productEntity);
+                        productEntity.getImageEntities().add(imageEntity);
+                    } catch (IOException e) {
+                        messageDTO.setMessage("Lỗi xử lý ảnh");
+                        messageDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
+                        messageDTO.setData(null);
+                        return messageDTO;
+                    }
                 }
             }
-        }
-        ProductEntity check = productRepository.save(productEntity);
-        if (check == null) {
+            ProductEntity check = productRepository.save(productEntity);
+            if (check == null) {
+                messageDTO.setMessage("Thêm sản phảm không thành công");
+                messageDTO.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+                messageDTO.setData(null);
+            }else{
+                ProductDTO productDTO = new ProductDTO();
+                modelMapper.map(productEntity, productDTO);
+                productDTO.setCategoryName(productEntity.getCategoryEntity().getNameCategory());
+                productDTO.setStatusCode(productEntity.getStatusEntity().getStatusCode());
+                List<byte[]> images = new ArrayList<>();
+                for (ImageEntity imageEntity : productEntity.getImageEntities()) {
+                    byte[] imageBytes = imageEntity.getImageUrl(); // BLOB trong DB
+                    if (imageBytes != null && imageBytes.length > 0) {
+                        images.add(imageBytes);
+                    }
+                }
+                productDTO.setImages(images);;
+                messageDTO.setMessage("Tạo sản phẩm thành công");
+                messageDTO.setHttpStatus(HttpStatus.OK);
+                messageDTO.setData(productDTO);
+            }
+        }catch (Exception e){
             messageDTO.setMessage("Thêm sản phảm không thành công");
             messageDTO.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             messageDTO.setData(null);
-        }else{
-            ProductDTO productDTO = new ProductDTO();
-            modelMapper.map(productEntity, productDTO);
-            productDTO.setCategoryName(productEntity.getCategoryEntity().getNameCategory());
-            productDTO.setStatusCode(productEntity.getStatusEntity().getStatusCode());
-            List<byte[]> images = new ArrayList<>();
-            for (ImageEntity imageEntity : productEntity.getImageEntities()) {
-                byte[] imageBytes = imageEntity.getImageUrl(); // BLOB trong DB
-                if (imageBytes != null && imageBytes.length > 0) {
-                    images.add(imageBytes);
-                }
-            }
-            productDTO.setImages(images);;
-            messageDTO.setMessage("Tạo sản phẩm thành công");
-            messageDTO.setHttpStatus(HttpStatus.OK);
-            messageDTO.setData(productDTO);
         }
+
         return messageDTO;
     }
 

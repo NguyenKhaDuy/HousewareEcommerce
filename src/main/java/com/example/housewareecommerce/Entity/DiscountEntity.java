@@ -2,9 +2,9 @@ package com.example.housewareecommerce.Entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -16,13 +16,13 @@ public class DiscountEntity {
     @Column(name = "namediscount")
     private String nameDiscount;
     @Column(name = "discountcode")
-    private Date discounCode;
+    private String discounCode;
     @Column(name = "percentdiscount")
     private Float percentDiscount;
     @Column(name = "datestart")
-    private LocalDateTime dateStart;
+    private LocalDate dateStart;
     @Column(name = "dateend")
-    private LocalDateTime dateEnd;
+    private LocalDate dateEnd;
     @Column(name = "created")
     private LocalDateTime created;
 
@@ -49,11 +49,11 @@ public class DiscountEntity {
         this.nameDiscount = nameDiscount;
     }
 
-    public Date getDiscounCode() {
+    public String getDiscounCode() {
         return discounCode;
     }
 
-    public void setDiscounCode(Date discounCode) {
+    public void setDiscounCode(String discounCode) {
         this.discounCode = discounCode;
     }
 
@@ -65,19 +65,19 @@ public class DiscountEntity {
         this.percentDiscount = percentDiscount;
     }
 
-    public LocalDateTime getDateStart() {
+    public LocalDate getDateStart() {
         return dateStart;
     }
 
-    public void setDateStart(LocalDateTime dateStart) {
+    public void setDateStart(LocalDate dateStart) {
         this.dateStart = dateStart;
     }
 
-    public LocalDateTime getDateEnd() {
+    public LocalDate getDateEnd() {
         return dateEnd;
     }
 
-    public void setDateEnd(LocalDateTime dateEnd) {
+    public void setDateEnd(LocalDate dateEnd) {
         this.dateEnd = dateEnd;
     }
 
