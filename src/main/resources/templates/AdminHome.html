@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheUdecor - Admin</title>
+    <link rel="stylesheet" th:href="@{/css/adminHomeCss.css}">
+
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo">theudecor</div>
+    </div>
+
+    <div class="sidebar-section">
+        <div class="section-title">QUẢN LÝ</div>
+
+        <a href="#" class="menu-item" data-menu="thong-ke">
+            <span class="menu-icon">📊</span>
+            Thống kê
+            <div class="notification-dot"></div>
+        </a>
+
+        <a href="#" class="menu-item highlighted" data-menu="danh-muc-san-pham">
+            <span class="menu-icon">📋</span>
+            Danh mục sản phẩm
+        </a>
+
+        <a href="#" class="menu-item highlighted active" data-menu="san-pham">
+            <span class="menu-icon">📦</span>
+            Sản phẩm
+        </a>
+
+        <a href="#" class="menu-item highlighted" data-menu="hinh-anh-san-pham">
+            <span class="menu-icon">🖼️</span>
+            Hình ảnh sản phẩm
+        </a>
+
+        <a href="#" class="menu-item highlighted" data-menu="khuyen-mai">
+            <span class="menu-icon">🎁</span>
+            Khuyến mãi
+        </a>
+
+        <a href="#" class="menu-item" data-menu="don-hang">
+            <span class="menu-icon">📦</span>
+            Quản lý đơn hàng
+        </a>
+
+        <a href="#" class="menu-item" data-menu="trang-thai-don-hang">
+            <span class="menu-icon">⚡</span>
+            Quản lý trang thái đơn hàng
+        </a>
+
+        <a th:href="@{/admin/users/getAll}" class="menu-item highlighted" data-menu="nguoi-dung">
+            <span class="menu-icon">👥</span>
+            Quản lý người dùng
+        </a>
+
+
+    </div>
+</div>
+
+<div class="header">
+    <h1>Quản Lý Danh Sách Sản Phẩm</h1>
+    <div class="header-right">
+        <div class="breadcrumb">Admin > Danh Sách Sản Phẩm</div>
+        <div class="theme-toggle">🌙</div>
+        <div class="user-info">
+            <div class="user-avatar"></div>
+            <span class="username">tb</span>
+        </div>
+    </div>
+</div>
+
+
+<div class="main-content">
+    <th:block th:replace="${content}"></th:block>
+</div>
+
+</div>
+
+<script>
+
+    const menuItems = {
+        'thong-ke': {
+            title: 'Thống Kê',
+            breadcrumb: 'Admin > Thống Kê'
+        },
+        'danh-muc-san-pham': {
+            title: 'Quản Lý Danh Mục Sản Phẩm',
+            breadcrumb: 'Admin > Danh Mục Sản Phẩm'
+        },
+        'san-pham': {
+            title: 'Quản Lý Danh Sách Sản Phẩm',
+            breadcrumb: 'Admin > Danh Sách Sản Phẩm'
+        },
+        'hinh-anh-san-pham': {
+            title: 'Quản Lý Hình Ảnh Sản Phẩm',
+            breadcrumb: 'Admin > Hình Ảnh Sản Phẩm'
+        },
+        'khuyen-mai': {
+            title: 'Quản Lý Khuyến Mãi',
+            breadcrumb: 'Admin > Khuyến Mãi'
+        },
+        'don-hang': {
+            title: 'Quản Lý Đơn Hàng',
+            breadcrumb: 'Admin > Đơn Hàng'
+        },
+        'trang-thai-don-hang': {
+            title: 'Quản Lý Trạng Thái Đơn Hàng',
+            breadcrumb: 'Admin > Trạng Thái Đơn Hàng'
+        },
+        'nguoi-dung': {
+            title: 'Quản Lý Người Dùng',
+            breadcrumb: 'Admin > Người Dùng'
+        },
+
+    };
+
+    function updateHeader(menuKey) {
+        const headerTitle = document.querySelector('.header h1');
+        const breadcrumb = document.querySelector('.breadcrumb');
+
+        if (menuItems[menuKey]) {
+            headerTitle.textContent = menuItems[menuKey].title;
+            breadcrumb.textContent = menuItems[menuKey].breadcrumb;
+        }
+    }
+
+    function setActiveMenuItem(clickedItem) {
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        clickedItem.classList.add('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const menuLinks = document.querySelectorAll('.menu-item[data-menu]');
+
+        menuLinks.forEach((link) => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const menuKey = this.getAttribute('data-menu');
+
+                if (menuKey && menuItems[menuKey]) {
+                    updateHeader(menuKey);
+
+                    setActiveMenuItem(this);
+
+                    localStorage.setItem('currentMenu', menuKey);
+                }
+            });
+        });
+
+        const savedMenu = localStorage.getItem('currentMenu');
+        if (savedMenu && menuItems[savedMenu]) {
+            updateHeader(savedMenu);
+            const savedMenuItem = document.querySelector(`[data-menu="${savedMenu}"]`);
+            if (savedMenuItem) {
+                setActiveMenuItem(savedMenuItem);
+            }
+        }
+    });
+</script>
+</body>
+</html>

@@ -3,6 +3,7 @@ package com.example.housewareecommerce.Entity;
 import jakarta.persistence.*;
 
 import javax.naming.Name;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,7 +27,7 @@ public class UserEntity {
     @Column(name = "gender")
     private String gender;
     @Column(name = "created")
-    private Date created;
+    private LocalDateTime created;
     @Column(name = "role")
     private Long role;
 
@@ -105,11 +106,11 @@ public class UserEntity {
         this.gender = gender;
     }
 
-    public Date getCreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(LocalDateTime created) {
         this.created = created;
     }
 
