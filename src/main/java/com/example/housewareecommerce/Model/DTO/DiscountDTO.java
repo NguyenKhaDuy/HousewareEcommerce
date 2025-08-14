@@ -1,37 +1,23 @@
-package com.example.housewareecommerce.Entity;
+package com.example.housewareecommerce.Model.DTO;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
-@Entity
-@Table(name = "discount")
-public class DiscountEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class DiscountDTO {
     private Long id;
-    @Column(name = "namediscount")
     private String nameDiscount;
-    @Column(name = "discountcode")
     private String discounCode;
-    @Column(name = "percentdiscount")
     private Float percentDiscount;
-    @Column(name = "datestart")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
     private LocalDate dateStart;
-    @Column(name = "dateend")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
     private LocalDate dateEnd;
-    @Column(name = "created")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
     private LocalDateTime created;
-
-    @ManyToOne
-    @JoinColumn(name = "statusid")
-    private StatusEntity statusEntity;
-
-    @OneToMany(mappedBy = "discountEntity", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    private List<OrderEntity> orderEntities = new ArrayList<>();
+    private String statusCode;
 
     public Long getId() {
         return id;
@@ -89,19 +75,11 @@ public class DiscountEntity {
         this.created = created;
     }
 
-    public StatusEntity getStatusEntity() {
-        return statusEntity;
+    public String getStatusCode() {
+        return statusCode;
     }
 
-    public void setStatusEntity(StatusEntity statusEntity) {
-        this.statusEntity = statusEntity;
-    }
-
-    public List<OrderEntity> getOrderEntities() {
-        return orderEntities;
-    }
-
-    public void setOrderEntities(List<OrderEntity> orderEntities) {
-        this.orderEntities = orderEntities;
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
     }
 }

@@ -2,6 +2,7 @@ package com.example.housewareecommerce.Entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,10 +17,8 @@ public class CategoryEntity {
     private String nameCategory;
     @Column(name = "description")
     private String description;
-    @Column(name = "status")
-    private Long status;
     @Column(name = "created")
-    private Date created;
+    private LocalDateTime created;
 
     @OneToMany(mappedBy = "categoryEntity", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<ProductEntity> productEntityList = new ArrayList<>();
@@ -48,19 +47,11 @@ public class CategoryEntity {
         this.description = description;
     }
 
-    public Long getStatus() {
-        return status;
-    }
-
-    public void setStatus(Long status) {
-        this.status = status;
-    }
-
-    public Date getCreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(LocalDateTime created) {
         this.created = created;
     }
 
