@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface StatusRepository extends JpaRepository<StatusEntity, Integer> {
+public interface StatusRepository extends JpaRepository<StatusEntity, Long> {
 
     Optional<StatusEntity> findById(Long id);
 }
