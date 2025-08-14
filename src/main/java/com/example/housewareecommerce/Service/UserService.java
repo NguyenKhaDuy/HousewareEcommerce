@@ -16,4 +16,15 @@ public interface UserService {
     boolean deleteUserById(Long id);
 
     Optional<UserEntity> getUserById(Long id);
+
+    Optional<UserEntity> getUserByEmail(String email);
+
+    boolean login(String email, String rawPassword);
+
+    boolean createUser(UserDTO user);
+
+    boolean isEmailExists(String email);
+
+    boolean updatePassword(String email, String newPassword);
+
 }

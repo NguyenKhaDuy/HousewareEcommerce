@@ -5,9 +5,12 @@ import com.example.housewareecommerce.Entity.UserEntity;
 import com.example.housewareecommerce.Model.DTO.UserDTO;
 import com.example.housewareecommerce.Repository.StatusRepository;
 import com.example.housewareecommerce.Repository.UserRepository;
+import com.example.housewareecommerce.Service.BryConfig;
 import com.example.housewareecommerce.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.Local;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +29,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private StatusRepository statusRepository;
+
+    @Value("${user.statusCode}")
+    private Integer statusCode;
 
     @Override
     public Page<UserEntity> getAllUsers(Pageable pageable) {
@@ -69,5 +75,71 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<UserEntity> getUserById(Long id) {
         return userRepository.findById(id);
+    }
+
+    @Override
+    public Optional<UserEntity> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public boolean login(String email, String rawPassword) {
+        return userRepository.findByEmail(email)
+                .map(u -> BryConfig.matches(rawPassword, u.getPassword()))
+                .orElse(false);
+    }
+
+    @Transactional
+    @Override
+    public boolean createUser(UserDTO user) {
+        try {
+            UserEntity entity = new UserEntity();
+            entity.setName(user.getName());
+            entity.setEmail(user.getEmail());
+            entity.setPassword(BryConfig.hash(user.getPassword()));
+            entity.setPhoneNumber(user.getPhoneNumber());
+            entity.setGender(user.getGender());
+            entity.setAddress(user.getAddress());
+            entity.setCreated(LocalDateTime.now());
+            entity.setRole(1L);
+
+            Optional<StatusEntity> statusEntity = statusRepository.findById(Long.valueOf(statusCode));
+            entity.setStatusEntity(statusEntity.orElseThrow(() -> new RuntimeException("Status not found")));
+
+            userRepository.save(entity);
+
+            return true;
+
+        }catch (DataAccessException e){
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    @Transactional
+    @Override
+    public boolean updatePassword(String email, String newPassword) {
+        try {
+            Optional<UserEntity> userOptional = userRepository.findByEmail(email);
+            if (userOptional.isPresent()) {
+                UserEntity user = userOptional.get();
+                user.setPassword(BryConfig.hash(newPassword));
+                userRepository.save(user);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            System.out.println("Error update password: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean isEmailExists(String email) {
+        try {
+            return userRepository.existsByEmail(email);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

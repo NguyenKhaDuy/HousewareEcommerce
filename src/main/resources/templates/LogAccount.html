@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Houseware Shop - Đăng nhập</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/logAccountCss.css}">
+    <script src="https://kit.fontawesome.com/yourkitid.js" crossorigin="anonymous"></script>
+    <style>
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            min-width: 300px;
+        }
+        .popup-content h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .otp-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            text-align: center;
+            letter-spacing: 3px;
+        }
+        .otp-input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .popup-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+        .resend-link {
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .resend-link:hover {
+            color: #0056b3;
+        }
+        .timer {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .success-message {
+            color: #28a745;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .gender-group {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0;
+            justify-content: center;
+        }
+        .gender-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .gender-option input[type="radio"] {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" alt="Houseware Logo" class="logo">
+
+    <!-- Form đăng nhập -->
+    <div id="loginForm" class="form">
+        <h2>Đăng nhập</h2>
+        <form th:action="@{/account/login}" method="post">
+            <div class="input-group">
+                <input type="email" name="email" placeholder="Email của bạn" required>
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Mật khẩu" required>
+                <i class="fas fa-lock"></i>
+            </div>
+            <button type="submit">Đăng nhập</button>
+        </form>
+
+        <p th:text="${message}" style="color: red; text-align: center; margin-top: 10px;"></p>
+
+        <div class="links">
+            <a href="#" onclick="showForm('registerForm')">Đăng ký</a> |
+            <a href="#" onclick="showForm('forgotForm')">Quên mật khẩu?</a>
+        </div>
+    </div>
+
+    <!-- Form đăng ký -->
+    <div id="registerForm" class="form hidden">
+        <h2>Tạo tài khoản</h2>
+        <form id="registerFormData">
+            <div class="input-group">
+                <input type="text" name="name" placeholder="Họ và tên" required>
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="input-group">
+                <input type="email" name="email" placeholder="Email" required>
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div class="input-group">
+                <input type="tel" name="phoneNumber" placeholder="Số điện thoại" required>
+                <i class="fas fa-phone"></i>
+            </div>
+            <div class="gender-group">
+                <div class="gender-option">
+                    <input type="radio" id="male" name="gender" value="Nam" checked>
+                    <label for="male">Nam</label>
+                </div>
+                <div class="gender-option">
+                    <input type="radio" id="female" name="gender" value="Nữ">
+                    <label for="female">Nữ</label>
+                </div>
+            </div>
+            <div class="input-group">
+                <input type="text" name="address" placeholder="Địa chỉ" required>
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Mật khẩu" required>
+                <i class="fas fa-lock"></i>
+            </div>
+            <div class="input-group">
+                <input type="password" name="confirmPassword" placeholder="Nhập lại mật khẩu" required>
+                <i class="fas fa-lock"></i>
+            </div>
+            <button type="submit">Đăng ký</button>
+        </form>
+        <div id="registerMessage" style="text-align: center; margin-top: 10px;"></div>
+        <div class="links">
+            <a href="#" onclick="showForm('loginForm')">Đã có tài khoản? Đăng nhập</a>
+        </div>
+    </div>
+
+    <!-- Form quên mật khẩu -->
+    <div id="forgotForm" class="form hidden">
+        <h2>Khôi phục mật khẩu</h2>
+        <form id="forgotPasswordForm">
+            <div class="input-group">
+                <input type="email" name="email" placeholder="Nhập email để khôi phục" required>
+                <i class="fas fa-envelope"></i>
+            </div>
+            <button type="submit">Gửi yêu cầu</button>
+        </form>
+        <div id="forgotMessage" style="text-align: center; margin-top: 10px;"></div>
+        <div class="links">
+            <a href="#" onclick="showForm('loginForm')">Quay lại đăng nhập</a>
+        </div>
+    </div>
+</div>
+
+<!-- OTP Popup -->
+<div id="otpPopup" class="popup-overlay">
+    <div class="popup-content">
+        <h3>Xác thực OTP</h3>
+        <p>Mã xác thực đã được gửi về email của bạn</p>
+        <input type="text" id="otpInput" class="otp-input" placeholder="Nhập mã OTP (6 số)" maxlength="6">
+        <div class="timer" id="otpTimer"></div>
+        <div id="otpMessage"></div>
+        <div class="popup-buttons">
+            <button class="btn btn-primary" onclick="verifyOTP()">Xác thực</button>
+            <button class="btn btn-secondary" onclick="closeOTPPopup()">Hủy</button>
+        </div>
+        <div class="resend-link" id="resendLink" onclick="resendOTP()" style="display: none;">
+            Gửi lại mã OTP
+        </div>
+    </div>
+</div>
+
+<script>
+    let otpTimer;
+    let timeLeft = 300; // 5 phút
+
+    function showForm(formId) {
+        document.querySelectorAll('.form').forEach(f => f.classList.add('hidden'));
+        document.getElementById(formId).classList.remove('hidden');
+    }
+
+    // Xử lý form đăng ký
+    document.getElementById('registerFormData').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const password = formData.get('password');
+        const confirmPassword = formData.get('confirmPassword');
+
+        if (password !== confirmPassword) {
+            showMessage('registerMessage', 'Mật khẩu không khớp!', 'error');
+            return;
+        }
+
+        const userData = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            phoneNumber: formData.get('phoneNumber'),
+            gender: formData.get('gender'),
+            address: formData.get('address'),
+            password: password
+        };
+
+        fetch('/account/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showOTPPopup();
+                    showMessage('registerMessage', data.message, 'success');
+                } else {
+                    showMessage('registerMessage', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showMessage('registerMessage', 'Có lỗi xảy ra: ' + error.message, 'error');
+            });
+    });
+
+    function showOTPPopup() {
+        document.getElementById('otpPopup').style.display = 'block';
+        timeLeft = 300;
+        startOTPTimer();
+    }
+
+    function closeOTPPopup() {
+        document.getElementById('otpPopup').style.display = 'none';
+        clearInterval(otpTimer);
+        document.getElementById('otpInput').value = '';
+        document.getElementById('otpMessage').innerHTML = '';
+    }
+
+    function startOTPTimer() {
+        document.getElementById('resendLink').style.display = 'none';
+        otpTimer = setInterval(() => {
+            if (timeLeft <= 0) {
+                clearInterval(otpTimer);
+                document.getElementById('otpTimer').innerHTML = 'Mã OTP đã hết hạn';
+                document.getElementById('resendLink').style.display = 'block';
+                return;
+            }
+
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('otpTimer').innerHTML =
+                `Mã có hiệu lực trong: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            timeLeft--;
+        }, 1000);
+    }
+
+    function verifyOTP() {
+        const otpCode = document.getElementById('otpInput').value;
+
+        if (otpCode.length !== 6) {
+            showOTPMessage('Vui lòng nhập đủ 6 số!', 'error');
+            return;
+        }
+
+        fetch('/account/verify-otp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'otpCode=' + encodeURIComponent(otpCode)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showOTPMessage(data.message, 'success');
+                    setTimeout(() => {
+                        closeOTPPopup();
+                        showForm('loginForm');
+                        document.getElementById('registerFormData').reset();
+                    }, 2000);
+                } else {
+                    showOTPMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showOTPMessage('Có lỗi xảy ra: ' + error.message, 'error');
+            });
+    }
+
+    function resendOTP() {
+        fetch('/account/resend-otp', {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showOTPMessage(data.message, 'success');
+                    timeLeft = 300;
+                    startOTPTimer();
+                } else {
+                    showOTPMessage(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showOTPMessage('Có lỗi xảy ra: ' + error.message, 'error');
+            });
+    }
+
+    function showMessage(elementId, message, type) {
+        const element = document.getElementById(elementId);
+        element.innerHTML = message;
+        element.className = type === 'error' ? 'error-message' : 'success-message';
+    }
+
+    function showOTPMessage(message, type) {
+        showMessage('otpMessage', message, type);
+    }
+
+    // Chỉ cho phép nhập số trong ô OTP
+    document.getElementById('otpInput').addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+
+    // Xử lý form quên mật khẩu
+    document.getElementById('forgotPasswordForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const email = formData.get('email');
+        const submitButton = this.querySelector('button[type="submit"]');
+
+        // Disable button và hiển thị loading
+        submitButton.disabled = true;
+        submitButton.innerHTML = 'Đang xử lý...';
+        submitButton.classList.add('loading');
+
+        fetch('/account/forgot-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'email=' + encodeURIComponent(email)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('forgotMessage', data.message, 'success');
+                    // Tự động chuyển về form đăng nhập sau 3 giây
+                    setTimeout(() => {
+                        showForm('loginForm');
+                        document.getElementById('forgotPasswordForm').reset();
+                        document.getElementById('forgotMessage').innerHTML = '';
+                    }, 3000);
+                } else {
+                    showMessage('forgotMessage', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                showMessage('forgotMessage', 'Có lỗi xảy ra: ' + error.message, 'error');
+            })
+            .finally(() => {
+                // Restore button
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Gửi yêu cầu';
+                submitButton.classList.remove('loading');
+            });
+    });
+</script>
+
+</body>
+</html>

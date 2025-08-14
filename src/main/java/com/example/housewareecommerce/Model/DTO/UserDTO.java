@@ -1,5 +1,6 @@
 package com.example.housewareecommerce.Model.DTO;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class UserDTO {
@@ -9,9 +10,31 @@ public class UserDTO {
     private String address;
     private String phoneNumber;
     private String gender;
+    private String password;
     private Long statusId; // ID của StatusEntity
 
-    // Getter & Setter
+
+    public UserDTO(Long id, String name, String email, String address, String phoneNumber, String gender, Long statusId) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.gender = gender;
+        this.statusId = statusId;
+    }
+
+    public UserDTO() {
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public Long getId() {
         return id;
     }
