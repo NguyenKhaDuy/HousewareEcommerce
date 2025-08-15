@@ -1,7 +1,7 @@
 package com.example.housewareecommerce.Controller;
 
 import com.example.housewareecommerce.Model.DTO.UserDTO;
-import com.example.housewareecommerce.Service.Impl.EmailService;
+import com.example.housewareecommerce.Service.EmailService;
 import com.example.housewareecommerce.Service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
