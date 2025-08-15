@@ -11,4 +11,6 @@ public interface OrdersService {
     Page<OrdersDTO> getAll(Integer pageNo);
     MessageDTO getById(Long id);
     MessageDTO createOrders(OrdersRequest ordersRequest);
+    MessageDTO updateStatusOrders(OrdersRequest OrdersRequest);
+    MessageDTO deleteOrders(Long id);
 }

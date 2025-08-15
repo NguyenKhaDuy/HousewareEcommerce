@@ -80,7 +80,6 @@ public class OrdersServiceImpl implements OrdersService {
             OrderEntity orderEntity = ordersRepository.findById(id).get();
             OrdersDTO ordersDTO = new OrdersDTO();
             modelMapper.map(orderEntity,ordersDTO);
-
             ordersDTO.setPaymentMethod(orderEntity.getPaymentMethodEntity().getNameMethod());
             ordersDTO.setUserName(orderEntity.getUserEntity().getName());
             ordersDTO.setStatusCode(orderEntity.getStatusEntity().getStatusCode());
@@ -174,6 +173,63 @@ public class OrdersServiceImpl implements OrdersService {
         }catch (Exception e){
             messageDTO.setMessage("Thêm không thành công");
             messageDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
+            messageDTO.setData(null);
+        }
+        return messageDTO;
+    }
+
+    @Override
+    public MessageDTO updateStatusOrders(OrdersRequest ordersRequest) {
+        MessageDTO messageDTO = new MessageDTO();
+        try{
+            OrderEntity orderEntity = ordersRepository.findById(ordersRequest.getId()).get();
+            StatusEntity statusEntity = statusRepository.findById(ordersRequest.getStatusId()).get();
+            orderEntity.setStatusEntity(statusEntity);
+            ordersRepository.save(orderEntity);
+
+            OrdersDTO ordersDTO = new OrdersDTO();
+            modelMapper.map(orderEntity,ordersDTO);
+            ordersDTO.setPaymentMethod(orderEntity.getPaymentMethodEntity().getNameMethod());
+            ordersDTO.setUserName(orderEntity.getUserEntity().getName());
+            ordersDTO.setStatusCode(orderEntity.getStatusEntity().getStatusCode());
+            ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
+            ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
+            List<OrdersDetailDTO> ordersDetailDTOS = new ArrayList<>();
+            for (OrderDetailsEntity orderDetails : orderEntity.getOrderDetails()){
+                OrdersDetailDTO ordersDetailDTO = new OrdersDetailDTO();
+                ordersDetailDTO.setId(orderDetails.getId());
+                ordersDetailDTO.setNameProduct(orderDetails.getProductEntity().getNameProduct());
+                ordersDetailDTO.setQuality(orderDetails.getQuality());
+                ordersDetailDTO.setPriceQuotation(orderDetails.getPriceQuotation());
+                ordersDetailDTO.setTotalAmount(orderDetails.getTotalAmount());
+                ordersDetailDTOS.add(ordersDetailDTO);
+            }
+            ordersDTO.setOrdersDetailDTOS(ordersDetailDTOS);
+
+            messageDTO.setMessage("Cập nhật trạng thái đơn hàng thành công");
+            messageDTO.setHttpStatus(HttpStatus.OK);
+            messageDTO.setData(ordersDTO);
+
+        }catch (NoSuchElementException e){
+            messageDTO.setMessage("Không tìm thấy đơn hàng");
+            messageDTO.setHttpStatus(HttpStatus.NOT_FOUND);
+            messageDTO.setData(null);
+        }
+        return messageDTO;
+    }
+
+    @Override
+    public MessageDTO deleteOrders(Long id) {
+        MessageDTO messageDTO = new MessageDTO();
+        try{
+            OrderEntity orderEntity = ordersRepository.findById(id).get();
+            ordersRepository.deleteById(id);
+            messageDTO.setMessage("Xóa thành công đơn hàng");
+            messageDTO.setHttpStatus(HttpStatus.OK);
+            messageDTO.setData(null);
+        }catch (NoSuchElementException e){
+            messageDTO.setMessage("Đơn hàng không tồn tại");
+            messageDTO.setHttpStatus(HttpStatus.NOT_FOUND);
             messageDTO.setData(null);
         }
         return messageDTO;

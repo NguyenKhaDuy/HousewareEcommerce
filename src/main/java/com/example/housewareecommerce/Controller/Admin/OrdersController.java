@@ -43,4 +43,22 @@ public class OrdersController {
         }
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }
+
+    @PutMapping(value = "/admin/orders")
+    public ResponseEntity<?> updateOrders(@RequestBody OrdersRequest ordersRequest){
+        MessageDTO messageDTO = ordersService.updateStatusOrders(ordersRequest);
+        if (messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){
+            return new ResponseEntity<>(messageDTO, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/orders/{id}")
+    public ResponseEntity<?> deleteOrders(@PathVariable Long id){
+        MessageDTO messageDTO = ordersService.deleteOrders(id);
+        if (messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){
+            return new ResponseEntity<>(messageDTO, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+    }
 }
