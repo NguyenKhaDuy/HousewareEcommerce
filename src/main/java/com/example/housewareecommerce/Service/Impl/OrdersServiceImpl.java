@@ -127,7 +127,7 @@ public class OrdersServiceImpl implements OrdersService {
                 messageDTO.setData(null);
                 return messageDTO;
             }
-//            List<OrderDetailsEntity> orderDetailsEntities = new ArrayList<>();
+//           Tiến hành thêm đơn hàng
             for (OrdersDetailsRequest it : ordersRequest.getOrdersDetailsRequests()){
                 OrderDetailsEntity orderDetails = new OrderDetailsEntity();
                 orderDetails.setQuality(it.getQuality());
@@ -147,7 +147,18 @@ public class OrdersServiceImpl implements OrdersService {
             orderEntity.setDiscountEntity(discountEntity);
 
             OrderEntity order = ordersRepository.save(orderEntity);
+            //thêm đơn hàng thành công
+            //Tiến hành cập nhật lại số lượng tồn kho trong product
 
+            for (OrdersDetailsRequest it : ordersRequest.getOrdersDetailsRequests()){
+                ProductEntity product = productRepository.findById(it.getProductId()).get();
+                Long qualityOrder = it.getQuality();
+                Long qualityProduct = product.getQuantity();
+                product.setQuantity(qualityProduct - qualityOrder);
+                productRepository.save(product);
+            }
+
+            //Hiển thị thông tin đơn hàng ra
             OrdersDTO ordersDTO = new OrdersDTO();
             modelMapper.map(orderEntity,ordersDTO);
             ordersDTO.setPaymentMethod(order.getPaymentMethodEntity().getNameMethod());
