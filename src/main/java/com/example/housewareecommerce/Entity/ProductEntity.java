@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -50,7 +49,7 @@ public class ProductEntity {
     private List<CommentEntity> commentEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "productEntity", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    private List<OrderDetails> orderDetails = new ArrayList<>();
+    private List<OrderDetailsEntity> orderDetails = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -164,11 +163,11 @@ public class ProductEntity {
         this.commentEntities = commentEntities;
     }
 
-    public List<OrderDetails> getOrderDetails() {
+    public List<OrderDetailsEntity> getOrderDetails() {
         return orderDetails;
     }
 
-    public void setOrderDetails(List<OrderDetails> orderDetails) {
+    public void setOrderDetails(List<OrderDetailsEntity> orderDetails) {
         this.orderDetails = orderDetails;
     }
 }

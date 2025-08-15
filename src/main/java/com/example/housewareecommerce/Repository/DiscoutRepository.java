@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DiscoutRepository extends JpaRepository<DiscountEntity, Long> {
+    DiscountEntity findByDiscounCode(String discountCode);
 }

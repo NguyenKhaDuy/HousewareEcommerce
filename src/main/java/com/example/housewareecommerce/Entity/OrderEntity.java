@@ -2,8 +2,8 @@ package com.example.housewareecommerce.Entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -17,7 +17,7 @@ public class OrderEntity {
     private Float totalPrice;
 
     @Column(name = "dateorder")
-    private Date dateOrder;
+    private LocalDate dateOrder;
 
     @Column(name = "note")
     private String note;
@@ -35,7 +35,7 @@ public class OrderEntity {
     private StatusEntity statusEntity;
 
     @OneToMany(mappedBy = "orderEntity", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    private List<OrderDetails> orderDetails = new ArrayList<>();
+    private List<OrderDetailsEntity> orderDetails = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "discountid")
@@ -57,11 +57,11 @@ public class OrderEntity {
         this.totalPrice = totalPrice;
     }
 
-    public Date getDateOrder() {
+    public LocalDate getDateOrder() {
         return dateOrder;
     }
 
-    public void setDateOrder(Date dateOrder) {
+    public void setDateOrder(LocalDate dateOrder) {
         this.dateOrder = dateOrder;
     }
 
@@ -97,11 +97,11 @@ public class OrderEntity {
         this.statusEntity = statusEntity;
     }
 
-    public List<OrderDetails> getOrderDetails() {
+    public List<OrderDetailsEntity> getOrderDetails() {
         return orderDetails;
     }
 
-    public void setOrderDetails(List<OrderDetails> orderDetails) {
+    public void setOrderDetails(List<OrderDetailsEntity> orderDetails) {
         this.orderDetails = orderDetails;
     }
 
