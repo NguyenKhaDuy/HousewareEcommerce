@@ -1,15 +1,14 @@
 package com.example.housewareecommerce.Service.Impl;
 
-import com.example.housewareecommerce.Entity.CategoryEntity;
-import com.example.housewareecommerce.Entity.ImageEntity;
-import com.example.housewareecommerce.Entity.ProductEntity;
-import com.example.housewareecommerce.Entity.StatusEntity;
+import com.example.housewareecommerce.Entity.*;
 import com.example.housewareecommerce.Model.DTO.MessageDTO;
 import com.example.housewareecommerce.Model.DTO.ProductDTO;
 import com.example.housewareecommerce.Model.Request.ProductRequest;
 import com.example.housewareecommerce.Repository.CategoryRepository;
+import com.example.housewareecommerce.Repository.EvaluateRepository;
 import com.example.housewareecommerce.Repository.ProductRepository;
 import com.example.housewareecommerce.Repository.StatusRepository;
+import com.example.housewareecommerce.Service.EvaluateService;
 import com.example.housewareecommerce.Service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +36,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     CategoryRepository categoryRepository;
+
+    @Autowired
+    EvaluateRepository evaluateRepository;
 
     @Autowired
     ModelMapper modelMapper;
@@ -129,6 +131,7 @@ public class ProductServiceImpl implements ProductService {
         MessageDTO messageDTO = new MessageDTO();
         try {
             ProductEntity productEntity = productRepository.findById(id).get();
+            Integer evaluateRating = averageRating(id);
             ProductDTO productDTO = new ProductDTO();
             modelMapper.map(productEntity, productDTO);
             productDTO.setCategoryName(productEntity.getCategoryEntity().getNameCategory());
@@ -140,6 +143,7 @@ public class ProductServiceImpl implements ProductService {
                     images.add(imageBytes);
                 }
             }
+            productDTO.setEvaluateRating(evaluateRating);
             productDTO.setImages(images);
             messageDTO.setMessage("Sản phẩm tồn tại");
             messageDTO.setHttpStatus(HttpStatus.OK);
@@ -150,6 +154,17 @@ public class ProductServiceImpl implements ProductService {
             messageDTO.setData(null);
         }
         return messageDTO;
+    }
+
+    public Integer averageRating(Long productId) {
+        ProductEntity productEntity = productRepository.findById(productId).get();
+        List<EvaluateEntity> evaluateEntities = evaluateRepository.findByProductEntity(productEntity);
+        Integer sumStar = 0;
+        for (EvaluateEntity it : evaluateEntities){
+            sumStar += it.getStar();
+        }
+        Integer result = sumStar / evaluateEntities.size();
+        return result;
     }
 
     @Override

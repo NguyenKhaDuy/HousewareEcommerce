@@ -9,4 +9,5 @@ import org.springframework.stereotype.Service;
 public interface CartService {
     CartDTO getCartByUser(Long userId);
     MessageDTO addToCart(CartRequest cartRequest);
+    MessageDTO deleteProductInCart(CartRequest cartRequest);
 }

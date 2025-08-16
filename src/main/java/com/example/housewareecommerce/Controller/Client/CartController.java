@@ -39,4 +39,13 @@ public class CartController {
         }
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }
+
+    @DeleteMapping(value = "/cart")
+    public ResponseEntity<?> deleteProductInCart(@RequestBody CartRequest cartRequest){
+        MessageDTO messageDTO = cartService.deleteProductInCart(cartRequest);
+        if (messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){
+            return new ResponseEntity<>(messageDTO, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+    }
 }
