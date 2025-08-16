@@ -1,9 +1,6 @@
 package com.example.housewareecommerce.Service.Impl;
 
-import com.example.housewareecommerce.Entity.CategoryEntity;
-import com.example.housewareecommerce.Entity.ImageEntity;
-import com.example.housewareecommerce.Entity.ProductEntity;
-import com.example.housewareecommerce.Entity.StatusEntity;
+import com.example.housewareecommerce.Entity.*;
 import com.example.housewareecommerce.Model.DTO.MessageDTO;
 import com.example.housewareecommerce.Model.DTO.ProductDTO;
 import com.example.housewareecommerce.Model.Request.ProductRequest;
@@ -74,7 +71,7 @@ public class ProductServiceImpl implements ProductService {
         MessageDTO messageDTO = new MessageDTO();
         try {
             ProductEntity productEntity = productRepository.findById(id).get();
-            Integer evaluateRating = evaluateRepository.averageRating(id);
+            Integer evaluateRating = averageRating(id);
             ProductDTO productDTO = new ProductDTO();
             modelMapper.map(productEntity, productDTO);
             productDTO.setCategoryName(productEntity.getCategoryEntity().getNameCategory());
@@ -97,6 +94,17 @@ public class ProductServiceImpl implements ProductService {
             messageDTO.setData(null);
         }
         return messageDTO;
+    }
+
+    public Integer averageRating(Long productId) {
+        ProductEntity productEntity = productRepository.findById(productId).get();
+        List<EvaluateEntity> evaluateEntities = evaluateRepository.findByProductEntity(productEntity);
+        Integer sumStar = 0;
+        for (EvaluateEntity it : evaluateEntities){
+            sumStar += it.getStar();
+        }
+        Integer result = sumStar / evaluateEntities.size();
+        return result;
     }
 
     @Override
