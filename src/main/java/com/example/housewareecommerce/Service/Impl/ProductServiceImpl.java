@@ -143,7 +143,7 @@ public class ProductServiceImpl implements ProductService {
                     images.add(imageBytes);
                 }
             }
-            productDTO.setEvaluateRating(evaluateRating);
+            //productDTO.setEvaluateRating(evaluateRating);
             productDTO.setImages(images);
             messageDTO.setMessage("Sản phẩm tồn tại");
             messageDTO.setHttpStatus(HttpStatus.OK);
