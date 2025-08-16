@@ -14,6 +14,7 @@ public class ProductDTO {
     private Float price;
     private Long quantity;
     private Float importPrice;
+    private Integer evaluateRating;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
     private LocalDateTime created;
     private String categoryName;
@@ -99,5 +100,13 @@ public class ProductDTO {
 
     public void setImages(List<byte[]> images) {
         this.images = images;
+    }
+
+    public Integer getEvaluateRating() {
+        return evaluateRating;
+    }
+
+    public void setEvaluateRating(Integer evaluateRating) {
+        this.evaluateRating = evaluateRating;
     }
 }

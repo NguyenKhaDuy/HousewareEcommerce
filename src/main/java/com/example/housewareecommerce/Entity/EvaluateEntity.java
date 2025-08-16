@@ -2,6 +2,7 @@ package com.example.housewareecommerce.Entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -16,7 +17,7 @@ public class EvaluateEntity {
     @Column(name = "note")
     private String note;
     @Column(name = "created")
-    private LocalDateTime created;
+    private LocalDate created;
 
     @ManyToOne
     @JoinColumn(name = "userid")
@@ -50,11 +51,11 @@ public class EvaluateEntity {
         this.note = note;
     }
 
-    public LocalDateTime getCreated() {
+    public LocalDate getCreated() {
         return created;
     }
 
-    public void setCreated(LocalDateTime created) {
+    public void setCreated(LocalDate created) {
         this.created = created;
     }
 
