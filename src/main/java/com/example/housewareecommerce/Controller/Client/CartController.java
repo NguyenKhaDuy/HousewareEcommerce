@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@SuppressWarnings("all")
 public class CartController {
     @Autowired
     CartService cartService;

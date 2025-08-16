@@ -2,6 +2,7 @@ package com.example.housewareecommerce.Model.DTO;
 
 import java.time.LocalDate;
 
+@SuppressWarnings("all")
 public class CommentDTO {
     private Long id;
     private String content;

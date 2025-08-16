@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
+@SuppressWarnings("all")
 public class FavoriteProductServiceImpl implements FavoriteProductService {
     @Autowired
     UserRepository userRepository;

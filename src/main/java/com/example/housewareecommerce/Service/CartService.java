@@ -6,6 +6,7 @@ import com.example.housewareecommerce.Model.Request.CartRequest;
 import org.springframework.stereotype.Service;
 
 @Service
+@SuppressWarnings("all")
 public interface CartService {
     CartDTO getCartByUser(Long userId);
     MessageDTO addToCart(CartRequest cartRequest);

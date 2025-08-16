@@ -8,6 +8,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "favoriteproduct")
+@SuppressWarnings("all")
 public class FavoriteProductEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

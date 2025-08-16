@@ -1,9 +1,8 @@
 package com.example.housewareecommerce.Model.DTO;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
+@SuppressWarnings("all")
 public class FavoriteProductDTO {
     private Long id;
     private LocalDate created;

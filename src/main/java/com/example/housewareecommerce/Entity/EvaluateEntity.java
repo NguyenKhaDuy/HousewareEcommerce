@@ -8,6 +8,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "evaluate")
+@SuppressWarnings("all")
 public class EvaluateEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.NoSuchElementException;
 
 @Service
+@SuppressWarnings("all")
 public class CartServiceImpl implements CartService {
     @Autowired
     UserRepository userRepository;

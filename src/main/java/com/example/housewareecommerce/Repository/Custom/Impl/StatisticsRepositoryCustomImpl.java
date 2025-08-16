@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 
 @Repository
+@SuppressWarnings("all")
 public class StatisticsRepositoryCustomImpl implements StatisticsRepositoryCustom {
     @PersistenceContext
     EntityManager entityManager;

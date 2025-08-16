@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 @Service
+@SuppressWarnings("all")
 public interface FavoriteProductService {
     Page<FavoriteProductDTO> getAllByUser(Long userId, Integer pageNo);
 

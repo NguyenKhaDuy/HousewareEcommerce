@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 @Service
+@SuppressWarnings("all")
 public interface CommentService {
     Page<CommentDTO> getAllByProduct(Long productId, Integer pageNo);
     MessageDTO createComment(CommentRequest commentRequest);

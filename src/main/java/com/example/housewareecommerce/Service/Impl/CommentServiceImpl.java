@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
+@SuppressWarnings("all")
 public class CommentServiceImpl implements CommentService {
     @Autowired
     CommentRepository commentRepository;

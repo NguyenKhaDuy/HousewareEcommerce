@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
+@SuppressWarnings("all")
 public interface FavoriteProductRepository extends JpaRepository<FavoriteProductEntity, Long> {
     Page<FavoriteProductEntity> findByUserEntity(UserEntity userEntity, Pageable pageable);
     FavoriteProductEntity findByUserEntityAndProductEntity(UserEntity userEntity, ProductEntity productEntity);

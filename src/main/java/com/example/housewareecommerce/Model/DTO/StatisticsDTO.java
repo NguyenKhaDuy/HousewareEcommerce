@@ -1,5 +1,6 @@
 package com.example.housewareecommerce.Model.DTO;
 
+@SuppressWarnings("all")
 public class StatisticsDTO {
     private Integer numberOrderAtCurrentMonth;
     private Float sumPriceAtCurrentMonth;
