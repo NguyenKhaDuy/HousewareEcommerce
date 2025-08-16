@@ -2,8 +2,7 @@ package com.example.housewareecommerce.Entity;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "comment")
@@ -15,7 +14,7 @@ public class CommentEntity {
     @Column(name = "content")
     private String content;
     @Column(name = "created")
-    private LocalDateTime created;
+    private LocalDate created;
 
     @ManyToOne
     @JoinColumn(name = "productid")
@@ -41,11 +40,11 @@ public class CommentEntity {
         this.content = content;
     }
 
-    public LocalDateTime getCreated() {
+    public LocalDate getCreated() {
         return created;
     }
 
-    public void setCreated(LocalDateTime created) {
+    public void setCreated(LocalDate created) {
         this.created = created;
     }
 

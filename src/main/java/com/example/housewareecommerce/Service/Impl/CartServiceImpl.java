@@ -117,4 +117,34 @@ public class CartServiceImpl implements CartService {
         }
         return messageDTO;
     }
+
+    @Override
+    public MessageDTO deleteProductInCart(CartRequest cartRequest) {
+        MessageDTO messageDTO = new MessageDTO();
+        try {
+            UserEntity userEntity = userRepository.findById(cartRequest.getUserId()).get();
+            if(userEntity.getCartEntity() == null){
+                messageDTO.setMessage("User chưa có giỏ hàng");
+                messageDTO.setHttpStatus(HttpStatus.NOT_FOUND);
+                messageDTO.setData(null);
+                return messageDTO;
+            }
+            ProductEntity productEntity = productRepository.findById(cartRequest.getProductId()).get();
+            CartEntity cartEntity = userEntity.getCartEntity();
+            CartItemEntity cartItemEntity = cartItemRepository.findByProductEntityAndAndCartEntity(productEntity, cartEntity);
+            if (cartEntity.getCartItemEntities().contains(cartItemEntity)){
+                cartEntity.getCartItemEntities().remove(cartItemEntity);
+                cartRepository.save(cartEntity);
+
+                messageDTO.setMessage("Xóa thành công");
+                messageDTO.setHttpStatus(HttpStatus.OK);
+                messageDTO.setData(null);
+            }
+        }catch (NoSuchElementException e){
+            messageDTO.setMessage("Fails");
+            messageDTO.setHttpStatus(HttpStatus.NOT_FOUND);
+            messageDTO.setData(null);
+        }
+        return messageDTO;
+    }
 }
