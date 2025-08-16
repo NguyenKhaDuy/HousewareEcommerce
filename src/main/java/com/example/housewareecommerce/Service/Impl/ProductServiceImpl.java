@@ -8,7 +8,6 @@ import com.example.housewareecommerce.Repository.CategoryRepository;
 import com.example.housewareecommerce.Repository.EvaluateRepository;
 import com.example.housewareecommerce.Repository.ProductRepository;
 import com.example.housewareecommerce.Repository.StatusRepository;
-import com.example.housewareecommerce.Service.EvaluateService;
 import com.example.housewareecommerce.Service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +26,7 @@ import java.util.stream.Collectors;
 
 
 @Service
+@SuppressWarnings("all")
 public class ProductServiceImpl implements ProductService {
     @Autowired
     ProductRepository productRepository;
