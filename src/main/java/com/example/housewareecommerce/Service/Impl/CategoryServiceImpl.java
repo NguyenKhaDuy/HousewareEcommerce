@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -51,6 +52,19 @@ public class CategoryServiceImpl implements CategoryService {
             messageDTO.setData(null);
         }
         return messageDTO;
+    }
+
+    @Override
+    public Optional<CategoryDTO> getByCategoryById(Long id) {
+        return categoryRepository.findById(id)
+                .map(categoryEntity -> {
+                    CategoryDTO dto = new CategoryDTO();
+                    dto.setId(categoryEntity.getId());
+                    dto.setNameCategory(categoryEntity.getNameCategory());
+                    dto.setDescription(categoryEntity.getDescription());
+                    dto.setCreated(categoryEntity.getCreated());
+                    return dto;
+                });
     }
 
     @Override

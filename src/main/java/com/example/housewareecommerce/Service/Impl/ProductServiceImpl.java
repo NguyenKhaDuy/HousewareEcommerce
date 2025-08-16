@@ -23,9 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -41,6 +40,67 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     ModelMapper modelMapper;
+
+    @Override
+    public List<ProductDTO> getProductsByCategoryId(Long categoryId) {
+        List<ProductEntity> products = productRepository.findByCategoryIdWithImages(categoryId);
+
+        if (products.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return products.stream()
+                .map(this::convertToListDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ProductEntity getProductDetailById(Long productId) {
+        ProductEntity product = productRepository.findByIdWithBasicRelations(productId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + productId));
+
+        ProductEntity productWithImages = productRepository.findByIdWithImages(productId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy product Images = " + productId));
+        product.setImageEntities(productWithImages.getImageEntities());
+
+        ProductEntity productWithEvaluates = productRepository.findByIdWithEvaluates(productId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy evalute = " + productId));
+        product.setEvaluateEntities(productWithEvaluates.getEvaluateEntities());
+
+        if (product.getImageEntities() != null) {
+            product.getImageEntities().forEach(img -> {
+                if (img.getImageUrl() != null && img.getImageUrl().length > 0) {
+                    String encodedImage = Base64.getEncoder().encodeToString(img.getImageUrl());
+                    img.setBase64Image(encodedImage);
+                }
+            });
+        }
+
+        return product;
+    }
+
+    private ProductDTO convertToListDTO(ProductEntity product) {
+        List<String> imageList = new ArrayList<>();
+
+        if (product.getImageEntities() != null && !product.getImageEntities().isEmpty()) {
+            imageList = product.getImageEntities()
+                    .stream()
+                    .filter(img -> img.getImageUrl() != null && img.getImageUrl().length > 0)
+                    .map(img -> Base64.getEncoder().encodeToString(img.getImageUrl()))
+                    .collect(Collectors.toList());
+        }
+
+        return new ProductDTO(
+                product.getId(),
+                product.getNameProduct(),
+                product.getDescription(),
+                product.getPrice(),
+                product.getQuantity(),
+                imageList,
+                product.getStatusEntity().getStatusCode()
+        );
+    }
+
     @Override
     public Page<ProductDTO> getAll(Integer pageNo) {
         Pageable pageable = PageRequest.of(pageNo - 1, 5);

@@ -78,8 +78,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserEntity> getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public Optional<UserDTO> getUserByEmail(String email) {
+        UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        return Optional.of(dto);
     }
 
     @Override

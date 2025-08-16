@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${product.nameProduct} + ' - Gia Dụng Pro'">Chi Tiết Sản Phẩm</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .thumbnail-active { border-color: #2563eb; opacity: 1; }
+    .tab-active { border-color: #2563eb; color: #2563eb; background-color: #eff6ff; }
+    .prose { max-width: 65ch; color: #374151; }
+    .prose ul { list-style-type: disc; padding-left: 1.5em; }
+    .prose ul > li { margin-top: 0.5em; margin-bottom: 0.5em; }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- Header -->
+<header class="bg-white shadow-md sticky top-0 z-50">
+  <div class="container mx-auto px-4">
+    <div class="flex justify-between items-center py-4">
+      <a href="/" class="text-2xl font-bold text-gray-800">
+        <i class="fas fa-home text-blue-600"></i>
+        Gia Dụng <span class="text-blue-600">Pro</span>
+      </a>
+      <nav class="hidden md:flex items-center space-x-6">
+        <a href="/" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Trang Chủ</a>
+        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Sản Phẩm</a>
+        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Khuyến Mãi</a>
+        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Về Chúng Tôi</a>
+        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Liên Hệ</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <button class="text-gray-600 hover:text-blue-600">
+          <i class="fas fa-search fa-lg"></i>
+        </button>
+        <a href="#" class="relative text-gray-600 hover:text-blue-600">
+          <i class="fas fa-heart fa-lg"></i>
+        </a>
+        <a href="#" class="relative text-gray-600 hover:text-blue-600">
+          <i class="fas fa-shopping-cart fa-lg"></i>
+          <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+        </a>
+        <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
+          <span class="font-medium text-gray-700">
+              Chào, <span th:text="${session.username}">Tên người dùng</span>
+          </span>
+          <a th:href="@{/account/logout}" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">
+            Đăng xuất
+          </a>
+        </div>
+
+        <a th:unless="${session.username}" th:href="@{/account/login}" class="hidden sm:block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+          Đăng nhập
+        </a>
+        <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue-600">
+          <i class="fas fa-bars fa-lg"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+    <a th:href="@{/user/category/getAll}" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Trang Chủ</a>
+    <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Sản Phẩm</a>
+    <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Khuyến Mãi</a>
+    <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Liên Hệ</a>
+    <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
+          <span class="font-medium text-gray-700">
+              Chào, <span th:text="${session.username}">Tên người dùng</span>
+          </span>
+      <a th:href="@{/account/logout}" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">
+        Đăng xuất
+      </a>
+    </div>
+
+    <a th:unless="${session.username}" th:href="@{/account/login}" class="hidden sm:block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+      Đăng nhập
+    </a>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="py-12">
+  <div class="container mx-auto px-4">
+    <!-- Breadcrumb -->
+    <div class="flex items-center space-x-2 text-sm text-gray-600 mb-8">
+      <a th:href="@{/user/category/getAll}" class="hover:text-blue-600 transition duration-300">
+        <i class="fas fa-home"></i> Trang Chủ
+      </a>
+      <i class="fas fa-chevron-right text-gray-400"></i>
+      <a th:href="@{/user/category/{id}(id=${product.categoryEntity.id})}"
+         class="hover:text-blue-600 transition duration-300"
+         th:text="${product.categoryEntity.nameCategory}">Tên Category</a>
+      <i class="fas fa-chevron-right text-gray-400"></i>
+      <span class="text-gray-800 font-medium" th:text="${product.nameProduct}">Tên Sản Phẩm</span>
+    </div>
+
+    <!-- Product Detail Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+      <div>
+        <!-- Main Image with Navigation Buttons -->
+        <div class="relative bg-white rounded-lg shadow-md p-4 mb-4">
+          <img id="mainImage"
+               th:src="${not #lists.isEmpty(product.imageEntities)
+              ? 'data:image/jpeg;base64,' + product.imageEntities[0].base64Image
+              : 'https://placehold.co/600x600/e2e8f0/a0aec0?text=No+Image'}"
+               th:alt="${product.nameProduct}"
+               class="w-full h-auto max-h-[500px] object-contain rounded-lg"/>
+
+          <!-- Previous Button -->
+          <button id="prevImage" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md text-gray-600 hover:text-blue-600 focus:outline-none">
+            <i class="fas fa-chevron-left fa-lg"></i>
+          </button>
+
+          <!-- Next Button -->
+          <button id="nextImage" class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md text-gray-600 hover:text-blue-600 focus:outline-none">
+            <i class="fas fa-chevron-right fa-lg"></i>
+          </button>
+        </div>
+
+        <!-- Image Thumbnails -->
+        <div class="grid grid-cols-5 gap-2"
+             th:if="${product.imageEntities != null and not #lists.isEmpty(product.imageEntities) and #lists.size(product.imageEntities) > 1}">
+          <th:block th:each="img, iterStat : ${product.imageEntities}">
+            <img th:src="'data:image/jpeg;base64,' + ${img.base64Image}"
+                 alt="Product thumbnail"
+                 class="w-full h-24 object-cover rounded-md cursor-pointer border-2 border-transparent opacity-70 hover:opacity-100 hover:border-blue-500 transition"
+                 th:classappend="${iterStat.index == 0} ? 'thumbnail-active'">
+          </th:block>
+        </div>
+
+      </div>
+
+
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-3" th:text="${product.nameProduct}">Tên sản phẩm</h1>
+
+        <!-- Status and Rating -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center">
+            <span th:if="${product.statusEntity != null and product.statusEntity.statusCode == 'ACTIVE'}"
+                  class="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full flex items-center">
+              <i class="fas fa-check-circle mr-2"></i>Còn hàng
+            </span>
+            <span th:if="${product.statusEntity != null and product.statusEntity.statusCode == 'OUT_OF_STOCK'}"
+                  class="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full flex items-center">
+              <i class="fas fa-times-circle mr-2"></i>Hết hàng
+            </span>
+            <span th:if="${product.statusEntity != null and product.statusEntity.statusCode == 'DISCONTINUED'}"
+                  class="px-3 py-1 bg-gray-100 text-gray-800 text-sm font-medium rounded-full flex items-center">
+              <i class="fas fa-ban mr-2"></i>Ngừng bán
+            </span>
+          </div>
+          <div class="flex items-center">
+            <div class="flex text-yellow-400">
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+            </div>
+            <span class="text-sm text-gray-500 ml-2"
+                  th:text="'(' + ${product.evaluateEntities != null ? #lists.size(product.evaluateEntities) : 0} + ' đánh giá)'">(0 đánh giá)</span>
+          </div>
+        </div>
+
+        <!-- Price -->
+        <div class="mb-6">
+          <span class="text-4xl font-bold text-blue-600"
+                th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+        </div>
+
+        <!-- Short Description -->
+        <p class="text-gray-600 mb-6" th:text="${product.description}">Mô tả ngắn gọn về sản phẩm.</p>
+
+        <!-- Quantity and Add to Cart -->
+        <div class="flex items-center space-x-4 mb-6">
+          <div class="flex items-center border border-gray-300 rounded-lg">
+            <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-l-lg" onclick="updateQuantity(-1)">-</button>
+            <input id="quantityInput" type="text" value="1" class="w-12 text-center border-none focus:ring-0" th:attr="data-max=${product.quantity}">
+            <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-r-lg" onclick="updateQuantity(1)">+</button>
+          </div>
+          <button class="flex-1 py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
+                  th:disabled="${product.statusEntity == null or product.statusEntity.statusCode != 'ACTIVE'}">
+            <i class="fas fa-shopping-cart mr-2"></i>
+            <span th:if="${product.statusEntity != null and product.statusEntity.statusCode == 'ACTIVE'}">Thêm vào giỏ hàng</span>
+            <span th:if="${product.statusEntity == null or product.statusEntity.statusCode != 'ACTIVE'}">Không khả dụng</span>
+          </button>
+          <button class="p-3 border border-gray-300 text-gray-600 rounded-lg hover:bg-red-50 hover:text-red-500 transition duration-300">
+            <i class="fas fa-heart fa-lg"></i>
+          </button>
+        </div>
+
+        <!-- Meta Info -->
+        <div class="text-sm text-gray-500 space-y-2">
+          <p>
+            <span class="font-medium text-gray-700">Mã sản phẩm:</span>
+            <span th:text="${product.id}">SP001</span>
+          </p>
+          <p>
+            <span class="font-medium text-gray-700">Danh mục:</span>
+            <a th:href="@{/user/category/{id}(id=${product.categoryEntity.id})}"
+               class="text-blue-600 hover:underline"
+               th:text="${product.categoryEntity.nameCategory}">Tên Category</a>
+          </p>
+          <p>
+            <span class="font-medium text-gray-700">Số lượng có sẵn:</span>
+            <span th:text="${product.quantity}">0</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Details, Specs, Reviews Tabs -->
+    <div class="mt-16 bg-white rounded-lg shadow-md">
+      <div class="border-b border-gray-200">
+        <nav class="flex -mb-px space-x-6 px-6" id="tab-buttons">
+          <button class="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-lg tab-active" data-tab="description">Mô tả</button>
+          <button class="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-lg" data-tab="specs">Thông số kỹ thuật</button>
+          <button class="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-lg"
+                  data-tab="reviews"
+                  th:text="'Đánh giá (' + ${product.evaluateEntities != null ? #lists.size(product.evaluateEntities) : 0} + ')'">Đánh giá (0)</button>
+        </nav>
+      </div>
+      <div class="p-6" id="tab-contents">
+        <!-- Description Content -->
+        <div id="description" class="prose max-w-none">
+          <div th:utext="${product.description}">
+            <p>Nội dung mô tả chi tiết sản phẩm sẽ được hiển thị ở đây.</p>
+          </div>
+        </div>
+
+        <!-- Specs Content -->
+        <div id="specs" class="hidden">
+          <table class="min-w-full divide-y divide-gray-200">
+            <tbody class="bg-white divide-y divide-gray-200">
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Ngày tạo</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                  th:text="${product.created != null ? #temporals.format(product.created, 'dd-MM-yyyy HH:mm') : 'N/A'}">N/A</td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Mã sản phẩm</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${product.id}">N/A</td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Danh mục</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                  th:text="${product.categoryEntity != null ? product.categoryEntity.nameCategory : 'N/A'}">N/A</td>
+            </tr>
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Số lượng</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${product.quantity}">N/A</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Reviews Content -->
+        <div id="reviews" class="hidden">
+          <div th:if="${product.evaluateEntities == null or #lists.isEmpty(product.evaluateEntities)}"
+               class="text-center text-gray-500 py-8">
+            <i class="fas fa-comment-slash fa-3x mb-3"></i>
+            <p>Chưa có đánh giá nào cho sản phẩm này.</p>
+          </div>
+          <div th:if="${product.evaluateEntities != null and not #lists.isEmpty(product.evaluateEntities)}"
+               class="space-y-6">
+            <div th:each="evaluate, iterStat : ${product.evaluateEntities}"
+                 class="flex space-x-4"
+                 th:classappend="${iterStat.index > 0} ? 'border-t border-gray-200 pt-6' : ''">
+              <img src="https://placehold.co/48x48/e2e8f0/a0aec0?text=U" alt="User avatar" class="w-12 h-12 rounded-full">
+              <div>
+                <div class="flex items-center mb-1">
+                  <span class="font-semibold"
+                        th:text="${evaluate.userEntity != null ? evaluate.userEntity.fullName : 'Người dùng ẩn danh'}">Tên người dùng</span>
+                  <span class="text-xs text-gray-400 mx-2">&bull;</span>
+                  <span class="text-xs text-gray-500"
+                        th:text="${evaluate.created != null ? #temporals.format(evaluate.created, 'dd-MM-yyyy') : 'N/A'}">Ngày đánh giá</span>
+                </div>
+                <div class="flex text-yellow-400 mb-2">
+                  <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                    <i th:class="${evaluate.rating != null and i <= evaluate.rating} ? 'fas fa-star' : 'far fa-star'"></i>
+                  </th:block>
+                </div>
+                <p class="text-gray-700" th:text="${evaluate.comment}">Nội dung đánh giá.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-gray-800 text-white mt-16">
+  <div class="container mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Gia Dụng Pro</h3>
+        <p class="text-gray-400">Chuyên cung cấp các sản phẩm gia dụng thông minh, chất lượng cao, giúp nâng tầm cuộc sống cho gia đình bạn.</p>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Liên kết nhanh</h3>
+        <ul class="space-y-2">
+          <li><a href="#" class="text-gray-400 hover:text-white">Về chúng tôi</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white">Sản phẩm</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white">Chính sách bảo mật</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white">Điều khoản dịch vụ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Liên hệ</h3>
+        <ul class="space-y-2 text-gray-400">
+          <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-3"></i>123 Đường ABC, Quận 1, TP.HCM</li>
+          <li class="flex items-center"><i class="fas fa-phone-alt mr-3"></i>(028) 3812 3456</li>
+          <li class="flex items-center"><i class="fas fa-envelope mr-3"></i>contact@giadungpro.vn</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold mb-4">Đăng ký nhận tin</h3>
+        <p class="text-gray-400 mb-4">Nhận thông tin về sản phẩm mới và khuyến mãi đặc biệt.</p>
+        <form class="flex">
+          <input type="email" placeholder="Email của bạn" class="w-full rounded-l-lg px-4 py-2 text-gray-800 focus:outline-none">
+          <button class="bg-blue-600 px-4 rounded-r-lg hover:bg-blue-700"><i class="fas fa-paper-plane"></i></button>
+        </form>
+      </div>
+    </div>
+    <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500 text-sm">
+      &copy; 2024 Gia Dụng Pro. All Rights Reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile menu toggle
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  if (mobileMenuButton) {
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+  }
+
+  // Image Gallery
+  const mainImage = document.getElementById('mainImage');
+  const prevButton = document.getElementById('prevImage');
+  const nextButton = document.getElementById('nextImage');
+  const thumbnails = document.querySelectorAll('.grid.grid-cols-5 img');
+
+  let currentImageIndex = 0;
+  const imageUrls = Array.from(thumbnails).map(img => img.src);
+
+  function updateImage() {
+    if (imageUrls.length === 0) return;
+
+    // Cập nhật ảnh chính
+    mainImage.src = imageUrls[currentImageIndex];
+
+    // Cập nhật trạng thái active của thumbnail tương ứng
+    thumbnails.forEach((thumb, index) => {
+      thumb.classList.remove('thumbnail-active');
+      if (index === currentImageIndex) {
+        thumb.classList.add('thumbnail-active');
+      }
+    });
+  }
+
+  // Xử lý sự kiện click nút Previous
+  if (prevButton) {
+    prevButton.addEventListener('click', () => {
+      currentImageIndex = (currentImageIndex - 1 + imageUrls.length) % imageUrls.length;
+      updateImage();
+    });
+  }
+
+  // Xử lý sự kiện click nút Next
+  if (nextButton) {
+    nextButton.addEventListener('click', () => {
+      currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
+      updateImage();
+    });
+  }
+
+  // Xử lý sự kiện click vào các thumbnail
+  thumbnails.forEach((thumb, index) => {
+    thumb.addEventListener('click', () => {
+      currentImageIndex = index;
+      updateImage();
+    });
+  });
+
+
+  // Quantity Input
+  function updateQuantity(amount) {
+    const quantityInput = document.getElementById('quantityInput');
+    let currentValue = parseInt(quantityInput.value);
+    if (isNaN(currentValue)) currentValue = 1;
+
+    let newValue = currentValue + amount;
+    if (newValue < 1) newValue = 1;
+
+    const maxQuantity = parseInt(quantityInput.dataset.max) || 999;
+    if (newValue > maxQuantity) newValue = maxQuantity;
+
+    quantityInput.value = newValue;
+  }
+
+  // Tabs
+  const tabButtons = document.querySelectorAll('#tab-buttons button');
+  const tabContents = document.querySelectorAll('#tab-contents > div');
+
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      tabButtons.forEach(btn => btn.classList.remove('tab-active'));
+      tabContents.forEach(content => content.classList.add('hidden'));
+
+      button.classList.add('tab-active');
+      const tabId = button.getAttribute('data-tab');
+      document.getElementById(tabId).classList.remove('hidden');
+    });
+  });
+</script>
+
+</body>
+</html>

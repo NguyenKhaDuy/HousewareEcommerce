@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gia Dụng Pro - Trang Chủ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" xintegrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .hero-bg {
+      background-image: url('https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=2070&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+    }
+    .fa-star.checked {
+      color: #f59e0b; /* amber-500 */
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .card {
+      transition: all 0.6s ease;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+
+
+<header class="bg-white shadow-md sticky top-0 z-50">
+  <div class="container mx-auto px-4">
+    <div class="flex justify-between items-center py-4">
+      <!-- Logo -->
+      <a href="#" class="text-2xl font-bold text-gray-800">
+        <i class="fas fa-home text-blue-600"></i>
+        Gia Dụng <span class="text-blue-600">Pro</span>
+      </a>
+
+      <!-- Navigation Links - Desktop -->
+      <nav class="hidden md:flex items-center space-x-6">
+        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Trang Chủ</a>
+        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Sản Phẩm</a>
+        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Khuyến Mãi</a>
+        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Về Chúng Tôi</a>
+        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Liên Hệ</a>
+      </nav>
+
+      <!-- Header Icons -->
+      <div class="flex items-center space-x-4">
+        <button class="text-gray-600 hover:text-blue-600">
+          <i class="fas fa-search fa-lg"></i>
+        </button>
+        <!-- FavoriteProductEntity: Hiển thị sản phẩm yêu thích -->
+        <a href="#" class="relative text-gray-600 hover:text-blue-600">
+          <i class="fas fa-heart fa-lg"></i>
+        </a>
+        <!-- CartEntity, CartItemEntity: Hiển thị giỏ hàng -->
+        <a href="#" class="relative text-gray-600 hover:text-blue-600">
+          <i class="fas fa-shopping-cart fa-lg"></i>
+          <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+        </a>
+        <a href="#" class="relative text-gray-600 hover:text-blue-600">
+          <i class="fas fa-shopping-cart fa-lg"></i>
+          <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+        </a>
+
+        <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
+          <span class="font-medium text-gray-700">
+              Chào, <span th:text="${session.username}">Tên người dùng</span>
+          </span>
+          <a th:href="@{/account/logout}" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">
+            Đăng xuất
+          </a>
+        </div>
+
+        <a th:unless="${session.username}" th:href="@{/account/login}" class="hidden sm:block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+          Đăng nhập
+        </a>
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue-600">
+          <i class="fas fa-bars fa-lg"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+    <a th:href="@{/user/category/getAll}" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Trang Chủ</a>
+    <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Sản Phẩm</a>
+    <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Khuyến Mãi</a>
+    <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Liên Hệ</a>
+    <a href="#" class="block px-4 py-3 text-blue-600 font-bold hover:bg-gray-100">Đăng nhập</a>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main>
+  <!-- Hero Section -->
+  <section class="hero-bg text-white">
+    <div class="bg-black bg-opacity-50 h-full">
+      <div class="container mx-auto px-4 flex flex-col justify-center items-start h-[60vh] md:h-[70vh]">
+        <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">Nâng Tầm Không Gian Sống Của Bạn</h1>
+        <p class="text-lg md:text-xl mb-8 max-w-2xl">Khám phá các thiết bị gia dụng hiện đại, thông minh và tiết kiệm năng lượng cho ngôi nhà của bạn.</p>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">Danh Mục Nổi Bật</h2>
+      <p class="text-center text-gray-500 mb-12">Tìm kiếm sản phẩm theo từng không gian trong nhà bạn.</p>
+
+      <div class="relative">
+        <!-- Nút trái -->
+        <button id="prevBtn"
+                class="absolute -left-6 top-1/2 transform -translate-y-1/2 bg-white shadow-lg text-gray-700 rounded-full p-4 hover:bg-blue-600 hover:text-white hover:scale-110 transition z-10">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <!-- Slider -->
+        <div id="categorySlider"
+             class="grid grid-flow-col auto-cols-[260px] gap-6 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory">
+          <th:block th:each="cat : ${categories}">
+            <div class="relative rounded-xl overflow-hidden group shadow-md min-w-[260px] transform transition duration-500 hover:scale-105 opacity-0 translate-y-4 card">
+              <img alt="" class="w-full h-64 object-cover transition duration-500 group-hover:scale-110">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex flex-col justify-end p-4">
+                <h3 class="text-white text-lg font-bold" th:text="${cat.nameCategory}">Tên Category</h3>
+                <p class="text-gray-200 text-sm mt-1 line-clamp-2" th:text="${cat.description}">Mô tả category</p>
+              </div>
+              <a th:href="@{/user/category/{id}(id=${cat.id})}" class="absolute inset-0"></a>
+            </div>
+          </th:block>
+        </div>
+
+        <!-- Nút phải -->
+        <button id="nextBtn"
+                class="absolute -right-6 top-1/2 transform -translate-y-1/2 bg-white shadow-lg text-gray-700 rounded-full p-4 hover:bg-blue-600 hover:text-white hover:scale-110 transition z-10">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div th:if="${showProducts}" th:insert="~{user/products-by-category :: productsByCategory}"></div>
+
+  <!-- Error Message -->
+  <div th:if="${error}" class="py-16 bg-red-50">
+    <div class="container mx-auto px-4 text-center">
+      <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-4"></i>
+      <h3 class="text-xl font-semibold text-red-800 mb-2">Có lỗi xảy ra</h3>
+      <p class="text-red-600 mb-4" th:text="${error}">Thông báo lỗi</p>
+      <a href="/" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+        <i class="fas fa-home mr-2"></i>
+        Về trang chủ
+      </a>
+    </div>
+  </div>
+
+
+</main>
+
+
+  <script>
+  // JavaScript for mobile menu toggle
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  mobileMenuButton.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
+
+  const slider = document.getElementById('categorySlider');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  // Nút điều hướng
+  nextBtn.addEventListener('click', () => {
+    slider.scrollBy({ left: 280, behavior: 'smooth' });
+  });
+  prevBtn.addEventListener('click', () => {
+    slider.scrollBy({ left: -280, behavior: 'smooth' });
+  });
+
+  // Auto slide
+  let autoSlide = setInterval(() => {
+    slider.scrollBy({ left: 280, behavior: 'smooth' });
+  }, 4000);
+
+  // Dừng auto slide khi hover
+  slider.addEventListener('mouseenter', () => clearInterval(autoSlide));
+  slider.addEventListener('mouseleave', () => {
+    autoSlide = setInterval(() => {
+      slider.scrollBy({ left: 280, behavior: 'smooth' });
+    }, 4000);
+  });
+
+  // Fade-in animation khi vào viewport
+  const cards = document.querySelectorAll('.card');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.remove("opacity-0", "translate-y-4");
+        entry.target.classList.add("opacity-100", "translate-y-0");
+      }
+    });
+  }, { threshold: 0.2 });
+
+  cards.forEach(card => observer.observe(card));
+</script>
+
+</body>
+</html>

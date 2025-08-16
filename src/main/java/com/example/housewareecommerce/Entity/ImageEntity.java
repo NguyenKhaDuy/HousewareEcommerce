@@ -12,9 +12,20 @@ public class ImageEntity {
     @Lob
     private byte[] imageUrl;
 
+    @Transient // không lưu vào DB
+    private String base64Image;
+
     @ManyToOne
     @JoinColumn(name = "productid")
     private ProductEntity productEntity;
+
+    public String getBase64Image() {
+        return base64Image;
+    }
+
+    public void setBase64Image(String base64Image) {
+        this.base64Image = base64Image;
+    }
 
     public Long getId() {
         return id;

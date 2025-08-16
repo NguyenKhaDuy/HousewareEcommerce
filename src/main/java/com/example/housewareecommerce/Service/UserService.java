@@ -17,7 +17,7 @@ public interface UserService {
 
     Optional<UserEntity> getUserById(Long id);
 
-    Optional<UserEntity> getUserByEmail(String email);
+    Optional<UserDTO> getUserByEmail(String email);
 
     boolean login(String email, String rawPassword);
 

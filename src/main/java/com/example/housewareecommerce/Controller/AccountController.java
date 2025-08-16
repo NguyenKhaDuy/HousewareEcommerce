@@ -1,6 +1,8 @@
 package com.example.housewareecommerce.Controller;
 
+import com.example.housewareecommerce.Model.DTO.CategoryDTO;
 import com.example.housewareecommerce.Model.DTO.UserDTO;
+import com.example.housewareecommerce.Service.CategoryService;
 import com.example.housewareecommerce.Service.EmailService;
 import com.example.housewareecommerce.Service.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -10,9 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @Controller
 @RequestMapping("/account")
@@ -24,6 +24,9 @@ public class AccountController {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private CategoryService categoryService;
+
     @GetMapping("/login")
     public String loginForm(Model model) {
         model.addAttribute("message", "");
@@ -33,10 +36,30 @@ public class AccountController {
     @PostMapping("/login")
     public String loginSubmit(@RequestParam String email,
                               @RequestParam String password,
-                              Model model) {
+                              Model model,
+                              HttpSession session) {
         boolean ok = userService.login(email, password);
-        model.addAttribute("message", ok ? "Đăng nhập thành công!" : "Email hoặc mật khẩu không đúng!");
+        if(ok){
+            Optional<UserDTO> userDTO = Optional.of(new UserDTO());
+            userDTO = userService.getUserByEmail(email);
+            session.setAttribute("username", userDTO.get().getName());
+            session.setAttribute("useremail", userDTO.get().getEmail());
+            session.setAttribute("userid", userDTO.get().getId());
+
+            List<CategoryDTO> categories = categoryService.getAll();
+            model.addAttribute("categories", categories);
+            model.addAttribute("showProducts", false);
+            return "UserHome";
+        }else{
+            model.addAttribute("message","Email hoặc mật khẩu không đúng!");
+        }
         return "LogAccount";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/account/login";
     }
 
     @PostMapping("/register")
