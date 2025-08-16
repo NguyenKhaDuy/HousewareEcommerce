@@ -1,8 +1,6 @@
 package com.example.housewareecommerce.Model.Request;
 
-import java.time.LocalDate;
-
-public class EvaluteRequest {
+public class EvaluateRequest {
     private Long id;
     private Integer star;
     private String note;
