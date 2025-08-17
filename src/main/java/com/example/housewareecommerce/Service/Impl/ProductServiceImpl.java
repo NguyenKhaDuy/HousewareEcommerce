@@ -19,9 +19,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -72,14 +83,103 @@ public class ProductServiceImpl implements ProductService {
         if (product.getImageEntities() != null) {
             product.getImageEntities().forEach(img -> {
                 if (img.getImageUrl() != null && img.getImageUrl().length > 0) {
-                    String encodedImage = Base64.getEncoder().encodeToString(img.getImageUrl());
-                    img.setBase64Image(encodedImage);
+                    try {
+                        String base64Image;
+                        if (isAlreadyBase64(img.getImageUrl())) {
+                            base64Image = new String(img.getImageUrl(), StandardCharsets.UTF_8);
+                        } else {
+                            base64Image = Base64.getEncoder().encodeToString(img.getImageUrl());
+                        }
+
+                        // Kiểm tra kích thước base64
+                        if (isBase64TooLarge(base64Image)) {
+                            // Nén ảnh nếu quá lớn
+                            base64Image = compressAndEncodeImage(img.getImageUrl());
+                        }
+
+                        img.setBase64Image(base64Image);
+                    } catch (Exception e) {
+                        img.setBase64Image(null);
+                    }
                 }
             });
         }
 
         return product;
     }
+
+    private boolean isAlreadyBase64(byte[] data) {
+        try {
+            String str = new String(data, StandardCharsets.UTF_8);
+            // Kiểm tra format base64
+            return str.matches("^[A-Za-z0-9+/]*={0,2}$") && str.length() % 4 == 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean isBase64TooLarge(String base64) {
+        // Giới hạn ~50KB cho base64 string (tương đương ~37KB binary)
+        return base64.length() > 50000;
+    }
+
+    private String compressAndEncodeImage(byte[] originalImageData) {
+        try {
+            ByteArrayInputStream bis = new ByteArrayInputStream(originalImageData);
+            BufferedImage originalImage = ImageIO.read(bis);
+
+            if (originalImage == null) {
+                return null;
+            }
+
+            // Resize nếu quá lớn
+            BufferedImage resizedImage = resizeImage(originalImage, 800, 600);
+
+            // Nén với quality 70%
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageWriter writer = ImageIO.getImageWritersByFormatName("jpeg").next();
+            ImageOutputStream ios = ImageIO.createImageOutputStream(baos);
+            writer.setOutput(ios);
+
+            ImageWriteParam param = writer.getDefaultWriteParam();
+            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            param.setCompressionQuality(0.7f);
+
+            writer.write(null, new IIOImage(resizedImage, null, null), param);
+            writer.dispose();
+            ios.close();
+
+            return Base64.getEncoder().encodeToString(baos.toByteArray());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private BufferedImage resizeImage(BufferedImage original, int maxWidth, int maxHeight) {
+        int originalWidth = original.getWidth();
+        int originalHeight = original.getHeight();
+
+        // Tính tỷ lệ scale
+        double scaleWidth = (double) maxWidth / originalWidth;
+        double scaleHeight = (double) maxHeight / originalHeight;
+        double scale = Math.min(scaleWidth, scaleHeight);
+
+        if (scale >= 1.0) {
+            return original; // Không cần resize
+        }
+
+        int newWidth = (int) (originalWidth * scale);
+        int newHeight = (int) (originalHeight * scale);
+
+        BufferedImage resized = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = resized.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.drawImage(original, 0, 0, newWidth, newHeight, null);
+        g2d.dispose();
+
+        return resized;
+    }
+
 
     private ProductDTO convertToListDTO(ProductEntity product) {
         List<String> imageList = new ArrayList<>();

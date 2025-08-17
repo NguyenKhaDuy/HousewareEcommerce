@@ -19,9 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 @SuppressWarnings("all")
@@ -55,32 +53,32 @@ public class FavoriteProductServiceImpl implements FavoriteProductService {
         return new PageImpl<>(favoriteProductDTOS, favoriteProductEntities.getPageable(), favoriteProductEntities.getTotalElements());
     }
 
-    @Override
-    public MessageDTO addToFavorite(FavoriteProductRequest favoriteProductRequest) {
-        MessageDTO messageDTO = new MessageDTO();
-        UserEntity userEntity = null;
-        ProductEntity productEntity = null;
-        try{
-            userEntity = userRepository.findById(favoriteProductRequest.getUserId()).get();
-            productEntity = productRepository.findById(favoriteProductRequest.getProductId()).get();
-        }catch (NoSuchElementException e){
-            messageDTO.setMessage("Thêm không thành công");
-            messageDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
+        @Override
+        public MessageDTO addToFavorite(FavoriteProductRequest favoriteProductRequest) {
+            MessageDTO messageDTO = new MessageDTO();
+            UserEntity userEntity = null;
+            ProductEntity productEntity = null;
+            try{
+                userEntity = userRepository.findById(favoriteProductRequest.getUserId()).get();
+                productEntity = productRepository.findById(favoriteProductRequest.getProductId()).get();
+            }catch (NoSuchElementException e){
+                messageDTO.setMessage("Thêm không thành công");
+                messageDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
+                messageDTO.setData(null);
+                return messageDTO;
+            }
+            FavoriteProductEntity favoriteProductEntity = new FavoriteProductEntity();
+            favoriteProductEntity.setUserEntity(userEntity);
+            favoriteProductEntity.setProductEntity(productEntity);
+            favoriteProductEntity.setCreated(LocalDate.now());
+            favoriteProductRepository.save(favoriteProductEntity);
+
+            messageDTO.setMessage("Thêm thành công");
+            messageDTO.setHttpStatus(HttpStatus.OK);
             messageDTO.setData(null);
+
             return messageDTO;
         }
-        FavoriteProductEntity favoriteProductEntity = new FavoriteProductEntity();
-        favoriteProductEntity.setUserEntity(userEntity);
-        favoriteProductEntity.setProductEntity(productEntity);
-        favoriteProductEntity.setCreated(LocalDate.now());
-        favoriteProductRepository.save(favoriteProductEntity);
-
-        messageDTO.setMessage("Thêm thành công");
-        messageDTO.setHttpStatus(HttpStatus.OK);
-        messageDTO.setData(null);
-
-        return messageDTO;
-    }
 
     @Override
     public MessageDTO deleteFavoriteProduct(FavoriteProductRequest favoriteProductRequest) {
@@ -105,5 +103,16 @@ public class FavoriteProductServiceImpl implements FavoriteProductService {
             messageDTO.setData(null);
         }
         return messageDTO;
+    }
+
+    @Override
+    public Set<Long> getFavoriteProductIds(Long userId) {
+        try {
+            return favoriteProductRepository.findProductIdsByUserId(userId);
+        } catch (Exception e) {
+            System.err.println("Error get favorite" + userId + ": " + e.getMessage());
+            e.printStackTrace();
+            return new HashSet<>();
+        }
     }
 }
