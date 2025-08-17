@@ -7,7 +7,7 @@ public class EvaluateDTO {
     private Long id;
     private Integer star;
     private String note;
-    private LocalDateTime created;
+    private LocalDate created;
     private Long userId;
     private String userName;
 
@@ -35,11 +35,11 @@ public class EvaluateDTO {
         this.note = note;
     }
 
-    public LocalDateTime getCreated() {
+    public LocalDate getCreated() {
         return created;
     }
 
-    public void setCreated(LocalDateTime created) {
+    public void setCreated(LocalDate created) {
         this.created = created;
     }
 

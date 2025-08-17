@@ -61,7 +61,7 @@ public class EvaluateServiceImpl implements EvaluateService {
 
             EvaluateEntity evaluateEntity = new EvaluateEntity();
             evaluateEntity.setNote(evaluteRequest.getNote());
-            evaluateEntity.setCreated(LocalDateTime.now());
+            evaluateEntity.setCreated(LocalDate.now());
             evaluateEntity.setStar(evaluteRequest.getStar());
             evaluateEntity.setProductEntity(productEntity);
             evaluateEntity.setUserEntity(userEntity);

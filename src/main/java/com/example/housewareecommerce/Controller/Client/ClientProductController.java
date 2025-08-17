@@ -5,7 +5,9 @@ import com.example.housewareecommerce.Entity.ProductEntity;
 import com.example.housewareecommerce.Model.DTO.CategoryDTO;
 import com.example.housewareecommerce.Model.DTO.ProductDTO;
 import com.example.housewareecommerce.Service.CategoryService;
+import com.example.housewareecommerce.Service.FavoriteProductService;
 import com.example.housewareecommerce.Service.ProductService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,10 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequestMapping("/user")
@@ -28,9 +27,11 @@ public class ClientProductController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private FavoriteProductService favoriteProductService;
 
     @GetMapping("/category/{categoryId}")
-    public String getProductsByCategory(@PathVariable Long categoryId, Model model) {
+    public String getProductsByCategory(@PathVariable Long categoryId, Model model, HttpSession session) {
         try {
 
             List<CategoryDTO> categories = categoryService.getAll();
@@ -53,6 +54,22 @@ public class ClientProductController {
                     System.out.println("  First image length: " + product.getImagesBase64().get(0).length());
                 }
             }
+
+            Object userIdObj = session.getAttribute("userid");
+            Set<Long> favoriteProductIds = new HashSet<>();
+
+            if (userIdObj != null) {
+                try {
+                    Long userId = Long.valueOf(userIdObj.toString());
+                    favoriteProductIds = favoriteProductService.getFavoriteProductIds(userId);
+                    System.out.println("User ID: " + userId);
+                    System.out.println("Favorite Product IDs: " + favoriteProductIds);
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid userid in session: " + userIdObj);
+                }
+            }
+
+            model.addAttribute("favoriteProductIds", favoriteProductIds);
 
             model.addAttribute("products", products);
             model.addAttribute("showProducts", "user/products-by-category");

@@ -6,6 +6,8 @@ import com.example.housewareecommerce.Model.Request.FavoriteProductRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @SuppressWarnings("all")
 public interface FavoriteProductService {
@@ -14,4 +16,6 @@ public interface FavoriteProductService {
     MessageDTO addToFavorite(FavoriteProductRequest favoriteProductRequest);
 
     MessageDTO deleteFavoriteProduct(FavoriteProductRequest favoriteProductRequest);
+
+    public Set<Long> getFavoriteProductIds(Long userId);
 }

@@ -5,7 +5,12 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "favoriteproduct")
+@Table(
+        name = "favoriteproduct",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"userid", "productid"})
+        }
+)
 @SuppressWarnings("all")
 public class FavoriteProductEntity {
     @Id
