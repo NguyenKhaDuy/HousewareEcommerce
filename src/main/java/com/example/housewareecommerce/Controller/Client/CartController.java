@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @SuppressWarnings("all")
+@RequestMapping("/api")
 public class CartController {
     @Autowired
     CartService cartService;
@@ -32,7 +33,7 @@ public class CartController {
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/cart")
+    @PostMapping(value = "/cart/add")
     public ResponseEntity<?> addToCart(@RequestBody CartRequest cartRequest){
         MessageDTO messageDTO = cartService.addToCart(cartRequest);
         if (messageDTO.getHttpStatus() == HttpStatus.BAD_REQUEST){
@@ -41,12 +42,30 @@ public class CartController {
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/cart")
+    @PostMapping(value = "/cart/remove")
+    public ResponseEntity<?> removeFromCart(@RequestBody CartRequest cartRequest){
+        MessageDTO messageDTO = cartService.removeFromCart(cartRequest);
+
+        if (messageDTO.getHttpStatus() == HttpStatus.BAD_REQUEST ||
+                messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){
+            return new ResponseEntity<>(messageDTO, messageDTO.getHttpStatus());
+        }
+
+        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/cart/delete")
     public ResponseEntity<?> deleteProductInCart(@RequestBody CartRequest cartRequest){
         MessageDTO messageDTO = cartService.deleteProductInCart(cartRequest);
         if (messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){
             return new ResponseEntity<>(messageDTO, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/count/{userId}")
+    public ResponseEntity<Long> getCartItemCount(@PathVariable Long userId) {
+        Long count = cartService.getCartItemCount(userId);
+        return ResponseEntity.ok(count);
     }
 }

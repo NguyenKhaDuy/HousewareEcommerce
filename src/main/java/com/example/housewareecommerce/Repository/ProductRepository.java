@@ -2,6 +2,8 @@ package com.example.housewareecommerce.Repository;
 
 import com.example.housewareecommerce.Entity.ProductEntity;
 import com.example.housewareecommerce.Repository.Custom.ProductRepositoryCustom;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -39,4 +41,11 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long>, P
             "LEFT JOIN FETCH e.userEntity " +
             "WHERE p.id = :productId")
     Optional<ProductEntity> findByIdWithEvaluates(@Param("productId") Long productId);
+
+    @Query("SELECT DISTINCT p FROM ProductEntity p " +
+            "LEFT JOIN FETCH p.categoryEntity " +
+            "LEFT JOIN FETCH p.statusEntity " +
+            "LEFT JOIN FETCH p.imageEntities " +
+            "WHERE LOWER(p.nameProduct) LIKE LOWER(CONCAT('%', :nameProduct, '%'))")
+    Page<ProductEntity> searchProduct(Pageable pageable, @Param("nameProduct") String nameProduct);
 }

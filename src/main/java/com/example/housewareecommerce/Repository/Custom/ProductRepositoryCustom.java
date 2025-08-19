@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductRepositoryCustom {
-    Page<ProductEntity> searchProduct(Pageable pageable, String nameProduct);
+    //Page<ProductEntity> searchProduct(Pageable pageable, String nameProduct);
 }

@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TheUdecor - Admin</title>
     <link rel="stylesheet" th:href="@{/css/adminHomeCss.css}">
-
+    <!-- Include category management CSS when needed -->
+    <link rel="stylesheet" th:href="@{/css/categoryManagement.css}" th:if="${content == 'categoryManagement'}">
 </head>
 <body>
 
@@ -23,19 +24,14 @@
             <div class="notification-dot"></div>
         </a>
 
-        <a href="#" class="menu-item highlighted" data-menu="danh-muc-san-pham">
+        <a th:href="@{/admin/categories}" class="menu-item highlighted" data-menu="danh-muc-san-pham">
             <span class="menu-icon">📋</span>
             Danh mục sản phẩm
         </a>
 
-        <a href="#" class="menu-item highlighted active" data-menu="san-pham">
+        <a th:href="@{/admin/products}" class="menu-item highlighted active" data-menu="san-pham">
             <span class="menu-icon">📦</span>
             Sản phẩm
-        </a>
-
-        <a href="#" class="menu-item highlighted" data-menu="hinh-anh-san-pham">
-            <span class="menu-icon">🖼️</span>
-            Hình ảnh sản phẩm
         </a>
 
         <a href="#" class="menu-item highlighted" data-menu="khuyen-mai">
@@ -50,15 +46,13 @@
 
         <a href="#" class="menu-item" data-menu="trang-thai-don-hang">
             <span class="menu-icon">⚡</span>
-            Quản lý trang thái đơn hàng
+            Quản lý trạng thái đơn hàng
         </a>
 
         <a th:href="@{/admin/users/getAll}" class="menu-item highlighted" data-menu="nguoi-dung">
             <span class="menu-icon">👥</span>
             Quản lý người dùng
         </a>
-
-
     </div>
 </div>
 
@@ -74,97 +68,102 @@
     </div>
 </div>
 
-
 <div class="main-content">
-    <th:block th:replace="${content}"></th:block>
-</div>
+     <th:block th:replace="${content}"></th:block>
+    <!--   <th:block th:replace="~{${content}}"></th:block>-->
 
-</div>
+ </div>
 
-<script>
+ <script>
+     const menuItems = {
+         'thong-ke': {
+             title: 'Thống Kê',
+             breadcrumb: 'Admin > Thống Kê'
+         },
+         'danh-muc-san-pham': {
+             title: 'Quản Lý Danh Mục Sản Phẩm',
+             breadcrumb: 'Admin > Danh Mục Sản Phẩm'
+         },
+         'san-pham': {
+             title: 'Quản Lý Danh Sách Sản Phẩm',
+             breadcrumb: 'Admin > Danh Sách Sản Phẩm'
+         },
+         'khuyen-mai': {
+             title: 'Quản Lý Khuyến Mãi',
+             breadcrumb: 'Admin > Khuyến Mãi'
+         },
+         'don-hang': {
+             title: 'Quản Lý Đơn Hàng',
+             breadcrumb: 'Admin > Đơn Hàng'
+         },
+         'trang-thai-don-hang': {
+             title: 'Quản Lý Trạng Thái Đơn Hàng',
+             breadcrumb: 'Admin > Trạng Thái Đơn Hàng'
+         },
+         'nguoi-dung': {
+             title: 'Quản Lý Người Dùng',
+             breadcrumb: 'Admin > Người Dùng'
+         },
+     };
 
-    const menuItems = {
-        'thong-ke': {
-            title: 'Thống Kê',
-            breadcrumb: 'Admin > Thống Kê'
-        },
-        'danh-muc-san-pham': {
-            title: 'Quản Lý Danh Mục Sản Phẩm',
-            breadcrumb: 'Admin > Danh Mục Sản Phẩm'
-        },
-        'san-pham': {
-            title: 'Quản Lý Danh Sách Sản Phẩm',
-            breadcrumb: 'Admin > Danh Sách Sản Phẩm'
-        },
-        'hinh-anh-san-pham': {
-            title: 'Quản Lý Hình Ảnh Sản Phẩm',
-            breadcrumb: 'Admin > Hình Ảnh Sản Phẩm'
-        },
-        'khuyen-mai': {
-            title: 'Quản Lý Khuyến Mãi',
-            breadcrumb: 'Admin > Khuyến Mãi'
-        },
-        'don-hang': {
-            title: 'Quản Lý Đơn Hàng',
-            breadcrumb: 'Admin > Đơn Hàng'
-        },
-        'trang-thai-don-hang': {
-            title: 'Quản Lý Trạng Thái Đơn Hàng',
-            breadcrumb: 'Admin > Trạng Thái Đơn Hàng'
-        },
-        'nguoi-dung': {
-            title: 'Quản Lý Người Dùng',
-            breadcrumb: 'Admin > Người Dùng'
-        },
+     function updateHeader(menuKey) {
+         const headerTitle = document.querySelector('.header h1');
+         const breadcrumb = document.querySelector('.breadcrumb');
 
-    };
+         if (menuItems[menuKey]) {
+             headerTitle.textContent = menuItems[menuKey].title;
+             breadcrumb.textContent = menuItems[menuKey].breadcrumb;
+         }
+     }
 
-    function updateHeader(menuKey) {
-        const headerTitle = document.querySelector('.header h1');
-        const breadcrumb = document.querySelector('.breadcrumb');
+     function setActiveMenuItem(clickedItem) {
+         document.querySelectorAll('.menu-item').forEach(item => {
+             item.classList.remove('active');
+         });
 
-        if (menuItems[menuKey]) {
-            headerTitle.textContent = menuItems[menuKey].title;
-            breadcrumb.textContent = menuItems[menuKey].breadcrumb;
-        }
-    }
+         clickedItem.classList.add('active');
+     }
 
-    function setActiveMenuItem(clickedItem) {
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.classList.remove('active');
-        });
+     document.addEventListener('DOMContentLoaded', function() {
+         const menuLinks = document.querySelectorAll('.menu-item[data-menu]');
 
-        clickedItem.classList.add('active');
-    }
+         menuLinks.forEach((link) => {
+             link.addEventListener('click', function(e) {
+                 // Only prevent default for non-link items
+                 if (!this.hasAttribute('href') || this.getAttribute('href') === '#') {
+                     e.preventDefault();
+                 }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const menuLinks = document.querySelectorAll('.menu-item[data-menu]');
+                 const menuKey = this.getAttribute('data-menu');
 
-        menuLinks.forEach((link) => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
+                 if (menuKey && menuItems[menuKey]) {
+                     updateHeader(menuKey);
+                     setActiveMenuItem(this);
+                     localStorage.setItem('currentMenu', menuKey);
+                 }
+             });
+         });
 
-                const menuKey = this.getAttribute('data-menu');
-
-                if (menuKey && menuItems[menuKey]) {
-                    updateHeader(menuKey);
-
-                    setActiveMenuItem(this);
-
-                    localStorage.setItem('currentMenu', menuKey);
-                }
-            });
-        });
-
-        const savedMenu = localStorage.getItem('currentMenu');
-        if (savedMenu && menuItems[savedMenu]) {
-            updateHeader(savedMenu);
-            const savedMenuItem = document.querySelector(`[data-menu="${savedMenu}"]`);
-            if (savedMenuItem) {
-                setActiveMenuItem(savedMenuItem);
-            }
-        }
-    });
-</script>
-</body>
-</html>
+         // Set active state based on current page
+         const currentPath = window.location.pathname;
+         if (currentPath.includes('/admin/categories')) {
+             const categoryMenuItem = document.querySelector('[data-menu="danh-muc-san-pham"]');
+             if (categoryMenuItem) {
+                 setActiveMenuItem(categoryMenuItem);
+                 updateHeader('danh-muc-san-pham');
+             }
+         } else {
+             // Use saved menu state for other pages
+             const savedMenu = localStorage.getItem('currentMenu');
+             if (savedMenu && menuItems[savedMenu]) {
+                 updateHeader(savedMenu);
+                 const savedMenuItem = document.querySelector(`[data-menu="${savedMenu}"]`);
+                 if (savedMenuItem) {
+                     setActiveMenuItem(savedMenuItem);
+                 }
+             }
+         }
+     });
+ </script>
+ </body>
+ </html>

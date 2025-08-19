@@ -22,16 +22,16 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     @PersistenceContext
     EntityManager entityManager;
 
-    @Override
-    public Page<ProductEntity> searchProduct(Pageable pageable, String nameProduct) {
-        StringBuilder sql = new StringBuilder("SELECT * FROM product JOIN category ON category.id = product.categoryid JOIN status ON status.id = product.statusid WHERE product.nameproduct LIKE '%" + nameProduct + "%'");
-        String sqlCount = "SELECT count(*) FROM product JOIN category ON category.id = product.categoryid JOIN status ON status.id = product.statusid WHERE product.nameproduct LIKE '%" + nameProduct + "%'";
-        Number total = count(sqlCount);
-        Query query = entityManager.createNativeQuery(sql.toString());
-        query.setFirstResult((int)pageable.getOffset());
-        query.setMaxResults(pageable.getPageSize());
-        return new PageImpl<>(query.getResultList(), pageable, total.longValue());
-    }
+//    @Override
+//    public Page<ProductEntity> searchProduct(Pageable pageable, String nameProduct) {
+//        StringBuilder sql = new StringBuilder("SELECT * FROM product JOIN category ON category.id = product.categoryid JOIN status ON status.id = product.statusid WHERE product.nameproduct LIKE '%" + nameProduct + "%'");
+//        String sqlCount = "SELECT count(*) FROM product JOIN category ON category.id = product.categoryid JOIN status ON status.id = product.statusid WHERE product.nameproduct LIKE '%" + nameProduct + "%'";
+//        Number total = count(sqlCount);
+//        Query query = entityManager.createNativeQuery(sql.toString());
+//        query.setFirstResult((int)pageable.getOffset());
+//        query.setMaxResults(pageable.getPageSize());
+//        return new PageImpl<>(query.getResultList(), pageable, total.longValue());
+//    }
 
     public Number count(String sql){
         Query query = entityManager.createNativeQuery(sql);

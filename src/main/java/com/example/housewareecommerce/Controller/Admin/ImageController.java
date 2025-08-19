@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class ImageController {
@@ -44,8 +45,21 @@ public class ImageController {
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }
 
+    @PutMapping(value = "/admin/image/{imageId}")
+    public ResponseEntity<?> updateImage(
+            @PathVariable Long imageId,
+            @RequestParam("newImage") MultipartFile newImage) {
+
+        MessageDTO messageDTO = imageProductService.updateImage(imageId, newImage);
+        if(messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){
+            return new ResponseEntity<>(messageDTO, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+    }
+
     @DeleteMapping(value = "/admin/image")
     public ResponseEntity<?> deleteImage(@RequestParam(name = "id") Long id){
+        System.out.println("Delete image called with ID: " + id);
         MessageDTO messageDTO = imageProductService.deleteImage(id);
         if(messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){
             return new ResponseEntity<>(messageDTO, HttpStatus.NOT_FOUND);
