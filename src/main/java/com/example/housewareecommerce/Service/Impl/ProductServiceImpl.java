@@ -226,6 +226,36 @@ public class ProductServiceImpl implements ProductService {
         return new PageImpl<>(results, productEntities.getPageable(), productEntities.getTotalElements());
     }
 
+//    @Override
+//    public MessageDTO findById(Long id) {
+//        MessageDTO messageDTO = new MessageDTO();
+//        try {
+//            ProductEntity productEntity = productRepository.findById(id).get();
+//            Integer evaluateRating = averageRating(id);
+//            ProductDTO productDTO = new ProductDTO();
+//            modelMapper.map(productEntity, productDTO);
+//            productDTO.setCategoryName(productEntity.getCategoryEntity().getNameCategory());
+//            productDTO.setStatusCode(productEntity.getStatusEntity().getStatusCode());
+//            List<byte[]> images = new ArrayList<>();
+//            for (ImageEntity imageEntity : productEntity.getImageEntities()) {
+//                byte[] imageBytes = imageEntity.getImageUrl(); // BLOB trong DB
+//                if (imageBytes != null && imageBytes.length > 0) {
+//                    images.add(imageBytes);
+//                }
+//            }
+//            //productDTO.setEvaluateRating(evaluateRating);
+//            productDTO.setImages(images);
+//            messageDTO.setMessage("Sản phẩm tồn tại");
+//            messageDTO.setHttpStatus(HttpStatus.OK);
+//            messageDTO.setData(productDTO);
+//        }catch (NoSuchElementException e){
+//            messageDTO.setMessage("Không tìm thấy sản phẩm");
+//            messageDTO.setHttpStatus(HttpStatus.NOT_FOUND);
+//            messageDTO.setData(null);
+//        }
+//        return messageDTO;
+//    }
+
     @Override
     public MessageDTO findById(Long id) {
         MessageDTO messageDTO = new MessageDTO();
@@ -236,19 +266,32 @@ public class ProductServiceImpl implements ProductService {
             modelMapper.map(productEntity, productDTO);
             productDTO.setCategoryName(productEntity.getCategoryEntity().getNameCategory());
             productDTO.setStatusCode(productEntity.getStatusEntity().getStatusCode());
+
+            // Xử lý images và imageIds
             List<byte[]> images = new ArrayList<>();
+            List<String> imagesBase64 = new ArrayList<>();
+            List<Long> imageIds = new ArrayList<>();
+
             for (ImageEntity imageEntity : productEntity.getImageEntities()) {
-                byte[] imageBytes = imageEntity.getImageUrl(); // BLOB trong DB
+                byte[] imageBytes = imageEntity.getImageUrl();
                 if (imageBytes != null && imageBytes.length > 0) {
                     images.add(imageBytes);
+                    // Thêm base64 string
+                    String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                    imagesBase64.add(base64Image);
+                    // Thêm image ID
+                    imageIds.add(imageEntity.getId());
                 }
             }
             //productDTO.setEvaluateRating(evaluateRating);
             productDTO.setImages(images);
+            productDTO.setImagesBase64(imagesBase64);
+            productDTO.setImageIds(imageIds);
+
             messageDTO.setMessage("Sản phẩm tồn tại");
             messageDTO.setHttpStatus(HttpStatus.OK);
             messageDTO.setData(productDTO);
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             messageDTO.setMessage("Không tìm thấy sản phẩm");
             messageDTO.setHttpStatus(HttpStatus.NOT_FOUND);
             messageDTO.setData(null);
@@ -257,15 +300,24 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public Integer averageRating(Long productId) {
-        ProductEntity productEntity = productRepository.findById(productId).get();
+        ProductEntity productEntity = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với id: " + productId));
+
         List<EvaluateEntity> evaluateEntities = evaluateRepository.findByProductEntity(productEntity);
-        Integer sumStar = 0;
-        for (EvaluateEntity it : evaluateEntities){
+
+        if (evaluateEntities.isEmpty()) {
+            return 0;
+        }
+
+        int sumStar = 0;
+        for (EvaluateEntity it : evaluateEntities) {
             sumStar += it.getStar();
         }
-        Integer result = sumStar / evaluateEntities.size();
-        return result;
+
+        // :))))))))))))))))))
+        return sumStar / evaluateEntities.size();
     }
+
 
     @Override
     public MessageDTO createProduct(ProductRequest productRequest) {

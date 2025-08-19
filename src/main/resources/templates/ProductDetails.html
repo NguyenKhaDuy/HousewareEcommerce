@@ -47,14 +47,16 @@
         <a href="#" class="relative text-gray-600 hover:text-blue-600">
           <i class="fas fa-heart fa-lg"></i>
         </a>
-        <a href="#" class="relative text-gray-600 hover:text-blue-600">
+        <a href="/view/cart" class="relative text-gray-600 hover:text-blue-600">
           <i class="fas fa-shopping-cart fa-lg"></i>
-          <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+          <!-- Dynamic cart item count, updated by JavaScript -->
+          <span id="cart-item-count"
+                class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
         </a>
         <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
-          <span class="font-medium text-gray-700">
-              Chào, <span th:text="${session.username}">Tên người dùng</span>
-          </span>
+                    <span class="font-medium text-gray-700">
+                        Chào, <span th:text="${session.username}">Tên người dùng</span>
+                    </span>
           <a th:href="@{/account/logout}" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">
             Đăng xuất
           </a>
@@ -87,7 +89,7 @@
   </div>
 </header>
 
-<!-- Main Content -->
+<!-- Rest of the page remains the same -->
 <main class="py-12">
   <div class="container mx-auto px-4">
     <!-- Breadcrumb -->
@@ -137,18 +139,18 @@
         <h1 class="text-3xl font-bold text-gray-800 mb-3" th:text="${product.nameProduct}">Tên sản phẩm</h1>
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center">
-            <span th:if="${product.statusEntity != null and product.statusEntity.statusCode == 'ACTIVE'}"
-                  class="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full flex items-center">
-              <i class="fas fa-check-circle mr-2"></i>Còn hàng
-            </span>
+                        <span th:if="${product.statusEntity != null and product.statusEntity.statusCode == 'ACTIVE'}"
+                              class="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full flex items-center">
+                            <i class="fas fa-check-circle mr-2"></i>Còn hàng
+                        </span>
             <span th:if="${product.statusEntity != null and product.statusEntity.statusCode == 'OUT_OF_STOCK'}"
                   class="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full flex items-center">
-              <i class="fas fa-times-circle mr-2"></i>Hết hàng
-            </span>
+                            <i class="fas fa-times-circle mr-2"></i>Hết hàng
+                        </span>
             <span th:if="${product.statusEntity != null and product.statusEntity.statusCode == 'DISCONTINUED'}"
                   class="px-3 py-1 bg-gray-100 text-gray-800 text-sm font-medium rounded-full flex items-center">
-              <i class="fas fa-ban mr-2"></i>Ngừng bán
-            </span>
+                            <i class="fas fa-ban mr-2"></i>Ngừng bán
+                        </span>
           </div>
           <div class="flex items-center">
             <div class="flex text-yellow-400">
@@ -159,8 +161,8 @@
           </div>
         </div>
         <div class="mb-6">
-          <span class="text-4xl font-bold text-blue-600"
-                th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
+                    <span class="text-4xl font-bold text-blue-600"
+                          th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
         </div>
         <p class="text-gray-600 mb-6" th:text="${product.description}">Mô tả ngắn gọn về sản phẩm.</p>
         <div class="flex items-center space-x-4 mb-6">
@@ -169,11 +171,11 @@
             <input id="quantityInput" type="text" value="1" class="w-12 text-center border-none focus:ring-0" th:attr="data-max=${product.quantity}">
             <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-r-lg" onclick="updateQuantity(1)">+</button>
           </div>
-          <button class="flex-1 py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
-                  th:disabled="${product.statusEntity == null or product.statusEntity.statusCode != 'ACTIVE'}">
+          <button id="addToCartButton"
+                  class="flex-1 py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
+                  th:attr="data-product-id=${product.id}, data-product-price=${product.price}">
             <i class="fas fa-shopping-cart mr-2"></i>
-            <span th:if="${product.statusEntity != null and product.statusEntity.statusCode == 'ACTIVE'}">Thêm vào giỏ hàng</span>
-            <span th:if="${product.statusEntity == null or product.statusEntity.statusCode != 'ACTIVE'}">Không khả dụng</span>
+            <span>Thêm vào giỏ hàng</span>
           </button>
 
           <button class="add-to-favorite-btn p-3 rounded-lg transition duration-300"
@@ -348,35 +350,128 @@
     });
   });
 
+  // Function to fetch and update cart count
+  async function fetchCartItemCount(userId) {
+    if (!userId) {
+      console.warn("User ID not found, cannot fetch cart count.");
+      return;
+    }
+
+    const cartCountElement = document.getElementById('cart-item-count');
+    if (cartCountElement) {
+      try {
+        const response = await fetch(`/api/count/${userId}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const count = await response.json();
+        cartCountElement.textContent = count;
+        // Show the count badge if count > 0, otherwise hide it
+        if (count > 0) {
+          cartCountElement.classList.remove('hidden');
+        } else {
+          cartCountElement.classList.add('hidden');
+        }
+      } catch (error) {
+        console.error("Could not fetch cart item count:", error);
+        cartCountElement.textContent = '0'; // Default to 0 on error
+        cartCountElement.classList.remove('hidden');
+      }
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
-    // Get user data safely
     const userData = document.getElementById('user-data');
     const currentUserId = userData.dataset.userId;
     const isLoggedIn = userData.dataset.isLoggedIn === 'true';
 
-    // Find the single favorite button on this page
+    const addToCartButton = document.getElementById('addToCartButton');
+    const addToCartText = addToCartButton.querySelector('span');
     const favoriteButton = document.querySelector('.add-to-favorite-btn');
+    const favoriteIcon = favoriteButton.querySelector('i');
 
-    // If the button exists, add the event listener
+    // Initial fetch of cart count if user is logged in
+    if (isLoggedIn) {
+      fetchCartItemCount(currentUserId);
+      addToCartButton.disabled = false;
+      addToCartButton.classList.remove('disabled:bg-gray-400');
+      addToCartText.textContent = 'Thêm vào giỏ hàng';
+    } else {
+      addToCartButton.disabled = true;
+      addToCartButton.classList.add('disabled:bg-gray-400');
+      addToCartText.textContent = 'Đăng nhập để thêm vào giỏ';
+    }
+
+    // Event listener for the "Add to Cart" button
+    if (addToCartButton) {
+      addToCartButton.addEventListener('click', async function(event) {
+        event.preventDefault();
+
+        if (this.disabled) {
+          showToast('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!', 'error');
+          setTimeout(() => {
+            window.location.href = '/account/login';
+          }, 1500);
+          return;
+        }
+
+        // Lấy dữ liệu cần thiết từ DOM
+        const productId = this.dataset.productId;
+        const price = this.dataset.productPrice;
+        const quantity = parseInt(document.getElementById('quantityInput').value);
+
+        // Tạo đối tượng request
+        const cartRequest = {
+          userId: parseInt(currentUserId),
+          productId: parseInt(productId),
+          quantity: quantity,
+          subTotal: price * quantity
+        };
+
+        try {
+          const response = await fetch('/api/cart/add', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(cartRequest)
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            showToast(result.message || 'Thêm vào giỏ hàng thành công', 'success');
+            // After successful addition, fetch the updated count
+            fetchCartItemCount(currentUserId);
+          } else {
+            showToast(result.message || 'Có lỗi xảy ra, vui lòng thử lại.', 'error');
+          }
+        } catch (error) {
+          console.error('Lỗi khi thêm vào giỏ hàng:', error);
+          showToast('Đã xảy ra lỗi kết nối. Vui lòng thử lại.', 'error');
+        }
+      });
+    }
+
+    // Add event listener for the Favorite button
     if (favoriteButton) {
       favoriteButton.addEventListener('click', function (event) {
         event.preventDefault();
 
-        // If button is already disabled (e.g., already favorited), do nothing.
+        if (!isLoggedIn) {
+          showToast('Vui lòng đăng nhập để thêm sản phẩm yêu thích!', 'error');
+          setTimeout(() => {
+            window.location.href = '/account/login';
+          }, 1500);
+          return;
+        }
+
+        // If the button is already disabled (e.g., already favorited), do nothing.
         if (this.disabled) {
           return;
         }
 
-        if (!isLoggedIn || !currentUserId || currentUserId === 'null') {
-          showToast('Vui lòng đăng nhập để thêm sản phẩm yêu thích!', 'error');
-          setTimeout(() => {
-            window.location.href = '/account/login';
-          }, 1000);
-          return;
-        }
-
         const productId = parseInt(this.dataset.productId);
-        const icon = this.querySelector('i');
         const favoriteRequest = {
           userId: parseInt(currentUserId),
           productId: productId
@@ -384,8 +479,8 @@
 
         // Disable button and show loading spinner
         this.disabled = true;
-        icon.classList.add('fa-spinner', 'fa-spin');
-        icon.classList.remove('fa-heart', 'far', 'fas');
+        favoriteIcon.classList.add('fa-spinner', 'fa-spin');
+        favoriteIcon.classList.remove('fa-heart', 'far', 'fas');
 
         fetch('/favorite', {
           method: 'POST',
@@ -404,17 +499,17 @@
                   if (data.httpStatus === 'OK') {
                     showToast(data.message || 'Đã thêm vào yêu thích', 'success');
                     // Change to filled heart and update styles
-                    icon.classList.remove('far', 'fa-spinner', 'fa-spin');
-                    icon.classList.add('fas', 'fa-heart');
-                    this.classList.remove('bg-red-100', 'text-red-500', 'hover:bg-red-200', 'border', 'border-gray-300');
+                    favoriteIcon.classList.remove('far', 'fa-spinner', 'fa-spin');
+                    favoriteIcon.classList.add('fas', 'fa-heart');
+                    this.classList.remove('bg-red-100', 'text-red-500', 'hover:bg-red-200');
                     this.classList.add('bg-red-500', 'text-white');
                     // Keep it disabled
                     this.disabled = true;
                   } else {
                     showToast(data.message || 'Có lỗi xảy ra', 'error');
                     // Restore original icon if fails
-                    icon.classList.remove('fa-spinner', 'fa-spin');
-                    icon.classList.add('far', 'fa-heart');
+                    favoriteIcon.classList.remove('fa-spinner', 'fa-spin');
+                    favoriteIcon.classList.add('far', 'fa-heart');
                     this.disabled = false; // Re-enable on failure
                   }
                 })
@@ -423,8 +518,8 @@
                   const errorMessage = error.message || 'Đã yêu thích rồi!';
                   showToast(errorMessage, 'error');
                   // Restore original icon on error
-                  icon.classList.remove('fa-spinner', 'fa-spin');
-                  icon.classList.add('far', 'fa-heart');
+                  favoriteIcon.classList.remove('fa-spinner', 'fa-spin');
+                  favoriteIcon.classList.add('far', 'fa-heart');
                   this.disabled = false; // Re-enable on error
                 });
       });

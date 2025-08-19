@@ -11,4 +11,8 @@ public interface CartService {
     CartDTO getCartByUser(Long userId);
     MessageDTO addToCart(CartRequest cartRequest);
     MessageDTO deleteProductInCart(CartRequest cartRequest);
+
+    Long getCartItemCount(Long userId);
+
+    MessageDTO removeFromCart(CartRequest cartRequest);
 }

@@ -25,7 +25,7 @@ public class ProductDTO {
     private List<byte[]> images = new ArrayList<>();
     private List<String> imagesBase64 = new ArrayList<>();
 
-
+    private List<Long> imageIds = new ArrayList<>();
 
     public ProductDTO(Long id, String nameProduct, String description, Float price, Long quantity, List<String> imagesBase64, String statusCode) {
         this.id = id;
@@ -38,6 +38,14 @@ public class ProductDTO {
     }
 
     public ProductDTO() {
+    }
+
+    public List<Long> getImageIds() {
+        return imageIds;
+    }
+
+    public void setImageIds(List<Long> imageIds) {
+        this.imageIds = imageIds;
     }
 
     public List<String> getImagesBase64() {

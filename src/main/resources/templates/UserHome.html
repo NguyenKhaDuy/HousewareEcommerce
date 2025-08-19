@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gia Dụng Pro - Trang Chủ</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" xintegrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -33,6 +33,13 @@
   </style>
 </head>
 <body class="bg-gray-50">
+
+<!-- User data for JavaScript -->
+<div id="user-data"
+     th:data-user-id="${session.userid}"
+     th:data-is-logged-in="${session.userid != null}"
+     style="display: none;">
+</div>
 
 
 <header class="bg-white shadow-md sticky top-0 z-50">
@@ -63,13 +70,11 @@
           <i class="fas fa-heart fa-lg"></i>
         </a>
         <!-- CartEntity, CartItemEntity: Hiển thị giỏ hàng -->
-        <a href="#" class="relative text-gray-600 hover:text-blue-600">
+        <a href="/view/cart" class="relative text-gray-600 hover:text-blue-600">
           <i class="fas fa-shopping-cart fa-lg"></i>
-          <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
-        </a>
-        <a href="#" class="relative text-gray-600 hover:text-blue-600">
-          <i class="fas fa-shopping-cart fa-lg"></i>
-          <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+          <!-- Dynamic cart item count, updated by JavaScript -->
+          <span id="cart-item-count"
+                class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
         </a>
 
         <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
@@ -169,8 +174,8 @@
 </main>
 
 
-  <script>
-  // JavaScript for mobile menu toggle
+<script>
+  // Mobile menu toggle
   const mobileMenuButton = document.getElementById('mobile-menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
 
@@ -215,6 +220,47 @@
   }, { threshold: 0.2 });
 
   cards.forEach(card => observer.observe(card));
+
+  // Function to fetch and update cart count
+  async function fetchCartItemCount(userId) {
+    if (!userId) {
+      console.warn("User ID not found, cannot fetch cart count.");
+      return;
+    }
+
+    const cartCountElement = document.getElementById('cart-item-count');
+    if (cartCountElement) {
+      try {
+        const response = await fetch(`/api/count/${userId}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const count = await response.json();
+        cartCountElement.textContent = count;
+        // Show the count badge if count > 0, otherwise hide it
+        if (count > 0) {
+          cartCountElement.classList.remove('hidden');
+        } else {
+          cartCountElement.classList.add('hidden');
+        }
+      } catch (error) {
+        console.error("Could not fetch cart item count:", error);
+        cartCountElement.textContent = '0'; // Default to 0 on error
+        cartCountElement.classList.add('hidden');
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const userData = document.getElementById('user-data');
+    const currentUserId = userData.dataset.userId;
+    const isLoggedIn = userData.dataset.isLoggedIn === 'true';
+
+    if (isLoggedIn) {
+      fetchCartItemCount(currentUserId);
+    }
+  });
+
 </script>
 
 </body>

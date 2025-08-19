@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Danh Mục</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .category-container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .categories-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .table-content {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+            transform: translateY(-1px);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+            transform: translateY(-1px);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .search-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .header-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                margin: 10% auto;
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="category-container">
+    <!-- Header Section -->
+    <div class="header-section">
+        <h1 class="page-title">Quản Lý Danh Mục Sản Phẩm</h1>
+        <button class="add-btn" onclick="openModal('add')">
+            <span>➕</span>
+            Thêm Danh Mục
+        </button>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Tìm kiếm danh mục...">
+    </div>
+
+    <!-- Alert Messages -->
+    <div id="alertContainer"></div>
+
+    <!-- Loading -->
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Đang tải dữ liệu...</p>
+    </div>
+
+    <!-- Categories Table -->
+    <div class="categories-table">
+        <div class="table-header">
+            📋 Danh Sách Danh Mục
+        </div>
+        <div class="table-content">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên Danh Mục</th>
+                    <th>Mô Tả</th>
+                    <th>Ngày Tạo</th>
+                    <th>Thao Tác</th>
+                </tr>
+                </thead>
+                <tbody id="categoriesTableBody">
+                <!-- Categories will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Category Modal -->
+<div id="categoryModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle" class="modal-title">Thêm Danh Mục</h3>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="categoryForm">
+                <input type="hidden" id="categoryId" name="id">
+
+                <div class="form-group">
+                    <label for="nameCategory">Tên Danh Mục *</label>
+                    <input type="text" id="nameCategory" name="nameCategory" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Mô Tả</label>
+                    <textarea id="description" name="description" class="form-control" rows="4"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+            <button type="button" class="btn btn-primary" onclick="saveCategory()">Lưu</button>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Xác Nhận Xóa</h3>
+            <span class="close" onclick="closeDeleteModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p>Bạn có chắc chắn muốn xóa danh mục này không?</p>
+            <p><strong id="deleteCategoryName"></strong></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Hủy</button>
+            <button type="button" class="btn btn-primary" style="background-color: #dc3545;" onclick="confirmDelete()">Xóa</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let categories = [];
+    let currentCategoryId = null;
+    let deleteId = null;
+
+    // Load categories when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        loadCategories();
+        setupSearch();
+    });
+
+    // Load all categories
+    async function loadCategories() {
+        showLoading(true);
+        try {
+            const response = await fetch('/admin/categories/all');
+            if (response.ok) {
+                categories = await response.json();
+                displayCategories(categories);
+            } else {
+                showAlert('Không thể tải danh sách danh mục', 'danger');
+            }
+        } catch (error) {
+            console.error('Error loading categories:', error);
+            showAlert('Có lỗi xảy ra khi tải dữ liệu', 'danger');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    // Display categories in table
+    function displayCategories(categoriesToShow) {
+        const tbody = document.getElementById('categoriesTableBody');
+
+        if (categoriesToShow.length === 0) {
+            tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 60px;">
+                            <div class="empty-state">
+                                <div class="empty-icon">📂</div>
+                                <h3>Chưa có danh mục nào</h3>
+                                <p>Hãy thêm danh mục đầu tiên để bắt đầu</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            return;
+        }
+
+        tbody.innerHTML = categoriesToShow.map(category => `
+                <tr>
+                    <td>${category.id}</td>
+                    <td><strong>${category.nameCategory}</strong></td>
+                    <td>${category.description || 'Không có mô tả'}</td>
+                    <td>${formatDateTime(category.created)}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="edit-btn" onclick="editCategory(${category.id})">
+                                ✏️ Sửa
+                            </button>
+                            <button class="delete-btn" onclick="deleteCategory(${category.id}, '${category.nameCategory}')">
+                                🗑️ Xóa
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+    }
+
+    // Format datetime
+    function formatDateTime(dateTimeString) {
+        if (!dateTimeString) return 'N/A';
+        const date = new Date(dateTimeString);
+        return date.toLocaleString('vi-VN');
+    }
+
+    // Setup search functionality
+    function setupSearch() {
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const filteredCategories = categories.filter(category =>
+                category.nameCategory.toLowerCase().includes(searchTerm) ||
+                (category.description && category.description.toLowerCase().includes(searchTerm))
+            );
+            displayCategories(filteredCategories);
+        });
+    }
+
+    // Open modal for add/edit
+    function openModal(mode, categoryData = null) {
+        const modal = document.getElementById('categoryModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const form = document.getElementById('categoryForm');
+
+        if (mode === 'add') {
+            modalTitle.textContent = 'Thêm Danh Mục Mới';
+            form.reset();
+            document.getElementById('categoryId').value = '';
+            currentCategoryId = null;
+        } else if (mode === 'edit' && categoryData) {
+            modalTitle.textContent = 'Chỉnh Sửa Danh Mục';
+            document.getElementById('categoryId').value = categoryData.id;
+            document.getElementById('nameCategory').value = categoryData.nameCategory;
+            document.getElementById('description').value = categoryData.description || '';
+            currentCategoryId = categoryData.id;
+        }
+
+        modal.style.display = 'block';
+    }
+
+    // Close modal
+    function closeModal() {
+        document.getElementById('categoryModal').style.display = 'none';
+    }
+
+    // Edit category
+    async function editCategory(id) {
+        try {
+            const response = await fetch(`/admin/category/${id}`);
+            if (response.ok) {
+                const result = await response.json();
+                if (result.httpStatus === 'OK') {
+                    openModal('edit', result.data);
+                } else {
+                    showAlert(result.message, 'danger');
+                }
+            } else {
+                showAlert('Không thể lấy thông tin danh mục', 'danger');
+            }
+        } catch (error) {
+            console.error('Error fetching category:', error);
+            showAlert('Có lỗi xảy ra khi lấy thông tin danh mục', 'danger');
+        }
+    }
+
+    // Save category (add or update)
+    async function saveCategory() {
+        const form = document.getElementById('categoryForm');
+        const formData = new FormData(form);
+
+        const categoryData = {
+            id: formData.get('id') || null,
+            nameCategory: formData.get('nameCategory').trim(),
+            description: formData.get('description').trim()
+        };
+
+        // Validation
+        if (!categoryData.nameCategory) {
+            showAlert('Tên danh mục không được để trống', 'danger');
+            return;
+        }
+
+        try {
+            let url, method;
+            if (currentCategoryId) {
+                // Update
+                categoryData.id = currentCategoryId;
+                url = '/admin/category';
+                method = 'PUT';
+            } else {
+                // Create
+                url = '/admin/category';
+                method = 'POST';
+            }
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(categoryData)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.httpStatus === 'OK') {
+                    showAlert(result.message, 'success');
+                    closeModal();
+                    loadCategories(); // Reload table
+                } else {
+                    showAlert(result.message, 'danger');
+                }
+            } else {
+                showAlert('Có lỗi xảy ra khi lưu danh mục', 'danger');
+            }
+        } catch (error) {
+            console.error('Error saving category:', error);
+            showAlert('Có lỗi xảy ra khi lưu danh mục', 'danger');
+        }
+    }
+
+    // Delete category
+    function deleteCategory(id, name) {
+        deleteId = id;
+        document.getElementById('deleteCategoryName').textContent = name;
+        document.getElementById('deleteModal').style.display = 'block';
+    }
+
+    // Confirm delete
+    async function confirmDelete() {
+        if (!deleteId) return;
+
+        try {
+            const response = await fetch(`/admin/category/${deleteId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                if (result.httpStatus === 'OK') {
+                    showAlert(result.message, 'success');
+                    closeDeleteModal();
+                    loadCategories(); // Reload table
+                } else {
+                    showAlert(result.message, 'danger');
+                }
+            } else {
+                showAlert('Có lỗi xảy ra khi xóa danh mục', 'danger');
+            }
+        } catch (error) {
+            console.error('Error deleting category:', error);
+            showAlert('Có lỗi xảy ra khi xóa danh mục', 'danger');
+        }
+    }
+
+    // Close delete modal
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+        deleteId = null;
+    }
+
+    // Show alert message
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alertContainer');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.textContent = message;
+
+        alertContainer.innerHTML = '';
+        alertContainer.appendChild(alertDiv);
+
+        // Auto hide after 5 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    }
+
+    // Show/hide loading
+    function showLoading(show) {
+        document.getElementById('loading').style.display = show ? 'block' : 'none';
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        const categoryModal = document.getElementById('categoryModal');
+        const deleteModal = document.getElementById('deleteModal');
+
+        if (event.target === categoryModal) {
+            closeModal();
+        }
+        if (event.target === deleteModal) {
+            closeDeleteModal();
+        }
+    }
+
+    // Handle form submission with Enter key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            const modal = document.getElementById('categoryModal');
+            if (modal.style.display === 'block') {
+                event.preventDefault();
+                saveCategory();
+            }
+        }
+        if (event.key === 'Escape') {
+            closeModal();
+            closeDeleteModal();
+        }
+    });
+</script>
+</body>
+</html>

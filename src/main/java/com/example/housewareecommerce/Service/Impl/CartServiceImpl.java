@@ -120,6 +120,64 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
+    public MessageDTO removeFromCart(CartRequest cartRequest) {
+        MessageDTO messageDTO = new MessageDTO();
+        try {
+            UserEntity userEntity = userRepository.findById(cartRequest.getUserId())
+                    .orElseThrow(() -> new NoSuchElementException("Không tìm thấy user"));
+
+            CartEntity cartEntity = cartRepository.findByUserEntity(userEntity);
+
+            ProductEntity productEntity = productRepository.findById(cartRequest.getProductId())
+                    .orElseThrow(() -> new NoSuchElementException("Không tìm thấy sản phẩm"));
+
+            CartItemEntity cartItemEntity = cartItemRepository.findByProductEntityAndAndCartEntity(productEntity, cartEntity);
+
+            if (cartItemEntity == null) {
+                messageDTO.setMessage("Sản phẩm không có trong giỏ hàng");
+                messageDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
+                return messageDTO;
+            }
+
+            Long delta = cartRequest.getQuantity();
+            if (delta == null) {
+                messageDTO.setMessage("Thiếu số lượng thay đổi");
+                messageDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
+                return messageDTO;
+            }
+
+            Long newQuantity = cartItemEntity.getQuantity() + delta;
+
+            if (newQuantity < 1) {
+                // Nếu số lượng mới < 1 thì xóa sản phẩm
+                cartItemRepository.delete(cartItemEntity);
+                messageDTO.setMessage("Đã xóa sản phẩm khỏi giỏ hàng");
+            } else {
+                cartItemEntity.setQuantity(newQuantity);
+
+                Long newSubTotal = (long) (productEntity.getPrice() * newQuantity);
+                cartItemEntity.setSubTotal(Float.valueOf(newSubTotal));
+
+                cartItemRepository.save(cartItemEntity);
+                messageDTO.setMessage("Đã cập nhật số lượng sản phẩm trong giỏ hàng");
+            }
+
+            messageDTO.setHttpStatus(HttpStatus.OK);
+            messageDTO.setData(null);
+
+        } catch (NoSuchElementException e) {
+            messageDTO.setMessage("Không tìm thấy user hoặc sản phẩm");
+            messageDTO.setHttpStatus(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            messageDTO.setMessage("Có lỗi xảy ra: " + e.getMessage());
+            messageDTO.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return messageDTO;
+    }
+
+
+    @Override
     public MessageDTO deleteProductInCart(CartRequest cartRequest) {
         MessageDTO messageDTO = new MessageDTO();
         try {
@@ -147,5 +205,10 @@ public class CartServiceImpl implements CartService {
             messageDTO.setData(null);
         }
         return messageDTO;
+    }
+
+    @Override
+    public Long getCartItemCount(Long userId) {
+        return cartRepository.getCartItemCountByUserId(userId);
     }
 }

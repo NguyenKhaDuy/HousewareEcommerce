@@ -121,9 +121,10 @@ public class ImageProductServiceImpl implements ImageProductService {
     public MessageDTO deleteImage(Long id) {
         MessageDTO messageDTO = new MessageDTO();
         try{
-            ImageEntity imageEntity = imageProductRepository.findById(id).get();
-
-            imageProductRepository.deleteById(id);
+            Optional<ImageEntity> optionalImage = imageProductRepository.findById(id);
+            if (optionalImage.isPresent()) {
+                imageProductRepository.deleteById(id);
+            }
 
             messageDTO.setMessage("Xóa thành công");
             messageDTO.setHttpStatus(HttpStatus.OK);
@@ -132,6 +133,32 @@ public class ImageProductServiceImpl implements ImageProductService {
         }catch (NoSuchElementException e){
             messageDTO.setMessage("Không tìm thấy");
             messageDTO.setHttpStatus(HttpStatus.NOT_FOUND);
+            messageDTO.setData(null);
+        }
+        return messageDTO;
+    }
+
+    @Override
+    public MessageDTO updateImage(Long imageId, MultipartFile newImage) {
+        MessageDTO messageDTO = new MessageDTO();
+        try {
+            Optional<ImageEntity> optionalImage = imageProductRepository.findById(imageId);
+            if (optionalImage.isPresent()) {
+                ImageEntity imageEntity = optionalImage.get();
+                imageEntity.setImageUrl(newImage.getBytes());
+                imageProductRepository.save(imageEntity);
+
+                messageDTO.setMessage("Cập nhật ảnh thành công");
+                messageDTO.setHttpStatus(HttpStatus.OK);
+                messageDTO.setData(null);
+            } else {
+                messageDTO.setMessage("Không tìm thấy ảnh");
+                messageDTO.setHttpStatus(HttpStatus.NOT_FOUND);
+                messageDTO.setData(null);
+            }
+        } catch (IOException e) {
+            messageDTO.setMessage("Lỗi xử lý ảnh");
+            messageDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
             messageDTO.setData(null);
         }
         return messageDTO;
