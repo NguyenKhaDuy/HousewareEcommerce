@@ -15,4 +15,5 @@ public interface ImageProductService {
     MessageDTO deleteImage(Long id);
 
     MessageDTO updateImage(Long imageId, MultipartFile newImage);
+
 }
