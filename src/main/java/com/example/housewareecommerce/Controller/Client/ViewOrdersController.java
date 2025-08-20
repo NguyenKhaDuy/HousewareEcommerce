@@ -1,4 +1,4 @@
-package com.example.housewareecommerce.Controller.Admin;
+package com.example.housewareecommerce.Controller.Client;
 
 import com.example.housewareecommerce.Model.DTO.ListDTO;
 import com.example.housewareecommerce.Model.DTO.MessageDTO;
@@ -12,13 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class OrdersController {
+public class ViewOrdersController {
     @Autowired
     OrdersService ordersService;
-
-    @GetMapping(value = "/admin/orders")
-    public ResponseEntity<?> getAll(@RequestParam(name = "page", defaultValue = "1") Integer pageNo){
-        Page<OrdersDTO> ordersDTOS = ordersService.getAll(pageNo);
+    @GetMapping(value = "/orders/{id}")
+    public ResponseEntity<?> getOrdersByUser(@PathVariable Long id, @RequestParam(name = "page", defaultValue = "1") Integer pageNo){
+        Page<OrdersDTO> ordersDTOS = ordersService.getAllByUser(id,pageNo);
         ListDTO<OrdersDTO> listDTO = new ListDTO<>();
         listDTO.setTotalPage(ordersDTOS.getTotalPages());
         listDTO.setCurrentPage(pageNo);
@@ -26,23 +25,21 @@ public class OrdersController {
         return new ResponseEntity<>(listDTO, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/admin/orders/{id}")
-    public ResponseEntity<?> getById(@PathVariable Long id){
-        MessageDTO messageDTO = ordersService.getById(id);
-        if(messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){
-            return new ResponseEntity<>(messageDTO, HttpStatus.NOT_FOUND);
+    @PostMapping(value = "/orders")
+    public ResponseEntity<?> createOrders(@RequestBody OrdersRequest ordersRequest){
+        MessageDTO messageDTO = ordersService.createOrders(ordersRequest);
+        if (messageDTO.getHttpStatus() == HttpStatus.BAD_REQUEST){
+            return new ResponseEntity<>(messageDTO, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/admin/orders")
-    public ResponseEntity<?> updateOrders(@RequestBody OrdersRequest ordersRequest){
-        MessageDTO messageDTO = ordersService.updateStatusOrders(ordersRequest);
+    @DeleteMapping(value = "/orders/{id}")
+    public ResponseEntity<?> deleteOrders(@PathVariable Long id){
+        MessageDTO messageDTO = ordersService.deleteOrders(id);
         if (messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){
             return new ResponseEntity<>(messageDTO, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }
-
-
 }

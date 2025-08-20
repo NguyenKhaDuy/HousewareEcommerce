@@ -51,8 +51,62 @@ public class OrdersServiceImpl implements OrdersService {
             ordersDTO.setPaymentMethod(orderEntity.getPaymentMethodEntity().getNameMethod());
             ordersDTO.setUserName(orderEntity.getUserEntity().getName());
             ordersDTO.setStatusCode(orderEntity.getStatusEntity().getStatusCode());
-            ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
-            ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
+            if (orderEntity.getDiscountEntity() != null) {
+                ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
+                ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
+            } else {
+                ordersDTO.setNameDiscount("Không áp dụng");
+                ordersDTO.setPercentDiscount(null);
+            }
+
+            List<OrdersDetailDTO> ordersDetailDTOS = new ArrayList<>();
+            for (OrderDetailsEntity orderDetails : orderEntity.getOrderDetails()){
+                OrdersDetailDTO ordersDetailDTO = new OrdersDetailDTO();
+                ordersDetailDTO.setId(orderDetails.getId());
+                ordersDetailDTO.setNameProduct(orderDetails.getProductEntity().getNameProduct());
+                ordersDetailDTO.setQuality(orderDetails.getQuality());
+                ordersDetailDTO.setPriceQuotation(orderDetails.getPriceQuotation());
+                ordersDetailDTO.setTotalAmount(orderDetails.getTotalAmount());
+                ordersDetailDTOS.add(ordersDetailDTO);
+            }
+
+            ordersDTO.setOrdersDetailDTOS(ordersDetailDTOS);
+
+            results.add(ordersDTO);
+        }
+
+        return new PageImpl<>(results, orderEntities.getPageable(), orderEntities.getTotalElements());
+    }
+
+    @Override
+    public Page<OrdersDTO> getAllByUser(Long userId, Integer pageNo) {
+        Pageable pageable = PageRequest.of(pageNo - 1, 5);
+        UserEntity userEntity = null;
+        try{
+            userEntity = userRepository.findById(userId).get();
+        }catch (NoSuchElementException e){
+            e.printStackTrace();
+            return null;
+        }
+
+        Page<OrderEntity> orderEntities = ordersRepository.findByUserEntity(userEntity, pageable);
+        List<OrdersDTO> results = new ArrayList<>();
+
+        for (OrderEntity orderEntity : orderEntities){
+            OrdersDTO ordersDTO = new OrdersDTO();
+            modelMapper.map(orderEntity,ordersDTO);
+
+            ordersDTO.setPaymentMethod(orderEntity.getPaymentMethodEntity().getNameMethod());
+            ordersDTO.setUserName(orderEntity.getUserEntity().getName());
+            ordersDTO.setStatusCode(orderEntity.getStatusEntity().getStatusCode());
+            if (orderEntity.getDiscountEntity() != null) {
+                ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
+                ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
+            } else {
+                ordersDTO.setNameDiscount("Không áp dụng");
+                ordersDTO.setPercentDiscount(null);
+            }
+
 
             List<OrdersDetailDTO> ordersDetailDTOS = new ArrayList<>();
             for (OrderDetailsEntity orderDetails : orderEntity.getOrderDetails()){
@@ -83,8 +137,13 @@ public class OrdersServiceImpl implements OrdersService {
             ordersDTO.setPaymentMethod(orderEntity.getPaymentMethodEntity().getNameMethod());
             ordersDTO.setUserName(orderEntity.getUserEntity().getName());
             ordersDTO.setStatusCode(orderEntity.getStatusEntity().getStatusCode());
-            ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
-            ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
+            if (orderEntity.getDiscountEntity() != null) {
+                ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
+                ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
+            } else {
+                ordersDTO.setNameDiscount("Không áp dụng");
+                ordersDTO.setPercentDiscount(null);
+            }
             List<OrdersDetailDTO> ordersDetailDTOS = new ArrayList<>();
             for (OrderDetailsEntity orderDetails : orderEntity.getOrderDetails()){
                 OrdersDetailDTO ordersDetailDTO = new OrdersDetailDTO();
