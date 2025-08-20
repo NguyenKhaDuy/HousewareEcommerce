@@ -235,6 +235,22 @@
       from { opacity: 1; }
       to { opacity: 0; }
     }
+    .status-active {
+      background-color: #4CAF50;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .status-discontinued {
+      background-color: #f44336;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
   </style>
 
   <h2>Danh sách người dùng</h2>
@@ -243,6 +259,7 @@
       <th>STT</th>
       <th>Tên</th>
       <th>Email</th>
+      <th>Trạng thái</th>
       <th>Vai trò</th>
       <th>Thao tác</th>
     </tr>
@@ -251,12 +268,22 @@
       <td th:text="${user.name}"></td>
       <td th:text="${user.email}"></td>
       <td>
+        <span th:if="${user.statusEntity.id == 38}" class="status-active">Hoạt động</span>
+        <span th:if="${user.statusEntity.id == 37}" class="status-discontinued">Ngừng</span>
+      </td>
+
+      <td>
         <span th:if="${user.role == 1}" class="role-admin">Quản trị viên</span>
         <span th:if="${user.role == 2}" class="role-customer">Khách hàng</span>
       </td>
       <td>
         <a th:href="@{/admin/user/edit/{id}(id=${user.id})}" class="action-btn edit-btn" title="Chỉnh sửa">&#9998;</a>
-        <a href="javascript:void(0)" class="action-btn delete-btn" th:attr="data-user-id=${user.id},data-user-name=${user.name}" onclick="showDeleteModal(this.getAttribute('data-user-id'), this.getAttribute('data-user-name'))" title="Xóa">&#128465;</a>
+        <a th:if="${user.role != 1}"
+           href="javascript:void(0)"
+           class="action-btn delete-btn"
+           th:attr="data-user-id=${user.id},data-user-name=${user.name}"
+           onclick="showDeleteModal(this.getAttribute('data-user-id'), this.getAttribute('data-user-name'))"
+           title="Xóa">&#128465;</a>
       </td>
     </tr>
   </table>

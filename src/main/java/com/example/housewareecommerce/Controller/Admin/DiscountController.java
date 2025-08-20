@@ -38,6 +38,7 @@ public class DiscountController {
     @PostMapping(value = "/admin/discount")
     public ResponseEntity<?> createDisount(@RequestBody DiscountRequest discountRequest){
         MessageDTO messageDTO = discoutService.createDisount(discountRequest);
+        System.out.println("Code " + discountRequest.getDiscountCode());
         if(messageDTO.getHttpStatus() == HttpStatus.BAD_REQUEST){
             return new ResponseEntity<>(messageDTO, HttpStatus.BAD_REQUEST);
         }
@@ -47,6 +48,7 @@ public class DiscountController {
     @PutMapping(value = "/admin/discount")
     public ResponseEntity<?> updateDiscount(@RequestBody DiscountRequest discountRequest){
         MessageDTO messageDTO = discoutService.updateDiscount(discountRequest);
+        System.out.println("Code " + discountRequest.getDiscountCode());
         if(messageDTO.getHttpStatus() == HttpStatus.BAD_REQUEST){
             return new ResponseEntity<>(messageDTO, HttpStatus.BAD_REQUEST);
         }else if(messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){

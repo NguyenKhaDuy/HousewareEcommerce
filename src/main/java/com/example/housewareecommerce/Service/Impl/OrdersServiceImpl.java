@@ -48,17 +48,33 @@ public class OrdersServiceImpl implements OrdersService {
             OrdersDTO ordersDTO = new OrdersDTO();
             modelMapper.map(orderEntity,ordersDTO);
 
-            ordersDTO.setPaymentMethod(orderEntity.getPaymentMethodEntity().getNameMethod());
-            ordersDTO.setUserName(orderEntity.getUserEntity().getName());
-            ordersDTO.setStatusCode(orderEntity.getStatusEntity().getStatusCode());
-            ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
-            ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
+            if (orderEntity.getPaymentMethodEntity() != null) {
+                ordersDTO.setPaymentMethod(orderEntity.getPaymentMethodEntity().getNameMethod());
+            }
+            if (orderEntity.getUserEntity() != null) {
+                ordersDTO.setUserName(orderEntity.getUserEntity().getName());
+            }
+            if (orderEntity.getStatusEntity() != null) {
+                ordersDTO.setStatusCode(orderEntity.getStatusEntity().getStatusCode());
+            }
+
+            if (orderEntity.getDiscountEntity() != null) {
+                ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
+                ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
+            } else {
+                ordersDTO.setNameDiscount(null);
+                ordersDTO.setPercentDiscount(null);
+            }
 
             List<OrdersDetailDTO> ordersDetailDTOS = new ArrayList<>();
             for (OrderDetailsEntity orderDetails : orderEntity.getOrderDetails()){
                 OrdersDetailDTO ordersDetailDTO = new OrdersDetailDTO();
                 ordersDetailDTO.setId(orderDetails.getId());
-                ordersDetailDTO.setNameProduct(orderDetails.getProductEntity().getNameProduct());
+
+                if (orderDetails.getProductEntity() != null) {
+                    ordersDetailDTO.setNameProduct(orderDetails.getProductEntity().getNameProduct());
+                }
+
                 ordersDetailDTO.setQuality(orderDetails.getQuality());
                 ordersDetailDTO.setPriceQuotation(orderDetails.getPriceQuotation());
                 ordersDetailDTO.setTotalAmount(orderDetails.getTotalAmount());
@@ -80,11 +96,25 @@ public class OrdersServiceImpl implements OrdersService {
             OrderEntity orderEntity = ordersRepository.findById(id).get();
             OrdersDTO ordersDTO = new OrdersDTO();
             modelMapper.map(orderEntity,ordersDTO);
-            ordersDTO.setPaymentMethod(orderEntity.getPaymentMethodEntity().getNameMethod());
-            ordersDTO.setUserName(orderEntity.getUserEntity().getName());
-            ordersDTO.setStatusCode(orderEntity.getStatusEntity().getStatusCode());
-            ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
-            ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
+            if (orderEntity.getPaymentMethodEntity() != null) {
+                ordersDTO.setPaymentMethod(orderEntity.getPaymentMethodEntity().getNameMethod());
+            }
+
+            if (orderEntity.getUserEntity() != null) {
+                ordersDTO.setUserName(orderEntity.getUserEntity().getName());
+            }
+
+            if (orderEntity.getStatusEntity() != null) {
+                ordersDTO.setStatusCode(orderEntity.getStatusEntity().getStatusCode());
+            }
+
+            if (orderEntity.getDiscountEntity() != null) {
+                ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
+                ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
+            } else {
+                ordersDTO.setNameDiscount(null);
+                ordersDTO.setPercentDiscount(null);
+            }
             List<OrdersDetailDTO> ordersDetailDTOS = new ArrayList<>();
             for (OrderDetailsEntity orderDetails : orderEntity.getOrderDetails()){
                 OrdersDetailDTO ordersDetailDTO = new OrdersDetailDTO();
@@ -120,7 +150,7 @@ public class OrdersServiceImpl implements OrdersService {
                 userEntity = userRepository.findById(ordersRequest.getUserId()).get();
                 statusEntity = statusRepository.findById(ordersRequest.getStatusId()).get();
                 paymentMethodEntity = paymentMethodRepository.findById(ordersRequest.getPaymentMethodId()).get();
-                discountEntity = discoutRepository.findByDiscounCode(ordersRequest.getDiscoutCode());
+                discountEntity = discoutRepository.findByDiscountCode(ordersRequest.getDiscoutCode());
             }catch (NoSuchElementException e){
                 messageDTO.setMessage("Thêm không thành công");
                 messageDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
@@ -164,8 +194,11 @@ public class OrdersServiceImpl implements OrdersService {
             ordersDTO.setPaymentMethod(order.getPaymentMethodEntity().getNameMethod());
             ordersDTO.setUserName(order.getUserEntity().getName());
             ordersDTO.setStatusCode(order.getStatusEntity().getStatusCode());
-            ordersDTO.setNameDiscount(order.getDiscountEntity().getNameDiscount());
-            ordersDTO.setPercentDiscount(order.getDiscountEntity().getPercentDiscount());
+
+            if (order.getDiscountEntity() != null) {
+                ordersDTO.setNameDiscount(order.getDiscountEntity().getNameDiscount());
+                ordersDTO.setPercentDiscount(order.getDiscountEntity().getPercentDiscount());
+            }
             List<OrdersDetailDTO> ordersDetailDTOS = new ArrayList<>();
             for (OrderDetailsEntity orderDetails : order.getOrderDetails()){
                 OrdersDetailDTO ordersDetailDTO = new OrdersDetailDTO();
@@ -203,8 +236,13 @@ public class OrdersServiceImpl implements OrdersService {
             ordersDTO.setPaymentMethod(orderEntity.getPaymentMethodEntity().getNameMethod());
             ordersDTO.setUserName(orderEntity.getUserEntity().getName());
             ordersDTO.setStatusCode(orderEntity.getStatusEntity().getStatusCode());
-            ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
-            ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
+            if (orderEntity.getDiscountEntity() != null) {
+                ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
+                ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
+            } else {
+                ordersDTO.setNameDiscount(null);
+                ordersDTO.setPercentDiscount(null);
+            }
             List<OrdersDetailDTO> ordersDetailDTOS = new ArrayList<>();
             for (OrderDetailsEntity orderDetails : orderEntity.getOrderDetails()){
                 OrdersDetailDTO ordersDetailDTO = new OrdersDetailDTO();
@@ -243,6 +281,72 @@ public class OrdersServiceImpl implements OrdersService {
             messageDTO.setHttpStatus(HttpStatus.NOT_FOUND);
             messageDTO.setData(null);
         }
+        return messageDTO;
+    }
+
+    @Override
+    public MessageDTO getOrdersByUserId(Long userId) {
+        MessageDTO messageDTO = new MessageDTO();
+        try {
+            // Lấy danh sách đơn hàng của user, sắp xếp theo ngày đặt mới nhất
+            List<OrderEntity> orderEntities = ordersRepository.findByUserEntityIdOrderByDateOrderDesc(userId);
+
+            List<OrdersDTO> ordersDTOs = new ArrayList<>();
+
+            for (OrderEntity orderEntity : orderEntities) {
+                OrdersDTO ordersDTO = new OrdersDTO();
+                modelMapper.map(orderEntity, ordersDTO);
+
+                // Set payment method
+                if (orderEntity.getPaymentMethodEntity() != null) {
+                    ordersDTO.setPaymentMethod(orderEntity.getPaymentMethodEntity().getNameMethod());
+                }
+
+                // Set user name
+                if (orderEntity.getUserEntity() != null) {
+                    ordersDTO.setUserName(orderEntity.getUserEntity().getName());
+                }
+
+                // Set status
+                if (orderEntity.getStatusEntity() != null) {
+                    ordersDTO.setStatusCode(orderEntity.getStatusEntity().getStatusCode());
+                }
+
+                // Set discount info
+                if (orderEntity.getDiscountEntity() != null) {
+                    ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
+                    ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
+                } else {
+                    ordersDTO.setNameDiscount(null);
+                    ordersDTO.setPercentDiscount(null);
+                }
+
+                // Set order details
+                List<OrdersDetailDTO> ordersDetailDTOs = new ArrayList<>();
+                for (OrderDetailsEntity orderDetails : orderEntity.getOrderDetails()) {
+                    OrdersDetailDTO ordersDetailDTO = new OrdersDetailDTO();
+                    ordersDetailDTO.setId(orderDetails.getId());
+                    ordersDetailDTO.setNameProduct(orderDetails.getProductEntity().getNameProduct());
+                    ordersDetailDTO.setQuality(orderDetails.getQuality());
+                    ordersDetailDTO.setPriceQuotation(orderDetails.getPriceQuotation());
+                    ordersDetailDTO.setTotalAmount(orderDetails.getTotalAmount());
+                    ordersDetailDTOs.add(ordersDetailDTO);
+                }
+                ordersDTO.setOrdersDetailDTOS(ordersDetailDTOs);
+
+                ordersDTOs.add(ordersDTO);
+            }
+
+            messageDTO.setMessage("Success");
+            messageDTO.setHttpStatus(HttpStatus.OK);
+            messageDTO.setData(ordersDTOs);
+
+        } catch (Exception e) {
+            messageDTO.setMessage("Có lỗi xảy ra khi lấy danh sách đơn hàng");
+            messageDTO.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            messageDTO.setData(null);
+        }
+
         return messageDTO;
     }
 }

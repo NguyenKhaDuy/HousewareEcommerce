@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TheUdecor - Admin</title>
+    <title>House Ware - Admin</title>
     <link rel="stylesheet" th:href="@{/css/adminHomeCss.css}">
     <!-- Include category management CSS when needed -->
     <link rel="stylesheet" th:href="@{/css/categoryManagement.css}" th:if="${content == 'categoryManagement'}">
@@ -12,7 +12,7 @@
 
 <div class="sidebar">
     <div class="sidebar-header">
-        <div class="logo">theudecor</div>
+        <div class="logo">House Ware</div>
     </div>
 
     <div class="sidebar-section">
@@ -34,22 +34,17 @@
             Sản phẩm
         </a>
 
-        <a href="#" class="menu-item highlighted" data-menu="khuyen-mai">
+        <a th:href="@{/admin/view/discount}" class="menu-item highlighted" data-menu="khuyen-mai">
             <span class="menu-icon">🎁</span>
             Khuyến mãi
         </a>
 
-        <a href="#" class="menu-item" data-menu="don-hang">
+        <a th:href="@{/admin/view/order}" class="menu-item highlighted" data-menu="don-hang">
             <span class="menu-icon">📦</span>
             Quản lý đơn hàng
         </a>
 
-        <a href="#" class="menu-item" data-menu="trang-thai-don-hang">
-            <span class="menu-icon">⚡</span>
-            Quản lý trạng thái đơn hàng
-        </a>
-
-        <a th:href="@{/admin/users/getAll}" class="menu-item highlighted" data-menu="nguoi-dung">
+        <a th:href="@{/admin/user/getAll}" class="menu-item highlighted" data-menu="nguoi-dung">
             <span class="menu-icon">👥</span>
             Quản lý người dùng
         </a>
@@ -62,8 +57,8 @@
         <div class="breadcrumb">Admin > Danh Sách Sản Phẩm</div>
         <div class="theme-toggle">🌙</div>
         <div class="user-info">
-            <div class="user-avatar"></div>
-            <span class="username">tb</span>
+            <span class="username" th:text="${session.username != null ? session.username : 'Admin'}">Bảo</span>
+            <a th:href="@{/account/logout}" class="logout-link">Đăng xuất</a>
         </div>
     </div>
 </div>
@@ -74,7 +69,12 @@
 
  </div>
 
- <script>
+ <script th:inline="javascript">
+     const userRole = /*[[${session.role?:''}]]*/ '';
+
+     if (userRole !== '1') {
+         window.location.href = '/account/login';
+     }
      const menuItems = {
          'thong-ke': {
              title: 'Thống Kê',

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Quản lý Đơn hàng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+<div class="max-w-7xl mx-auto p-6">
+  <header class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-semibold">Quản lý Đơn hàng</h1>
+    <div class="flex gap-2 items-center">
+      <input id="searchInput" type="search" placeholder="Tìm theo tên khách / mã trạng thái / mã giảm giá" class="px-3 py-2 border rounded-lg" />
+      <select id="statusFilter" class="px-3 py-2 border rounded-lg">
+        <option value="">Tất cả trạng thái</option>
+        <option value="PENDING">PENDING</option>
+        <option value="PAID">PAID</option>
+        <option value="SHIPPED">SHIPPED</option>
+        <option value="CANCELLED">CANCELLED</option>
+      </select>
+      <input id="fromDate" type="date" class="px-3 py-2 border rounded-lg" />
+      <input id="toDate" type="date" class="px-3 py-2 border rounded-lg" />
+      <button id="filterBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Lọc</button>
+    </div>
+  </header>
+
+  <section class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="p-4 flex items-center justify-between border-b">
+      <div class="text-sm text-gray-600">Danh sách Đơn hàng</div>
+      <div class="text-sm text-gray-500">Hiển thị trang <span id="pageInfo">1</span> / <span id="totalPages">1</span></div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y">
+        <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-sm font-medium">Mã</th>
+          <th class="px-4 py-3 text-left text-sm font-medium">Khách</th>
+          <th class="px-4 py-3 text-left text-sm font-medium">Tổng tiền</th>
+          <th class="px-4 py-3 text-left text-sm font-medium">Ngày</th>
+          <th class="px-4 py-3 text-left text-sm font-medium">Thanh toán</th>
+          <th class="px-4 py-3 text-left text-sm font-medium">Giảm giá</th>
+          <th class="px-4 py-3 text-left text-sm font-medium">Trạng thái</th>
+          <th class="px-4 py-3 text-right text-sm font-medium">Hành động</th>
+        </tr>
+        </thead>
+        <tbody id="ordersTableBody" class="bg-white divide-y">
+        <!-- rows injected by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="p-4 flex items-center justify-between">
+      <div>
+        <button id="prevPage" class="px-3 py-1 border rounded disabled:opacity-50" disabled>Previous</button>
+        <button id="nextPage" class="px-3 py-1 border rounded disabled:opacity-50">Next</button>
+      </div>
+      <div class="text-sm text-gray-600">Trang <span id="currentPage">1</span> / <span id="totalPagesBottom">1</span></div>
+    </div>
+  </section>
+</div>
+
+<!-- View / Edit Modal -->
+<div id="orderModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
+  <div class="bg-white w-full max-w-3xl rounded-lg shadow-lg p-6 max-h-[90vh] overflow-y-auto">
+    <div class="flex justify-between items-center mb-4">
+      <h2 id="modalTitle" class="text-xl font-semibold">Chi tiết Đơn hàng</h2>
+      <div class="flex gap-2 items-center">
+        <button id="saveOrderBtn" class="px-3 py-2 bg-green-600 text-white rounded">Lưu</button>
+        <button id="closeModalBtn" class="px-3 py-2 border rounded">Đóng</button>
+      </div>
+    </div>
+
+    <form id="orderForm" class="space-y-4">
+      <input type="hidden" id="orderId" />
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm">Tên khách</label>
+          <input id="userName" class="w-full px-3 py-2 border rounded" readonly />
+        </div>
+        <div>
+          <label class="block text-sm">Thanh toán</label>
+          <input id="paymentMethod" class="w-full px-3 py-2 border rounded" readonly />
+        </div>
+        <div>
+          <label class="block text-sm">Tổng tiền</label>
+          <input id="totalPrice" class="w-full px-3 py-2 border rounded" disabled />
+        </div>
+        <div>
+          <label class="block text-sm">Ngày đặt</label>
+          <input id="dateOrder" class="w-full px-3 py-2 border rounded" disabled />
+        </div>
+        <div>
+          <label class="block text-sm">Tên giảm giá</label>
+          <input id="nameDiscount" class="w-full px-3 py-2 border rounded" readonly />
+        </div>
+        <div>
+          <label class="block text-sm">% Giảm</label>
+          <input id="percentDiscount" type="number" step="0.01" class="w-full px-3 py-2 border rounded" readonly />
+        </div>
+        <div class="col-span-2">
+          <label class="block text-sm">Ghi chú</label>
+          <textarea id="note" rows="2" class="w-full px-3 py-2 border rounded" readonly></textarea>
+        </div>
+        <div class="col-span-2">
+          <label class="block text-sm">Trạng thái <span class="text-red-500">*</span></label>
+          <select id="statusCode" class="w-full px-3 py-2 border rounded">
+            <option value="PENDING">PENDING</option>
+            <option value="PAID">PAID</option>
+            <option value="SHIPPED">SHIPPED</option>
+            <option value="CANCELLED">CANCELLED</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-lg font-medium mt-4 mb-2">Chi tiết sản phẩm</h3>
+        <div id="orderItems" class="space-y-2 max-h-48 overflow-auto border rounded p-2 bg-gray-50">
+          <!-- items go here -->
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2">
+        <button type="button" id="deleteOrderBtn" class="px-3 py-2 bg-red-600 text-white rounded">Xóa đơn</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // --- Configuration ---
+  const API_BASE = '/admin/orders';
+
+  // --- State ---
+  let currentPageNum = 1;
+  let totalPagesNum = 1;
+  const pageSize = 5; // Backend sử dụng pageSize = 5
+
+  // --- Utilities ---
+  function fmtCurrency(v) {
+    if (v == null) return '-';
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v);
+  }
+
+  function isoDateToLocal(dateStr){
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('vi-VN');
+  }
+
+  // --- Render rows ---
+  function renderOrders(orders) {
+    const tbody = document.getElementById('ordersTableBody');
+    tbody.innerHTML = '';
+
+    if (!orders || orders.length === 0) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td colspan="8" class="px-4 py-8 text-center text-gray-500">
+          Không có dữ liệu
+        </td>
+      `;
+      tbody.appendChild(tr);
+      return;
+    }
+
+    orders.forEach(o => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+          <td class="px-4 py-3 text-sm">${o.id || '-'}</td>
+          <td class="px-4 py-3 text-sm">${o.userName || '-'}</td>
+          <td class="px-4 py-3 text-sm">${fmtCurrency(o.totalPrice)}</td>
+          <td class="px-4 py-3 text-sm">${isoDateToLocal(o.dateOrder)}</td>
+          <td class="px-4 py-3 text-sm">${o.paymentMethod || '-'}</td>
+          <td class="px-4 py-3 text-sm">${o.nameDiscount ? (o.nameDiscount + ' (' + (o.percentDiscount || 0) + '%)') : '-'}</td>
+          <td class="px-4 py-3 text-sm">
+            <span class="px-2 py-1 rounded-full text-xs font-medium
+              ${o.statusCode === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+              o.statusCode === 'PAID' ? 'bg-green-100 text-green-800' :
+                      o.statusCode === 'SHIPPED' ? 'bg-blue-100 text-blue-800' :
+                              o.statusCode === 'CANCELLED' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'}">
+              ${o.statusCode || '-'}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-sm text-right">
+            <button class="viewBtn mr-2 px-2 py-1 border rounded hover:bg-gray-50" data-id="${o.id}">Xem</button>
+            <button class="editBtn mr-2 px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600" data-id="${o.id}">Sửa</button>
+            <button class="deleteBtn px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600" data-id="${o.id}">Xóa</button>
+          </td>
+        `;
+      tbody.appendChild(tr);
+    });
+
+    // attach listeners
+    document.querySelectorAll('.viewBtn').forEach(b => b.addEventListener('click', e => openModal(b.dataset.id, 'view')));
+    document.querySelectorAll('.editBtn').forEach(b => b.addEventListener('click', e => openModal(b.dataset.id, 'edit')));
+    document.querySelectorAll('.deleteBtn').forEach(b => b.addEventListener('click', e => deleteOrderConfirm(b.dataset.id)));
+  }
+
+  // --- Fetching ---
+  async function loadOrders(page = 1) {
+    const search = encodeURIComponent(document.getElementById('searchInput').value || '');
+    const status = encodeURIComponent(document.getElementById('statusFilter').value || '');
+    const from = document.getElementById('fromDate').value || '';
+    const to = document.getElementById('toDate').value || '';
+
+    // Backend expects 1-based page number
+    const url = `${API_BASE}?page=${page}&search=${search}&status=${status}&from=${from}&to=${to}`;
+
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      const data = await res.json();
+
+      // Backend trả về ListDTO với structure: { data: [], currentPage: number, totalPage: number }
+      const orders = data.data || [];
+      currentPageNum = data.currentPage || page;
+      totalPagesNum = data.totalPage || 1;
+
+      renderOrders(orders);
+      updatePaginationInfo();
+
+    } catch (err) {
+      console.error('Error loading orders:', err);
+      alert('Không thể tải dữ liệu: ' + err.message);
+      renderOrders([]);
+    }
+  }
+
+  function updatePaginationInfo() {
+    document.getElementById('currentPage').textContent = currentPageNum;
+    document.getElementById('pageInfo').textContent = currentPageNum;
+    document.getElementById('totalPages').textContent = totalPagesNum;
+    document.getElementById('totalPagesBottom').textContent = totalPagesNum;
+
+    // Update pagination buttons
+    const prevBtn = document.getElementById('prevPage');
+    const nextBtn = document.getElementById('nextPage');
+
+    prevBtn.disabled = currentPageNum <= 1;
+    nextBtn.disabled = currentPageNum >= totalPagesNum;
+
+    if (prevBtn.disabled) {
+      prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    } else {
+      prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+
+    if (nextBtn.disabled) {
+      nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    } else {
+      nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+  }
+
+  // --- Modal actions ---
+  async function openModal(orderId, mode = 'view') {
+    try {
+      const res = await fetch(`${API_BASE}/${orderId}`);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      const response = await res.json();
+
+      // Backend trả về MessageDTO với structure: { message: string, data: OrdersDTO, httpStatus: HttpStatus }
+      if (response.httpStatus && response.httpStatus !== 'OK') {
+        throw new Error(response.message || 'Không thể lấy chi tiết đơn hàng');
+      }
+
+      const order = response.data;
+      fillModal(order, mode);
+      document.getElementById('orderModal').classList.remove('hidden');
+      document.getElementById('orderModal').classList.add('flex');
+
+    } catch (err) {
+      console.error('Error fetching order details:', err);
+      alert('Lỗi khi lấy chi tiết: ' + err.message);
+    }
+  }
+
+  function fillModal(o, mode = 'view') {
+    document.getElementById('orderId').value = o.id || '';
+    document.getElementById('userName').value = o.userName || '';
+    document.getElementById('paymentMethod').value = o.paymentMethod || '';
+    document.getElementById('totalPrice').value = o.totalPrice != null ? o.totalPrice : '';
+    document.getElementById('dateOrder').value = o.dateOrder || '';
+    document.getElementById('nameDiscount').value = o.nameDiscount || '';
+    document.getElementById('percentDiscount').value = o.percentDiscount || '';
+    document.getElementById('note').value = o.note || '';
+    document.getElementById('statusCode').value = o.statusCode || 'PENDING';
+
+    // Set modal title based on mode
+    const modalTitle = document.getElementById('modalTitle');
+    const saveBtn = document.getElementById('saveOrderBtn');
+    const statusSelect = document.getElementById('statusCode');
+
+    if (mode === 'view') {
+      modalTitle.textContent = 'Chi tiết Đơn hàng #' + (o.id || '');
+      saveBtn.style.display = 'none';
+      statusSelect.disabled = true;
+    } else {
+      modalTitle.textContent = 'Chỉnh sửa Đơn hàng #' + (o.id || '');
+      saveBtn.style.display = 'block';
+      statusSelect.disabled = false;
+    }
+
+    // Fill order items
+    const itemsDiv = document.getElementById('orderItems');
+    itemsDiv.innerHTML = '';
+    const items = o.ordersDetailDTOS || o.orderDetails || [];
+
+    if (items.length === 0) {
+      itemsDiv.innerHTML = '<div class="text-gray-500 text-center py-4">Không có sản phẩm</div>';
+      return;
+    }
+
+    items.forEach(it => {
+      const el = document.createElement('div');
+      el.className = 'p-2 bg-white rounded shadow-sm flex justify-between items-center';
+      el.innerHTML = `
+          <div>
+            <div class="font-medium">${it.nameProduct || 'Sản phẩm #' + (it.id || '')}</div>
+            <div class="text-sm text-gray-500">Số lượng: ${it.quality || 0} — Giá: ${fmtCurrency(it.priceQuotation)}</div>
+          </div>
+          <div class="text-sm font-semibold">${fmtCurrency(it.totalAmount)}</div>
+        `;
+      itemsDiv.appendChild(el);
+    });
+  }
+
+  document.getElementById('closeModalBtn').addEventListener('click', () => {
+    document.getElementById('orderModal').classList.add('hidden');
+    document.getElementById('orderModal').classList.remove('flex');
+  });
+
+  // save (update) order - chỉ cập nhật trạng thái
+  document.getElementById('saveOrderBtn').addEventListener('click', async () => {
+    const id = document.getElementById('orderId').value;
+    const statusCode = document.getElementById('statusCode').value;
+
+    if (!id || !statusCode) {
+      alert('Thiếu thông tin cần thiết');
+      return;
+    }
+
+    const payload = {
+      id: Number(id),
+      statusId: getStatusIdByCode(statusCode) // Cần convert statusCode thành statusId
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response = await res.json();
+
+      if (response.httpStatus && response.httpStatus !== 'OK') {
+        throw new Error(response.message || 'Không thể cập nhật');
+      }
+
+      alert('Cập nhật thành công');
+      document.getElementById('closeModalBtn').click();
+      loadOrders(currentPageNum);
+
+    } catch (err) {
+      console.error('Error updating order:', err);
+      alert('Lỗi khi cập nhật: ' + err.message);
+    }
+  });
+
+  // Helper function to convert status code to status ID
+  // Cần điều chỉnh theo database thực tế
+  function getStatusIdByCode(statusCode) {
+    const statusMap = {
+      'PENDING': 1,
+      'PAID': 2,
+      'SHIPPED': 3,
+      'CANCELLED': 4
+    };
+    return statusMap[statusCode] || 1;
+  }
+
+  // delete
+  async function deleteOrderConfirm(id) {
+    if (!confirm('Bạn có chắc muốn xóa đơn #' + id + ' ?')) return;
+
+    try {
+      const res = await fetch(`/orders/${id}`, { method: 'DELETE' }); // Sử dụng endpoint đúng
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const response = await res.json();
+
+      if (response.httpStatus && response.httpStatus !== 'OK') {
+        throw new Error(response.message || 'Xóa thất bại');
+      }
+
+      alert('Đã xóa thành công');
+      loadOrders(currentPageNum);
+
+    } catch (err) {
+      console.error('Error deleting order:', err);
+      alert('Lỗi khi xóa: ' + err.message);
+    }
+  }
+
+  document.getElementById('deleteOrderBtn').addEventListener('click', async () => {
+    const id = document.getElementById('orderId').value;
+    if (!id) {
+      alert('Không tìm thấy ID đơn hàng');
+      return;
+    }
+    document.getElementById('closeModalBtn').click();
+    deleteOrderConfirm(id);
+  });
+
+  // pagination
+  document.getElementById('prevPage').addEventListener('click', () => {
+    if (currentPageNum > 1) {
+      loadOrders(currentPageNum - 1);
+    }
+  });
+
+  document.getElementById('nextPage').addEventListener('click', () => {
+    if (currentPageNum < totalPagesNum) {
+      loadOrders(currentPageNum + 1);
+    }
+  });
+
+  // filters
+  document.getElementById('filterBtn').addEventListener('click', () => {
+    loadOrders(1);
+  });
+
+  // search with Enter
+  document.getElementById('searchInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      loadOrders(1);
+    }
+  });
+
+  // initial load
+  (async function init(){
+    await loadOrders(1);
+  })();
+
+</script>
+
+</body>
+</html>

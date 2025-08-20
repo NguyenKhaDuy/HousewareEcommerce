@@ -107,4 +107,9 @@ public class StatusServiceImpl implements StatusService {
         }
         return messageDTO;
     }
+
+    @Override
+    public List<StatusEntity> findByIdIn(List<Long> ids) {
+        return statusRepository.findByIdIn(ids);
+    }
 }

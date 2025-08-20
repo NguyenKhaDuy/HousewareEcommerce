@@ -12,6 +12,15 @@ public class CategoryDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
     private LocalDateTime created;
 
+    public CategoryDTO() {
+    }
+
+    public CategoryDTO(Long id, String nameCategory, String description) {
+        this.id = id;
+        this.nameCategory = nameCategory;
+        this.description = description;
+    }
+
     public Long getId() {
         return id;
     }
