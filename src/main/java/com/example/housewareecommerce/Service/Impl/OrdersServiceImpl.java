@@ -115,7 +115,7 @@ public class OrdersServiceImpl implements OrdersService {
                 ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
                 ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
             } else {
-                ordersDTO.setNameDiscount("Không áp dụng");
+                ordersDTO.setNameDiscount(null);
                 ordersDTO.setPercentDiscount(null);
             }
 
@@ -169,7 +169,7 @@ public class OrdersServiceImpl implements OrdersService {
                 ordersDTO.setPercentDiscount(orderEntity.getDiscountEntity().getPercentDiscount());
                 ordersDTO.setNameDiscount(orderEntity.getDiscountEntity().getNameDiscount());
             } else {
-                ordersDTO.setNameDiscount("Không áp dụng");
+                ordersDTO.setNameDiscount(null);
                 ordersDTO.setPercentDiscount(null);
             }
             List<OrdersDetailDTO> ordersDetailDTOS = new ArrayList<>();
