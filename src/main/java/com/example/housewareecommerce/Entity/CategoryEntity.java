@@ -1,6 +1,7 @@
 package com.example.housewareecommerce.Entity;
 
 import jakarta.persistence.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,6 +20,17 @@ public class CategoryEntity {
     private String description;
     @Column(name = "created")
     private LocalDateTime created;
+
+    @Column(name = "image")
+    private byte[] image;
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
 
     @OneToMany(mappedBy = "categoryEntity", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<ProductEntity> productEntityList = new ArrayList<>();

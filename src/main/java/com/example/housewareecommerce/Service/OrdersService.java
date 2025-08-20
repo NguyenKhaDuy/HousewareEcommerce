@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface OrdersService {
     Page<OrdersDTO> getAll(Integer pageNo);
+    Page<OrdersDTO> getAllByUser(Long userId, Integer pageNo);
     MessageDTO getById(Long id);
     MessageDTO createOrders(OrdersRequest ordersRequest);
     MessageDTO updateStatusOrders(OrdersRequest OrdersRequest);

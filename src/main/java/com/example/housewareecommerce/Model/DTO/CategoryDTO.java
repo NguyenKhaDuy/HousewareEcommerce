@@ -4,6 +4,7 @@ package com.example.housewareecommerce.Model.DTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
+import java.util.Base64;
 
 public class CategoryDTO {
     private Long id;
@@ -11,6 +12,23 @@ public class CategoryDTO {
     private String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
     private LocalDateTime created;
+    
+    private byte[] image;
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public String getBase64Image() {
+        if (image != null) {
+            return Base64.getEncoder().encodeToString(image);
+        }
+        return null;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
 
     public CategoryDTO() {
     }

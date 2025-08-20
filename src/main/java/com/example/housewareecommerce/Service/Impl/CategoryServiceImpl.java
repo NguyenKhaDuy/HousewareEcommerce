@@ -1,6 +1,7 @@
 package com.example.housewareecommerce.Service.Impl;
 
 import com.example.housewareecommerce.Entity.CategoryEntity;
+import com.example.housewareecommerce.Entity.ImageEntity;
 import com.example.housewareecommerce.Model.DTO.CategoryDTO;
 import com.example.housewareecommerce.Model.DTO.MessageDTO;
 import com.example.housewareecommerce.Model.Request.CategoryRequest;
@@ -10,7 +11,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +33,7 @@ public class CategoryServiceImpl implements CategoryService {
         for (CategoryEntity categoryEntity : categoryEntities){
             CategoryDTO categoryDTO = new CategoryDTO();
             modelMapper.map(categoryEntity, categoryDTO);
+            categoryDTO.setImage(categoryEntity.getImage());
             results.add(categoryDTO);
         }
         return results;
@@ -42,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService {
             CategoryEntity categoryEntity = categoryRepository.findById(id).get();
             CategoryDTO categoryDTO = new CategoryDTO();
             modelMapper.map(categoryEntity, categoryDTO);
-
+            categoryDTO.setImage(categoryEntity.getImage());
             messageDTO.setMessage("Success");
             messageDTO.setHttpStatus(HttpStatus.OK);
             messageDTO.setData(categoryDTO);
@@ -61,6 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
                     CategoryDTO dto = new CategoryDTO();
                     dto.setId(categoryEntity.getId());
                     dto.setNameCategory(categoryEntity.getNameCategory());
+                    dto.setImage(categoryEntity.getImage());
                     dto.setDescription(categoryEntity.getDescription());
                     dto.setCreated(categoryEntity.getCreated());
                     return dto;
@@ -76,11 +81,22 @@ public class CategoryServiceImpl implements CategoryService {
             categoryEntity.setNameCategory(categoryRequest.getNameCategory());
             categoryEntity.setDescription(categoryRequest.getDescription());
             categoryEntity.setCreated(LocalDateTime.now());
-            CategoryEntity check = categoryRepository.save(categoryEntity);
 
             CategoryDTO categoryDTO = new CategoryDTO();
-            modelMapper.map(check, categoryDTO);
 
+            if (categoryRequest.getImage() != null && !categoryRequest.getImage().isEmpty()) {
+                try {
+                    categoryEntity.setImage(categoryRequest.getImage().getBytes());
+                } catch (IOException e) {
+                    messageDTO.setMessage("Lỗi xử lý ảnh");
+                    messageDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
+                    messageDTO.setData(null);
+                    return messageDTO;
+                }
+            }
+
+            CategoryEntity check = categoryRepository.save(categoryEntity);
+            modelMapper.map(check, categoryDTO);
             messageDTO.setMessage("Thêm thành công");
             messageDTO.setHttpStatus(HttpStatus.OK);
             messageDTO.setData(categoryDTO);
@@ -102,6 +118,17 @@ public class CategoryServiceImpl implements CategoryService {
 
             categoryEntity.setNameCategory(categoryRequest.getNameCategory());
             categoryEntity.setDescription(categoryRequest.getDescription());
+
+            if (categoryRequest.getImage() != null && !categoryRequest.getImage().isEmpty()) {
+                try {
+                    categoryEntity.setImage(categoryRequest.getImage().getBytes());
+                } catch (IOException e) {
+                    messageDTO.setMessage("Lỗi xử lý ảnh");
+                    messageDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
+                    messageDTO.setData(null);
+                    return messageDTO;
+                }
+            }
 
             CategoryEntity category = categoryRepository.save(categoryEntity);
             CategoryDTO categoryDTO = new CategoryDTO();
