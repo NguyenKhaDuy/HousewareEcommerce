@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class OrdersController {
+public class ViewOrdersController {
     @Autowired
     OrdersService ordersService;
     @GetMapping(value = "/orders/{id}")

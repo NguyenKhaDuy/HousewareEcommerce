@@ -35,15 +35,6 @@ public class OrdersController {
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/orders")
-    public ResponseEntity<?> createOrders(@RequestBody OrdersRequest ordersRequest){
-        MessageDTO messageDTO = ordersService.createOrders(ordersRequest);
-        if (messageDTO.getHttpStatus() == HttpStatus.BAD_REQUEST){
-            return new ResponseEntity<>(messageDTO, HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
-    }
-
     @PutMapping(value = "/admin/orders")
     public ResponseEntity<?> updateOrders(@RequestBody OrdersRequest ordersRequest){
         MessageDTO messageDTO = ordersService.updateStatusOrders(ordersRequest);
@@ -53,12 +44,5 @@ public class OrdersController {
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/orders/{id}")
-    public ResponseEntity<?> deleteOrders(@PathVariable Long id){
-        MessageDTO messageDTO = ordersService.deleteOrders(id);
-        if (messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){
-            return new ResponseEntity<>(messageDTO, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
-    }
+
 }
