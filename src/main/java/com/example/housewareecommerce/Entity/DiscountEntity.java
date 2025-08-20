@@ -16,7 +16,7 @@ public class DiscountEntity {
     @Column(name = "namediscount")
     private String nameDiscount;
     @Column(name = "discountcode")
-    private String discounCode;
+    private String discountCode;
     @Column(name = "percentdiscount")
     private Float percentDiscount;
     @Column(name = "datestart")
@@ -49,12 +49,12 @@ public class DiscountEntity {
         this.nameDiscount = nameDiscount;
     }
 
-    public String getDiscounCode() {
-        return discounCode;
+    public String getDiscountCode() {
+        return discountCode;
     }
 
-    public void setDiscounCode(String discounCode) {
-        this.discounCode = discounCode;
+    public void setDiscountCode(String discountCode) {
+        this.discountCode = discountCode;
     }
 
     public Float getPercentDiscount() {

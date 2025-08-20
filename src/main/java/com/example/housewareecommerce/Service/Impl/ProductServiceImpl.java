@@ -68,6 +68,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductDTO> getAll() {
+        List<ProductEntity> products = productRepository.findAll();
+
+        if (products.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return products.stream()
+                .map(this::convertToListDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public ProductEntity getProductDetailById(Long productId) {
         ProductEntity product = productRepository.findByIdWithBasicRelations(productId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + productId));

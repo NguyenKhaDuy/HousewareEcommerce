@@ -1,5 +1,6 @@
 package com.example.housewareecommerce.Controller.Admin;
 
+import com.example.housewareecommerce.Entity.StatusEntity;
 import com.example.housewareecommerce.Entity.UserEntity;
 import com.example.housewareecommerce.Model.DTO.MessageDTO;
 import com.example.housewareecommerce.Model.DTO.UserDTO;
@@ -17,6 +18,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -72,8 +75,10 @@ public class ManagerUserController {
             if (userOpt.isPresent()) {
                 UserEntity user = userOpt.get();
 
+                List<StatusEntity> statuses = statusService.findByIdIn(Arrays.asList(37L, 38L));
+
                 model.addAttribute("user", user);
-                model.addAttribute("statuses", statusService.getAllStatus());
+                model.addAttribute("statuses", statuses);
                 model.addAttribute("content", "user/user-edit");
                 return "AdminHome";
             }

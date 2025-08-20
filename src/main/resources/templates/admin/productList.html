@@ -443,13 +443,28 @@
           ${isSearchMode ? 'Không tìm thấy sản phẩm nào.' : 'Chưa có sản phẩm nào.'}
         </td></tr>`;
       } else {
+
+        console.log('Product payload:', payload);
+        console.log('Products[0] sample:', payload.data && payload.data[0]);
+
         products.forEach(p => {
           const id = p.id;
           const name = p.nameProduct || p.name || '';
-          const categoryName = getCategoryName(p.categoryCode) || 'N/A';
+          const categoryName = p.categoryName ?? getCategoryName(p.categoryCode ?? p.categoryId ?? (p.category && (p.category.id ?? p.category.code))) ?? 'N/A';
           const price = p.price != null ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p.price) : 'N/A';
           const quantity = p.quantity != null ? p.quantity : 'N/A';
-          const statusCode = p.statusCode || 'N/A';
+
+          const statusCode = p.statusCode ?? p.statusId ?? (p.status && (p.status.id ?? p.status.code)) ?? null;
+
+          let statusDisplayName = 'N/A';
+
+          if (p.statusName) {
+            statusDisplayName = p.statusName;
+          } else if (p.status && (p.status.name || p.status.statusName)) {
+            statusDisplayName = p.status.name || p.status.statusName;
+          } else if (statusCode) {
+            statusDisplayName = getStatusDisplayName(statusCode);
+          }
 
           // Status badge color
           let statusBadgeClass = getStatusBadgeClass(statusCode);
@@ -463,7 +478,7 @@
             <td class="text-gray-700">${quantity}</td>
             <td>
               <span class="px-2 py-1 text-xs font-medium rounded-full ${statusBadgeClass}">
-                ${getStatusName(statusCode)}
+                ${escapeHtml(statusDisplayName)}
               </span>
             </td>
             <td>
@@ -501,6 +516,16 @@
       tbody.innerHTML = `<tr><td colspan="8" class="text-center bg-white rounded-lg p-8 text-red-500">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại.</td></tr>`;
     }
   }
+
+  function getStatusDisplayName(statusCode) {
+    const statusMap = {
+      'InStock': 'Còn hàng',
+      'Stock': 'Hết hàng'
+    };
+
+    return statusMap[statusCode] || statusCode || 'N/A';
+  }
+
 
   async function loadFormData() {
     // Load categories from API

@@ -171,3 +171,17 @@ body {
     margin-left: 0;
   }
 }
+
+.logout-link {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: #f0f2f5;
+  transition: background-color 0.2s ease-in-out;
+  margin-left: 10px;
+}
+.logout-link:hover {
+  background-color: #e4e6eb;
+}

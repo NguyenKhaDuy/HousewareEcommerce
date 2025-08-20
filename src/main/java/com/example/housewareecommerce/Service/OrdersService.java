@@ -14,4 +14,6 @@ public interface OrdersService {
     MessageDTO createOrders(OrdersRequest ordersRequest);
     MessageDTO updateStatusOrders(OrdersRequest OrdersRequest);
     MessageDTO deleteOrders(Long id);
+
+    MessageDTO getOrdersByUserId(Long userId);
 }

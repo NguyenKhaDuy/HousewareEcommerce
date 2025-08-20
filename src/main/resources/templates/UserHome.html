@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gia Dụng Pro - Trang Chủ</title>
+  <title>Home ware - Trang Chủ</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -48,7 +48,7 @@
       <!-- Logo -->
       <a href="#" class="text-2xl font-bold text-gray-800">
         <i class="fas fa-home text-blue-600"></i>
-        Gia Dụng <span class="text-blue-600">Pro</span>
+        Home ware <span class="text-blue-600">Pro</span>
       </a>
 
       <!-- Navigation Links - Desktop -->
@@ -65,10 +65,7 @@
         <button class="text-gray-600 hover:text-blue-600">
           <i class="fas fa-search fa-lg"></i>
         </button>
-        <!-- FavoriteProductEntity: Hiển thị sản phẩm yêu thích -->
-        <a href="#" class="relative text-gray-600 hover:text-blue-600">
-          <i class="fas fa-heart fa-lg"></i>
-        </a>
+
         <!-- CartEntity, CartItemEntity: Hiển thị giỏ hàng -->
         <a href="/view/cart" class="relative text-gray-600 hover:text-blue-600">
           <i class="fas fa-shopping-cart fa-lg"></i>
@@ -173,6 +170,208 @@
 
 </main>
 
+<!-- Best-Selling Products Section -->
+<!-- Mỗi thẻ sản phẩm tương ứng với một ProductEntity -->
+<section class="py-16">
+  <div class="container mx-auto px-4">
+    <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">Sản Phẩm Bán Chạy</h2>
+    <p class="text-center text-gray-500 mb-12">Những sản phẩm được khách hàng yêu thích và lựa chọn nhiều nhất.</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+      <!-- Product Card: Dữ liệu từ ProductEntity, ImageEntity, DiscountEntity, EvaluateEntity -->
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden group flex flex-col">
+        <div class="relative">
+          <!-- ImageEntity -->
+          <img src="https://placehold.co/400x400/E2E8F0/334155?text=Nồi+chiên" alt="Nồi chiên không dầu" class="w-full h-64 object-cover">
+          <!-- DiscountEntity -->
+          <div class="absolute top-0 right-0 bg-red-500 text-white text-sm font-bold px-3 py-1 m-2 rounded-md">-25%</div>
+          <!-- FavoriteProductEntity -->
+          <button class="absolute top-2 left-2 bg-white rounded-full p-2 text-gray-600 hover:text-red-500 transition duration-300">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+        <div class="p-6 flex-grow flex flex-col">
+          <!-- ProductEntity: Name -->
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 flex-grow">Nồi Chiên Không Dầu Thông Minh 12L</h3>
+          <!-- EvaluateEntity: Hiển thị đánh giá -->
+          <div class="flex items-center mb-2 text-sm">
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star-half-alt checked"></i>
+            <span class="text-gray-500 ml-2">(125 đánh giá)</span>
+          </div>
+          <!-- ProductEntity: Price -->
+          <div class="flex items-center mb-4">
+            <span class="text-xl font-bold text-blue-600">2.250.000₫</span>
+            <span class="text-gray-500 line-through ml-3">3.000.000₫</span>
+          </div>
+          <!-- CartItemEntity: Thêm vào giỏ hàng -->
+          <button class="w-full mt-auto bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 transform group-hover:scale-105">
+            <i class="fas fa-cart-plus mr-2"></i>Thêm vào giỏ
+          </button>
+        </div>
+      </div>
+      <!-- Product Card 2 -->
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden group flex flex-col">
+        <div class="relative">
+          <img src="https://placehold.co/400x400/E2E8F0/334155?text=Máy+hút+bụi" alt="Máy hút bụi" class="w-full h-64 object-cover">
+          <button class="absolute top-2 left-2 bg-white rounded-full p-2 text-gray-600 hover:text-red-500 transition duration-300">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+        <div class="p-6 flex-grow flex flex-col">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 flex-grow">Máy Hút Bụi Cầm Tay Lực Hút Mạnh</h3>
+          <div class="flex items-center mb-2 text-sm">
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star checked"></i>
+            <span class="text-gray-500 ml-2">(98 đánh giá)</span>
+          </div>
+          <div class="flex items-center mb-4">
+            <span class="text-xl font-bold text-blue-600">3.500.000₫</span>
+          </div>
+          <button class="w-full mt-auto bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 transform group-hover:scale-105">
+            <i class="fas fa-cart-plus mr-2"></i>Thêm vào giỏ
+          </button>
+        </div>
+      </div>
+      <!-- Product Card 3 -->
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden group flex flex-col">
+        <div class="relative">
+          <img src="https://placehold.co/400x400/E2E8F0/334155?text=Máy+lọc+kk" alt="Máy lọc không khí" class="w-full h-64 object-cover">
+          <div class="absolute top-0 right-0 bg-green-500 text-white text-sm font-bold px-3 py-1 m-2 rounded-md">Mới</div>
+          <button class="absolute top-2 left-2 bg-white rounded-full p-2 text-gray-600 hover:text-red-500 transition duration-300">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+        <div class="p-6 flex-grow flex flex-col">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 flex-grow">Máy Lọc Không Khí Kháng Khuẩn Ion</h3>
+          <div class="flex items-center mb-2 text-sm">
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star checked"></i>
+            <i class="far fa-star text-gray-400"></i>
+            <span class="text-gray-500 ml-2">(55 đánh giá)</span>
+          </div>
+          <div class="flex items-center mb-4">
+            <span class="text-xl font-bold text-blue-600">4.190.000₫</span>
+          </div>
+          <button class="w-full mt-auto bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 transform group-hover:scale-105">
+            <i class="fas fa-cart-plus mr-2"></i>Thêm vào giỏ
+          </button>
+        </div>
+      </div>
+      <!-- Product Card 4 -->
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden group flex flex-col">
+        <div class="relative">
+          <img src="https://placehold.co/400x400/E2E8F0/334155?text=Tủ+lạnh" alt="Tủ lạnh" class="w-full h-64 object-cover">
+          <button class="absolute top-2 left-2 bg-white rounded-full p-2 text-gray-600 hover:text-red-500 transition duration-300">
+            <i class="far fa-heart"></i>
+          </button>
+        </div>
+        <div class="p-6 flex-grow flex flex-col">
+          <h3 class="text-lg font-semibold text-gray-800 mb-2 flex-grow">Tủ Lạnh Side-by-Side Inverter 500L</h3>
+          <div class="flex items-center mb-2 text-sm">
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star checked"></i>
+            <i class="fas fa-star-half-alt checked"></i>
+            <span class="text-gray-500 ml-2">(210 đánh giá)</span>
+          </div>
+          <div class="flex items-center mb-4">
+            <span class="text-xl font-bold text-blue-600">15.990.000₫</span>
+          </div>
+          <button class="w-full mt-auto bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 transform group-hover:scale-105">
+            <i class="fas fa-cart-plus mr-2"></i>Thêm vào giỏ
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="py-16 bg-white">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+      <div class="p-6">
+        <div class="text-blue-600 mb-4">
+          <i class="fas fa-shipping-fast fa-3x"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Giao Hàng Nhanh</h3>
+        <p class="text-gray-500">Miễn phí vận chuyển cho đơn hàng trên 500.000đ.</p>
+      </div>
+      <div class="p-6">
+        <div class="text-blue-600 mb-4">
+          <i class="fas fa-headset fa-3x"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Hỗ Trợ 24/7</h3>
+        <p class="text-gray-500">Luôn sẵn sàng giải đáp mọi thắc mắc của bạn.</p>
+      </div>
+      <div class="p-6">
+        <div class="text-blue-600 mb-4">
+          <i class="fas fa-shield-alt fa-3x"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">Bảo Hành Chính Hãng</h3>
+        <p class="text-gray-500">Cam kết sản phẩm chất lượng và bảo hành uy tín.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- Footer -->
+<footer class="bg-gray-800 text-white pt-16 pb-8">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+      <!-- About Us -->
+      <div>
+        <h3 class="text-xl font-bold mb-4">Gia Dụng Pro</h3>
+        <p class="text-gray-400">Chúng tôi cung cấp các giải pháp gia dụng thông minh, giúp cuộc sống của bạn trở nên tiện nghi và hiện đại hơn.</p>
+      </div>
+      <!-- Quick Links -->
+      <div>
+        <h3 class="text-xl font-bold mb-4">Liên Kết Nhanh</h3>
+        <ul class="space-y-2">
+          <li><a href="#" class="text-gray-400 hover:text-white">Sản Phẩm</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white">Chính Sách Bảo Mật</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white">Điều Khoản Dịch Vụ</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white">Câu Hỏi Thường Gặp</a></li>
+        </ul>
+      </div>
+      <!-- Contact Info -->
+      <div>
+        <h3 class="text-xl font-bold mb-4">Thông Tin Liên Hệ</h3>
+        <ul class="space-y-2 text-gray-400">
+          <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-3 w-4"></i>123 Đường ABC, Quận Ninh Kiều, Cần Thơ</li>
+          <li class="flex items-center"><i class="fas fa-phone-alt mr-3 w-4"></i>(0292) 123 4567</li>
+          <li class="flex items-center"><i class="fas fa-envelope mr-3 w-4"></i>support@giadungpro.vn</li>
+        </ul>
+      </div>
+      <!-- Newsletter -->
+      <div>
+        <h3 class="text-xl font-bold mb-4">Đăng Ký Nhận Tin</h3>
+        <p class="text-gray-400 mb-4">Nhận thông tin khuyến mãi và sản phẩm mới nhất.</p>
+
+      </div>
+    </div>
+    <div class="border-t border-gray-700 pt-8 mt-8 flex flex-col md:flex-row justify-between items-center">
+      <p class="text-gray-500 text-sm mb-4 md:mb-0">&copy; 2025 Gia Dụng Pro. Đã đăng ký bản quyền.</p>
+      <div class="flex space-x-4">
+        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f fa-lg"></i></a>
+        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram fa-lg"></i></a>
+        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-youtube fa-lg"></i></a>
+        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-tiktok fa-lg"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
 
 <script>
   // Mobile menu toggle

@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class DiscountRequest {
     private Long id;
     private String nameDiscount;
-    private String discounCode;
+    private String discountCode;
     private Float percentDiscount;
     private LocalDate dateStart;
     private LocalDate dateEnd;
@@ -27,12 +27,12 @@ public class DiscountRequest {
         this.nameDiscount = nameDiscount;
     }
 
-    public String getDiscounCode() {
-        return discounCode;
+    public String getDiscountCode() {
+        return discountCode;
     }
 
-    public void setDiscounCode(String discounCode) {
-        this.discounCode = discounCode;
+    public void setDiscountCode(String discountCode) {
+        this.discountCode = discountCode;
     }
 
     public Float getPercentDiscount() {

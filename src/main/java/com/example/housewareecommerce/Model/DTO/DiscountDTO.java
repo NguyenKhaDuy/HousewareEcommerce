@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class DiscountDTO {
     private Long id;
     private String nameDiscount;
-    private String discounCode;
+    private String discountCode;
     private Float percentDiscount;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Ho_Chi_Minh")
     private LocalDate dateStart;
@@ -35,12 +35,12 @@ public class DiscountDTO {
         this.nameDiscount = nameDiscount;
     }
 
-    public String getDiscounCode() {
-        return discounCode;
+    public String getDiscountCode() {
+        return discountCode;
     }
 
-    public void setDiscounCode(String discounCode) {
-        this.discounCode = discounCode;
+    public void setDiscountCode(String discountCode) {
+        this.discountCode = discountCode;
     }
 
     public Float getPercentDiscount() {

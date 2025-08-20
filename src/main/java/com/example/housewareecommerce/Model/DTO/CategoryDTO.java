@@ -30,6 +30,15 @@ public class CategoryDTO {
         this.image = image;
     }
 
+    public CategoryDTO() {
+    }
+
+    public CategoryDTO(Long id, String nameCategory, String description) {
+        this.id = id;
+        this.nameCategory = nameCategory;
+        this.description = description;
+    }
+
     public Long getId() {
         return id;
     }

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Khuyến Mãi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .container {
+            max-width: 90%;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .modal {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        .btn-danger {
+            background-color: #ef4444;
+            transition: background-color 0.3s;
+        }
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        .table-header {
+            background-color: #e5e7eb;
+        }
+        .table-row:nth-child(even) {
+            background-color: #f9fafb;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+
+<!-- Discount Management Main Section -->
+<div class="container mx-auto p-8 bg-white shadow-lg rounded-2xl">
+    <h2 class="text-3xl font-bold mb-6 text-gray-800">Quản Lý Khuyến Mãi</h2>
+    <div class="flex justify-between items-center mb-6">
+        <button id="add-discount-btn" class="flex items-center space-x-2 px-6 py-3 bg-blue-500 text-white rounded-xl shadow-lg hover:bg-blue-600 transition-colors">
+            <i class="fas fa-plus-circle"></i>
+            <span>Thêm Khuyến Mãi</span>
+        </button>
+    </div>
+
+    <!-- Discount Table -->
+    <div class="overflow-x-auto rounded-lg shadow-md">
+        <table class="w-full text-left table-auto">
+            <thead class="bg-gray-200 text-gray-700 uppercase text-sm">
+            <tr>
+                <th class="py-3 px-4">ID</th>
+                <th class="py-3 px-4">Tên Khuyến Mãi</th>
+                <th class="py-3 px-4">Mã Code</th>
+                <th class="py-3 px-4">Phần Trăm (%)</th>
+                <th class="py-3 px-4">Ngày Bắt Đầu</th>
+                <th class="py-3 px-4">Ngày Kết Thúc</th>
+                <th class="py-3 px-4">Trạng Thái</th>
+                <th class="py-3 px-4">Ngày Tạo</th>
+                <th class="py-3 px-4 text-center">Hành Động</th>
+            </tr>
+            </thead>
+            <tbody id="discount-table-body" class="bg-white divide-y divide-gray-200">
+            <!-- Data will be loaded here via JavaScript -->
+            <tr>
+                <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500" colspan="9">Loading...</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination-container" class="flex justify-center items-center mt-6 space-x-2">
+        <!-- Pagination buttons will be rendered here by JavaScript -->
+    </div>
+</div>
+
+<!-- Add/Edit Discount Modal -->
+<div id="discount-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden z-50">
+    <div class="modal-content w-full max-w-2xl p-8 rounded-2xl shadow-xl transform transition-all scale-95 opacity-0 duration-300">
+        <h3 id="modal-title" class="text-2xl font-bold mb-6 text-gray-800">Thêm Khuyến Mãi</h3>
+        <form id="discount-form" class="space-y-4">
+            <div>
+                <label for="nameDiscount" class="block text-gray-700 font-medium mb-1">Tên Khuyến Mãi</label>
+                <input type="text" id="nameDiscount" name="nameDiscount" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div>
+                <label for="discountCode" class="block text-gray-700 font-medium mb-1">Mã Code</label>
+                <input type="text" id="discountCode" name="discountCode" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div>
+                <label for="percentDiscount" class="block text-gray-700 font-medium mb-1">Phần Trăm (%)</label>
+                <input type="number" id="percentDiscount" name="percentDiscount" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div>
+                <label for="dateStart" class="block text-gray-700 font-medium mb-1">Ngày Bắt Đầu</label>
+                <input type="date" id="dateStart" name="dateStart" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div>
+                <label for="dateEnd" class="block text-gray-700 font-medium mb-1">Ngày Kết Thúc</label>
+                <input type="date" id="dateEnd" name="dateEnd" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div>
+                <label for="statusId" class="block text-gray-700 font-medium mb-1">Trạng Thái</label>
+                <select id="statusId" name="statusId" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <!-- Options will be loaded here -->
+                    <option value="1">Active</option>
+                    <option value="2">Inactive</option>
+                </select>
+            </div>
+            <input type="hidden" id="discountId" name="id">
+            <div class="flex justify-end space-x-4 mt-6">
+                <button type="button" id="cancel-btn" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">Hủy</button>
+                <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Message Modal -->
+<div id="message-modal" class="modal fixed inset-0 flex items-center justify-center p-4 hidden z-50">
+    <div class="modal-content max-w-sm p-6 rounded-lg shadow-xl text-center">
+        <p id="message-text" class="text-gray-800"></p>
+        <button id="close-message-btn" class="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">OK</button>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    // JavaScript for handling Discount management
+    document.addEventListener('DOMContentLoaded', () => {
+        const BASE_URL = window.location.origin;
+        const discountTableBody = document.getElementById('discount-table-body');
+        const addDiscountBtn = document.getElementById('add-discount-btn');
+        const discountModal = document.getElementById('discount-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const discountForm = document.getElementById('discount-form');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const messageModal = document.getElementById('message-modal');
+        const messageText = document.getElementById('message-text');
+        const closeMessageBtn = document.getElementById('close-message-btn');
+        const paginationContainer = document.getElementById('pagination-container');
+
+        let currentPage = 1;
+
+        // Function to show a message in a modal
+        const showMessage = (message) => {
+            messageText.textContent = message;
+            messageModal.classList.remove('hidden');
+            setTimeout(() => {
+                messageModal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
+                messageModal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
+            }, 10);
+        };
+
+        // Function to hide the message modal
+        const hideMessage = () => {
+            messageModal.querySelector('.modal-content').classList.remove('scale-100', 'opacity-100');
+            messageModal.querySelector('.modal-content').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                messageModal.classList.add('hidden');
+            }, 300);
+        };
+
+        // Event listener for closing message modal
+        closeMessageBtn.addEventListener('click', hideMessage);
+
+        // Function to fetch and display discounts
+        const fetchDiscounts = async (page) => {
+            try {
+                const response = await fetch(`${BASE_URL}/admin/discount?page=${page}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    renderDiscounts(data.data);
+                    renderPagination(data.totalPage, data.currentPage);
+                } else {
+                    showMessage('Lỗi khi tải dữ liệu khuyến mãi.');
+                    discountTableBody.innerHTML = `<tr><td class="px-4 py-4 text-center text-red-500" colspan="9">Không có dữ liệu khuyến mãi.</td></tr>`;
+                    paginationContainer.innerHTML = '';
+                }
+            } catch (error) {
+                console.error('Error fetching discounts:', error);
+                showMessage('Không thể kết nối đến máy chủ.');
+                discountTableBody.innerHTML = `<tr><td class="px-4 py-4 text-center text-red-500" colspan="9">Lỗi kết nối.</td></tr>`;
+            }
+        };
+
+        // Function to render discounts in the table
+        const renderDiscounts = (discounts) => {
+            discountTableBody.innerHTML = '';
+            if (discounts && discounts.length > 0) {
+                discounts.forEach(discount => {
+                    const row = document.createElement('tr');
+                    row.classList.add('hover:bg-gray-50', 'transition-colors', 'table-row');
+                    row.innerHTML = `
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${discount.id}</td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${discount.nameDiscount}</td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${discount.discountCode}</td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${discount.percentDiscount}</td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${discount.dateStart}</td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${discount.dateEnd}</td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${discount.statusCode}</td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">${discount.created}</td>
+                            <td class="px-4 py-4 whitespace-nowrap text-sm font-medium flex justify-center space-x-2">
+                                <button data-id="${discount.id}" class="edit-btn text-blue-600 hover:text-blue-900" title="Sửa"><i class="fas fa-edit"></i></button>
+                                <button data-id="${discount.id}" class="delete-btn text-red-600 hover:text-red-900" title="Xóa"><i class="fas fa-trash-alt"></i></button>
+                            </td>
+                        `;
+                    discountTableBody.appendChild(row);
+                });
+            } else {
+                discountTableBody.innerHTML = `<tr><td class="px-4 py-4 text-center text-gray-500" colspan="9">Không có dữ liệu khuyến mãi.</td></tr>`;
+            }
+        };
+
+        // Function to render pagination
+        const renderPagination = (totalPages, currentPage) => {
+            paginationContainer.innerHTML = '';
+            if (totalPages > 1) {
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.textContent = i;
+                    pageBtn.dataset.page = i;
+                    pageBtn.classList.add('px-4', 'py-2', 'rounded-lg', 'font-medium', 'transition-colors');
+                    if (i === currentPage) {
+                        pageBtn.classList.add('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+                    } else {
+                        pageBtn.classList.add('bg-gray-200', 'text-gray-700', 'hover:bg-gray-300');
+                    }
+                    pageBtn.addEventListener('click', () => {
+                        fetchDiscounts(i);
+                    });
+                    paginationContainer.appendChild(pageBtn);
+                }
+            }
+        };
+
+        // Show modal for adding a new discount
+        addDiscountBtn.addEventListener('click', () => {
+            modalTitle.textContent = 'Thêm Khuyến Mãi Mới';
+            discountForm.reset();
+            discountForm.dataset.mode = 'add';
+            discountModal.classList.remove('hidden');
+            setTimeout(() => {
+                discountModal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
+                discountModal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
+            }, 10);
+        });
+
+        // Handle edit and delete buttons with event delegation
+        discountTableBody.addEventListener('click', async (e) => {
+            const target = e.target.closest('button');
+            if (!target) return;
+
+            const discountId = target.dataset.id;
+
+            if (target.classList.contains('edit-btn')) {
+                try {
+                    const response = await fetch(`${BASE_URL}/admin/discount/${discountId}`);
+                    const data = await response.json();
+                    if (response.ok && data.data) {
+                        const discount = data.data;
+                        modalTitle.textContent = 'Chỉnh Sửa Khuyến Mãi';
+                        discountForm.dataset.mode = 'edit';
+                        document.getElementById('discountId').value = discount.id;
+                        document.getElementById('nameDiscount').value = discount.nameDiscount;
+                        document.getElementById('discountCode').value = discount.discountCode;
+                        document.getElementById('percentDiscount').value = discount.percentDiscount;
+                        document.getElementById('dateStart').value = discount.dateStart;
+                        document.getElementById('dateEnd').value = discount.dateEnd;
+                        // Set status code
+                        const statusSelect = document.getElementById('statusId');
+                        for(let i = 0; i < statusSelect.options.length; i++){
+                            if(statusSelect.options[i].text === discount.statusCode){
+                                statusSelect.selectedIndex = i;
+                                break;
+                            }
+                        }
+                        discountModal.classList.remove('hidden');
+                        setTimeout(() => {
+                            discountModal.querySelector('.modal-content').classList.remove('scale-95', 'opacity-0');
+                            discountModal.querySelector('.modal-content').classList.add('scale-100', 'opacity-100');
+                        }, 10);
+                    } else {
+                        showMessage('Không tìm thấy dữ liệu khuyến mãi.');
+                    }
+                } catch (error) {
+                    console.error('Error fetching discount for edit:', error);
+                    showMessage('Lỗi khi tải dữ liệu để chỉnh sửa.');
+                }
+            }
+
+            if (target.classList.contains('delete-btn')) {
+                if (confirm('Bạn có chắc chắn muốn xóa khuyến mãi này?')) {
+                    try {
+                        const response = await fetch(`${BASE_URL}/admin/discount/${discountId}`, {
+                            method: 'DELETE'
+                        });
+                        const data = await response.json();
+                        showMessage(data.message);
+                        if (response.ok) {
+                            fetchDiscounts(currentPage);
+                        }
+                    } catch (error) {
+                        console.error('Error deleting discount:', error);
+                        showMessage('Lỗi khi xóa khuyến mãi.');
+                    }
+                }
+            }
+        });
+
+        // Handle form submission
+        discountForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(discountForm);
+            const discountData = Object.fromEntries(formData.entries());
+            discountData.id = document.getElementById('discountId').value ? parseInt(document.getElementById('discountId').value) : null;
+            discountData.percentDiscount = parseFloat(discountData.percentDiscount);
+            discountData.statusId = parseInt(discountData.statusId);
+
+            const mode = discountForm.dataset.mode;
+            let url, method;
+
+            if (mode === 'add') {
+                url = `${BASE_URL}/admin/discount`;
+                method = 'POST';
+            } else if (mode === 'edit') {
+                url = `${BASE_URL}/admin/discount`;
+                method = 'PUT';
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(discountData)
+                });
+                const data = await response.json();
+                showMessage(data.message);
+                if (response.ok) {
+                    discountModal.classList.add('hidden');
+                    fetchDiscounts(currentPage);
+                }
+            } catch (error) {
+                console.error('Error saving discount:', error);
+                showMessage('Lỗi khi lưu khuyến mãi.');
+            }
+        });
+
+        // Hide modal on cancel button click
+        cancelBtn.addEventListener('click', () => {
+            discountModal.querySelector('.modal-content').classList.remove('scale-100', 'opacity-100');
+            discountModal.querySelector('.modal-content').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                discountModal.classList.add('hidden');
+            }, 300);
+        });
+
+        // Initial data fetch
+        fetchDiscounts(currentPage);
+    });
+</script>
+</body>
+</html>

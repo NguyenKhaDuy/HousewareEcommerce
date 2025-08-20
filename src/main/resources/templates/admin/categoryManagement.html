@@ -139,6 +139,56 @@
             transform: translateY(-1px);
         }
 
+        /* Pagination Styles */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px 0 10px;
+        }
+
+        .pagination {
+            display: flex;
+            list-style: none;
+            gap: 8px;
+        }
+
+        .page-item {
+            margin: 0;
+        }
+
+        .page-link {
+            display: block;
+            padding: 10px 16px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background-color: white;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            user-select: none;
+        }
+
+        .page-link:hover {
+            background-color: #f0f2ff;
+            border-color: #667eea;
+        }
+
+        .page-item.active .page-link {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .page-item.disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
+
         /* Modal Styles */
         .modal {
             display: none;
@@ -414,6 +464,13 @@
             </table>
         </div>
     </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination-container">
+        <ul id="paginationControls" class="pagination">
+            <!-- Pagination buttons will be generated here by JavaScript -->
+        </ul>
+    </div>
 </div>
 
 <!-- Add/Edit Category Modal -->
@@ -464,24 +521,32 @@
 </div>
 
 <script>
-    let categories = [];
+    // --- STATE MANAGEMENT ---
+    let allCategories = []; // Stores all categories from the server
+    let displayedCategories = []; // Stores categories to be shown (after filtering)
     let currentCategoryId = null;
     let deleteId = null;
 
-    // Load categories when page loads
+    // --- PAGINATION STATE ---
+    let currentPage = 1;
+    const itemsPerPage = 5; // Set how many items to show per page
+
+    // --- INITIALIZATION ---
     document.addEventListener('DOMContentLoaded', function() {
         loadCategories();
         setupSearch();
     });
 
-    // Load all categories
+    // --- DATA FETCHING ---
     async function loadCategories() {
         showLoading(true);
         try {
             const response = await fetch('/admin/categories/all');
             if (response.ok) {
-                categories = await response.json();
-                displayCategories(categories);
+                allCategories = await response.json();
+                displayedCategories = [...allCategories]; // Initially, display all
+                currentPage = 1; // Reset to the first page
+                renderTableAndPagination();
             } else {
                 showAlert('Không thể tải danh sách danh mục', 'danger');
             }
@@ -493,62 +558,117 @@
         }
     }
 
-    // Display categories in table
-    function displayCategories(categoriesToShow) {
+    // --- RENDERING LOGIC ---
+
+    /**
+     * Main function to update the view (table and pagination)
+     */
+    function renderTableAndPagination() {
+        // 1. Calculate items for the current page
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const pageItems = displayedCategories.slice(startIndex, endIndex);
+
+        // 2. Render the table with the items for the current page
+        renderTable(pageItems);
+
+        // 3. Render the pagination controls
+        renderPagination();
+    }
+
+    /**
+     * Renders the rows in the categories table
+     * @param {Array} categoriesToShow - The array of categories for the current page
+     */
+    function renderTable(categoriesToShow) {
         const tbody = document.getElementById('categoriesTableBody');
 
-        if (categoriesToShow.length === 0) {
+        if (displayedCategories.length === 0) { // Check the source array for empty state
             tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 60px;">
-                            <div class="empty-state">
-                                <div class="empty-icon">📂</div>
-                                <h3>Chưa có danh mục nào</h3>
-                                <p>Hãy thêm danh mục đầu tiên để bắt đầu</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
+                <tr>
+                    <td colspan="5">
+                        <div class="empty-state">
+                            <div class="empty-icon">📂</div>
+                            <h3>Không tìm thấy danh mục nào</h3>
+                            <p>Hãy thử một từ khóa tìm kiếm khác hoặc thêm danh mục mới.</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
             return;
         }
 
         tbody.innerHTML = categoriesToShow.map(category => `
-                <tr>
-                    <td>${category.id}</td>
-                    <td><strong>${category.nameCategory}</strong></td>
-                    <td>${category.description || 'Không có mô tả'}</td>
-                    <td>${formatDateTime(category.created)}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="edit-btn" onclick="editCategory(${category.id})">
-                                ✏️ Sửa
-                            </button>
-                            <button class="delete-btn" onclick="deleteCategory(${category.id}, '${category.nameCategory}')">
-                                🗑️ Xóa
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            <tr>
+                <td>${category.id}</td>
+                <td><strong>${category.nameCategory}</strong></td>
+                <td>${category.description || 'Không có mô tả'}</td>
+                <td>${formatDateTime(category.created)}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="edit-btn" onclick="editCategory(${category.id})">
+                            ✏️ Sửa
+                        </button>
+                        <button class="delete-btn" onclick="deleteCategory(${category.id}, '${category.nameCategory.replace(/'/g, "\\'")}')">
+                            🗑️ Xóa
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
     }
 
-    // Format datetime
-    function formatDateTime(dateTimeString) {
-        if (!dateTimeString) return 'N/A';
-        const date = new Date(dateTimeString);
-        return date.toLocaleString('vi-VN');
+    /**
+     * Renders the pagination control buttons
+     */
+    function renderPagination() {
+        const paginationContainer = document.getElementById('paginationControls');
+        paginationContainer.innerHTML = '';
+        const totalPages = Math.ceil(displayedCategories.length / itemsPerPage);
+
+        if (totalPages <= 1) return; // No need for pagination if there's only one page or less
+
+        // Helper function to create a page item
+        const createPageItem = (text, pageNumber, isDisabled = false, isActive = false) => {
+            const li = document.createElement('li');
+            li.className = `page-item ${isDisabled ? 'disabled' : ''} ${isActive ? 'active' : ''}`;
+            li.innerHTML = `<a class="page-link" href="#">${text}</a>`;
+            if (!isDisabled) {
+                li.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    currentPage = pageNumber;
+                    renderTableAndPagination();
+                });
+            }
+            return li;
+        };
+
+        // Previous Button
+        paginationContainer.appendChild(createPageItem('Trước', currentPage - 1, currentPage === 1));
+
+        // Page Number Buttons
+        for (let i = 1; i <= totalPages; i++) {
+            paginationContainer.appendChild(createPageItem(i, i, false, i === currentPage));
+        }
+
+        // Next Button
+        paginationContainer.appendChild(createPageItem('Sau', currentPage + 1, currentPage === totalPages));
     }
+
+
+    // --- EVENT HANDLING & ACTIONS ---
 
     // Setup search functionality
     function setupSearch() {
         const searchInput = document.getElementById('searchInput');
         searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const filteredCategories = categories.filter(category =>
+            const searchTerm = this.value.toLowerCase().trim();
+            displayedCategories = allCategories.filter(category =>
                 category.nameCategory.toLowerCase().includes(searchTerm) ||
                 (category.description && category.description.toLowerCase().includes(searchTerm))
             );
-            displayCategories(filteredCategories);
+            currentPage = 1; // Reset to page 1 on new search
+            renderTableAndPagination();
         });
     }
 
@@ -610,44 +730,28 @@
             description: formData.get('description').trim()
         };
 
-        // Validation
         if (!categoryData.nameCategory) {
             showAlert('Tên danh mục không được để trống', 'danger');
             return;
         }
 
         try {
-            let url, method;
-            if (currentCategoryId) {
-                // Update
-                categoryData.id = currentCategoryId;
-                url = '/admin/category';
-                method = 'PUT';
-            } else {
-                // Create
-                url = '/admin/category';
-                method = 'POST';
-            }
+            const url = '/admin/category';
+            const method = currentCategoryId ? 'PUT' : 'POST';
 
             const response = await fetch(url, {
                 method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(categoryData)
             });
 
-            if (response.ok) {
-                const result = await response.json();
-                if (result.httpStatus === 'OK') {
-                    showAlert(result.message, 'success');
-                    closeModal();
-                    loadCategories(); // Reload table
-                } else {
-                    showAlert(result.message, 'danger');
-                }
+            const result = await response.json();
+            if (response.ok && result.httpStatus === 'OK') {
+                showAlert(result.message, 'success');
+                closeModal();
+                loadCategories(); // Reload all data
             } else {
-                showAlert('Có lỗi xảy ra khi lưu danh mục', 'danger');
+                showAlert(result.message || 'Có lỗi xảy ra', 'danger');
             }
         } catch (error) {
             console.error('Error saving category:', error);
@@ -667,21 +771,15 @@
         if (!deleteId) return;
 
         try {
-            const response = await fetch(`/admin/category/${deleteId}`, {
-                method: 'DELETE'
-            });
+            const response = await fetch(`/admin/category/${deleteId}`, { method: 'DELETE' });
+            const result = await response.json();
 
-            if (response.ok) {
-                const result = await response.json();
-                if (result.httpStatus === 'OK') {
-                    showAlert(result.message, 'success');
-                    closeDeleteModal();
-                    loadCategories(); // Reload table
-                } else {
-                    showAlert(result.message, 'danger');
-                }
+            if (response.ok && result.httpStatus === 'OK') {
+                showAlert(result.message, 'success');
+                closeDeleteModal();
+                loadCategories(); // Reload all data
             } else {
-                showAlert('Có lỗi xảy ra khi xóa danh mục', 'danger');
+                showAlert(result.message || 'Có lỗi xảy ra', 'danger');
             }
         } catch (error) {
             console.error('Error deleting category:', error);
@@ -695,6 +793,14 @@
         deleteId = null;
     }
 
+    // --- UTILITY FUNCTIONS ---
+
+    // Format datetime
+    function formatDateTime(dateTimeString) {
+        if (!dateTimeString) return 'N/A';
+        return new Date(dateTimeString).toLocaleString('vi-VN');
+    }
+
     // Show alert message
     function showAlert(message, type) {
         const alertContainer = document.getElementById('alertContainer');
@@ -705,13 +811,10 @@
         alertContainer.innerHTML = '';
         alertContainer.appendChild(alertDiv);
 
-        // Auto hide after 5 seconds
-        setTimeout(() => {
-            alertDiv.remove();
-        }, 5000);
+        setTimeout(() => { alertDiv.remove(); }, 5000);
     }
 
-    // Show/hide loading
+    // Show/hide loading spinner
     function showLoading(show) {
         document.getElementById('loading').style.display = show ? 'block' : 'none';
     }
@@ -720,23 +823,15 @@
     window.onclick = function(event) {
         const categoryModal = document.getElementById('categoryModal');
         const deleteModal = document.getElementById('deleteModal');
-
-        if (event.target === categoryModal) {
-            closeModal();
-        }
-        if (event.target === deleteModal) {
-            closeDeleteModal();
-        }
+        if (event.target === categoryModal) closeModal();
+        if (event.target === deleteModal) closeDeleteModal();
     }
 
-    // Handle form submission with Enter key
+    // Handle form submission with Enter key and Escape key for modals
     document.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            const modal = document.getElementById('categoryModal');
-            if (modal.style.display === 'block') {
-                event.preventDefault();
-                saveCategory();
-            }
+        if (event.key === 'Enter' && document.getElementById('categoryModal').style.display === 'block') {
+            event.preventDefault();
+            saveCategory();
         }
         if (event.key === 'Escape') {
             closeModal();

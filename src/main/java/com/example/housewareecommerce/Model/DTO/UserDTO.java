@@ -11,6 +11,7 @@ public class UserDTO {
     private String phoneNumber;
     private String gender;
     private String password;
+    private Long role;
     private Long statusId; // ID của StatusEntity
 
 
@@ -25,6 +26,14 @@ public class UserDTO {
     }
 
     public UserDTO() {
+    }
+
+    public Long getRole() {
+        return role;
+    }
+
+    public void setRole(Long role) {
+        this.role = role;
     }
 
     public String getPassword() {
