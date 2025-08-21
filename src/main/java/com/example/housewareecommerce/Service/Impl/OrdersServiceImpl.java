@@ -132,6 +132,7 @@ public class OrdersServiceImpl implements OrdersService {
                 ordersDetailDTO.setQuality(orderDetails.getQuality());
                 ordersDetailDTO.setPriceQuotation(orderDetails.getPriceQuotation());
                 ordersDetailDTO.setTotalAmount(orderDetails.getTotalAmount());
+                ordersDetailDTO.setProductId(orderDetails.getProductEntity().getId());
                 ordersDetailDTOS.add(ordersDetailDTO);
             }
 

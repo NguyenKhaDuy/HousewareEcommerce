@@ -9,15 +9,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @SuppressWarnings("all")
 public class FavoriteProductController {
     @Autowired
     FavoriteProductService favoriteProductService;
 
+    @GetMapping("/user/favorite")
+    public String getFavoriteByUser(){
+        return "user/user-favorites";
+    }
+
     @GetMapping(value = "/favorite/{id}")
+    @ResponseBody
     public ResponseEntity<?> getAllByUser(@PathVariable Long id, @RequestParam(name = "page", defaultValue = "1") Integer pageNo){
         Page<FavoriteProductDTO> favoriteProductDTOS = favoriteProductService.getAllByUser(id, pageNo);
         ListDTO<FavoriteProductDTO> listDTO = new ListDTO<>();
@@ -29,6 +36,7 @@ public class FavoriteProductController {
     }
 
     @PostMapping(value = "/favorite")
+    @ResponseBody
     public ResponseEntity<?> addToFavorite(@RequestBody FavoriteProductRequest favoriteProductRequest){
         MessageDTO messageDTO = favoriteProductService.addToFavorite(favoriteProductRequest);
         if(messageDTO.getHttpStatus() == HttpStatus.BAD_REQUEST){
@@ -38,6 +46,7 @@ public class FavoriteProductController {
     }
 
     @DeleteMapping(value = "/favorite")
+    @ResponseBody
     public ResponseEntity<?> deleteFavoriteProduct(@RequestBody FavoriteProductRequest favoriteProductRequest){
         MessageDTO messageDTO = favoriteProductService.deleteFavoriteProduct(favoriteProductRequest);
         if(messageDTO.getHttpStatus() == HttpStatus.BAD_REQUEST){

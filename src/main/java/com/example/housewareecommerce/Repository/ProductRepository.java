@@ -48,4 +48,30 @@ public interface ProductRepository extends JpaRepository<ProductEntity, Long>, P
             "LEFT JOIN FETCH p.imageEntities " +
             "WHERE LOWER(p.nameProduct) LIKE LOWER(CONCAT('%', :nameProduct, '%'))")
     Page<ProductEntity> searchProduct(Pageable pageable, @Param("nameProduct") String nameProduct);
+
+    @Query("SELECT p FROM ProductEntity p " +
+            "LEFT JOIN p.orderDetails od " +
+            "GROUP BY p.id " +
+            "ORDER BY COALESCE(SUM(od.quality), 0) DESC")
+    List<ProductEntity> findTop4BestSellingProducts(Pageable pageable);
+
+    @Query("SELECT p FROM ProductEntity p " +
+            "LEFT JOIN p.orderDetails od " +
+            "LEFT JOIN od.orderEntity o " +
+            "LEFT JOIN o.statusEntity s " +
+            "WHERE s.statusCode = 'delivered' OR s.statusCode IS NULL " +
+            "GROUP BY p.id " +
+            "ORDER BY COALESCE(SUM(od.quality), 0) DESC")
+    List<ProductEntity> findTop4BestSellingCompletedProducts(Pageable pageable);
+
+    @Query("SELECT p.id, p.nameProduct, p.price, p.quantity, " +
+            "COALESCE(SUM(od.quality), 0) as totalSold " +
+            "FROM ProductEntity p " +
+            "LEFT JOIN p.orderDetails od " +
+            "LEFT JOIN od.orderEntity o " +
+            "LEFT JOIN o.statusEntity s " +
+            "WHERE s.statusCode = 'delivered' OR s.statusCode IS NULL " +
+            "GROUP BY p.id, p.nameProduct, p.price, p.quantity " +
+            "ORDER BY totalSold DESC")
+    List<Object[]> findTop4BestSellingProductsProjection(Pageable pageable);
 }

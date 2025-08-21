@@ -480,4 +480,6 @@ public class ProductServiceImpl implements ProductService {
 
         return new PageImpl<>(results, productEntities.getPageable(), productEntities.getTotalElements());
     }
+
+
 }

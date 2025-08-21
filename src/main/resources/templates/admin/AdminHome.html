@@ -22,7 +22,7 @@
     <div class="sidebar-section">
         <div class="section-title">QUẢN LÝ</div>
 
-        <a href="#" class="menu-item" data-menu="thong-ke">
+        <a th:href="@{/admin/get/statistics}" class="menu-item highlighted" data-menu="thong-ke">
             <span class="menu-icon">📊</span>
             Thống kê
             <div class="notification-dot"></div>
@@ -48,10 +48,21 @@
             Quản lý đơn hàng
         </a>
 
+        <a th:href="@{/admin/get/evaluate}" class="menu-item highlighted" data-menu="danh-gia">
+            <span class="menu-icon">👥</span>
+            Quản lý đánh giá
+        </a>
+
+        <a th:href="@{/admin/get/comment}" class="menu-item highlighted" data-menu="binh-luan">
+            <span class="menu-icon">👥</span>
+            Quản lý bình luận
+        </a>
+
         <a th:href="@{/admin/user/getAll}" class="menu-item highlighted" data-menu="nguoi-dung">
             <span class="menu-icon">👥</span>
             Quản lý người dùng
         </a>
+
     </div>
 </div>
 
@@ -103,6 +114,15 @@
          'trang-thai-don-hang': {
              title: 'Quản Lý Trạng Thái Đơn Hàng',
              breadcrumb: 'Admin > Trạng Thái Đơn Hàng'
+         },
+         'danh-gia': {
+             title: 'Quản Lý Đánh giá',
+             breadcrumb: 'Admin > Đánh giá'
+         },
+
+         'binh-luan': {
+             title: 'Quản Lý Bình luận',
+             breadcrumb: 'Admin > Bình luận'
          },
          'nguoi-dung': {
              title: 'Quản Lý Người Dùng',

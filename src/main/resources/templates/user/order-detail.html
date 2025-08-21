@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Đơn Hàng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100">
+<div id="user-data"
+     th:data-user-id="${session.userid}"
+     th:data-is-logged-in="${session.userid != null}"
+     style="display: none;">
+</div>
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+            <!-- Logo -->
+            <a href="#" class="flex items-center space-x-2 text-xl font-bold text-gray-800">
+                <img src="/image/logo.png" alt="Homeware Logo" class="h-12 w-auto">
+                <span>Homeware <span class="text-blue-600">Pro</span></span>
+            </a>
+
+
+            <!-- Navigation Links - Desktop -->
+            <nav class="hidden md:flex items-center space-x-6">
+                <a th:href="@{/homepage}" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Trang Chủ</a>
+
+                <a th:href="@{/homepage}" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Về Chúng Tôi</a>
+                <a th:href="@{/homepage}" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Liên Hệ</a>
+            </nav>
+
+            <!-- Header Icons -->
+            <div class="flex items-center space-x-4">
+
+                <a th:if="${session.username}"
+                   th:href="@{/orders/user}"
+                   class="relative text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-box fa-lg"></i>
+                </a>
+
+                <a th:unless="${session.username}"
+                   th:href="@{/account/login}"
+                   class="relative text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span id=""
+                          class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </a>
+
+
+                <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
+          <span class="font-medium text-gray-700">
+              Chào, <span th:text="${session.username}">Tên người dùng</span>
+          </span>
+                    <a th:href="@{/account/logout}" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">
+                        Đăng xuất
+                    </a>
+                </div>
+
+                <a th:unless="${session.username}" th:href="@{/account/login}" class="hidden sm:block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+                    Đăng nhập
+                </a>
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+        <a th:href="@{/homepage}" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Trang Chủ</a>
+        <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Khuyến Mãi</a>
+        <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Liên Hệ</a>
+        <a href="#" class="block px-4 py-3 text-blue-600 font-bold hover:bg-gray-100">Đăng nhập</a>
+    </div>
+</header>
+
+<main class="container mx-auto px-4 py-8 md:py-12">
+    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg max-w-4xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b pb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">
+                    Chi tiết đơn hàng #<span th:text="${order.id}">12345</span>
+                </h1>
+                <p class="text-gray-500 mt-1">
+                    Đặt ngày: <span th:text="${#temporals.format(order.dateOrder, 'dd-MM-yyyy')}">01-01-2024</span>
+                </p>
+            </div>
+            <div class="mt-4 md:mt-0">
+                <span class="py-1.5 px-4 rounded-full text-sm font-medium"
+                      th:text="${order.statusCode}"
+                      th:classappend="${order.statusCode == 'Đã giao' ? 'bg-green-100 text-green-700' : (order.statusCode == 'Đang xử lý' ? 'bg-yellow-100 text-yellow-700' : (order.statusCode == 'Đã hủy' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'))}">
+                    Đang xử lý
+                </span>
+            </div>
+        </div>
+
+        <!-- Danh sách sản phẩm -->
+        <div class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Các sản phẩm đã đặt</h2>
+            <div class="space-y-4">
+                <!-- Lặp qua từng sản phẩm trong đơn hàng -->
+                <div th:each="item : ${order.ordersDetailDTOS}" class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div>
+                            <p class="font-semibold text-gray-800" th:text="${item.nameProduct}">Tên sản phẩm</p>
+                            <p class="text-sm text-gray-500">Số lượng: <span th:text="${item.quality}">1</span></p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-gray-800" th:text="${#numbers.formatDecimal(item.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' ₫'">500.000 ₫</p>
+                        <p class="text-sm text-gray-500" th:text="${#numbers.formatDecimal(item.priceQuotation, 0, 'COMMA', 0, 'POINT')} + ' ₫' + ' / sp'">500.000 ₫ / sp</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tổng kết đơn hàng -->
+        <div class="border-t pt-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Tổng kết</h2>
+            <div class="space-y-3 text-gray-600">
+                <div class="flex justify-between">
+                    <span>Tạm tính:</span>
+                    <span class="font-medium text-gray-800" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">5.000.000 ₫</span>
+                </div>
+                <div class="flex justify-between" th:if="${order.nameDiscount}">
+                    <span>Giảm giá (<span th:text="${order.nameDiscount}">GIAM10</span>):</span>
+                    <span class="font-medium text-red-500" th:text="'- ' + ${#numbers.formatDecimal(order.totalPrice * order.percentDiscount / (100 - order.percentDiscount), 0, 'COMMA', 0, 'POINT')} + ' ₫'">- 500.000 ₫</span>
+                </div>
+                <div class="flex justify-between text-lg font-bold text-gray-900 border-t pt-3 mt-3">
+                    <span>Tổng cộng:</span>
+                    <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">4.500.000 ₫</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông tin khác -->
+        <div class="border-t pt-6 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h3 class="font-semibold text-gray-700 mb-2">Thông tin người nhận</h3>
+                <p class="text-gray-600" th:text="${order.userName}">Tên người dùng</p>
+            </div>
+            <div>
+                <h3 class="font-semibold text-gray-700 mb-2">Phương thức thanh toán</h3>
+                <p class="text-gray-600" th:text="${order.paymentMethod}">Thanh toán khi nhận hàng</p>
+            </div>
+        </div>
+
+        <div class="mt-8 text-center">
+            <a th:href="@{/orders/user}" class="text-blue-600 hover:underline font-medium">
+                <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách đơn hàng
+            </a>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

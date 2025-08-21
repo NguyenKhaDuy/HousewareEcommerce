@@ -24,4 +24,5 @@ public interface ProductService {
     ProductEntity getProductDetailById(Long productId);
 
     public List<ProductDTO> getAll();
+    
 }

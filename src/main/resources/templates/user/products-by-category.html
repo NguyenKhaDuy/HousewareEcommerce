@@ -34,7 +34,8 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" th:if="${not #lists.isEmpty(products)}">
-      <div th:each="product : ${products}" class="bg-white rounded-xl shadow-md overflow-hidden group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+      <div th:each="product, iterStat : ${products}"
+           th:attr="data-index=${iterStat.index}" class="product-card bg-white rounded-xl shadow-md overflow-hidden group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
         <div class="relative overflow-hidden bg-gray-100">
           <img th:if="${not #lists.isEmpty(product.imagesBase64)}"
                th:src="'data:image/jpeg;base64,' + ${product.imagesBase64[0]}"
@@ -116,6 +117,9 @@
         Xem danh mục khác
       </a>
     </div>
+
+    <div id="pagination" class="flex items-center justify-center mt-8 space-x-2"></div>
+
   </div>
 
   <div id="toast-notification" class="fixed top-5 right-5 bg-gray-800 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity duration-300 opacity-0 z-50">
@@ -124,125 +128,150 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-      // Get user data safely
+      // --- Lấy data user ---
       const userData = document.getElementById('user-data');
-      const currentUserId = userData.dataset.userId;
-      const isLoggedIn = userData.dataset.isLoggedIn === 'true';
+      const currentUserId = userData ? userData.dataset.userId : null;
+      const isLoggedIn = userData ? (userData.dataset.isLoggedIn === 'true') : false;
 
-      console.log('Current User ID:', currentUserId);
-      console.log('Is Logged In:', isLoggedIn);
+      // --- Grid & cards & pagination container ---
+      console.log("Pagination script loaded");
+      const grid = document.querySelector('.grid');
+      const paginationContainer = document.getElementById('pagination');
+      const cards = grid ? Array.from(grid.querySelectorAll('[data-index]')) : [];
+      console.log("Grid found:", !!grid);
+      console.log("Cards count:", cards.length);
+      console.log("Total pages:", Math.ceil(cards.length / 8));
 
-      // Find favorite buttons
+      // --- HANDLE FAVORITE BUTTONS ---
       const favoriteButtons = document.querySelectorAll('.add-to-favorite-btn');
-      console.log('Found favorite buttons:', favoriteButtons.length);
-
-      favoriteButtons.forEach((button, index) => {
+      favoriteButtons.forEach((button) => {
         const productId = parseInt(button.dataset.productId);
-        console.log(`Button ${index}: Product ${productId}`);
-
         button.addEventListener('click', function (event) {
           event.preventDefault();
-          console.log('Favorite button clicked for product:', productId);
 
           if (!isLoggedIn || !currentUserId || currentUserId === 'null') {
-            console.log('User not logged in');
             showToast('Vui lòng đăng nhập để thêm sản phẩm yêu thích!', 'error');
-            setTimeout(() => {
-              window.location.href = '/account/login';
-            }, 1000);
+            setTimeout(() => { window.location.href = '/account/login'; }, 1000);
             return;
           }
 
           const icon = this.querySelector('i');
-          const favoriteRequest = {
-            userId: parseInt(currentUserId),
-            productId: productId
-          };
+          const favoriteRequest = { userId: parseInt(currentUserId), productId: productId };
 
-          console.log('Sending request:', favoriteRequest);
-
-          // Disable button and show loading
           button.disabled = true;
-          icon.classList.add('fa-spinner', 'fa-spin');
-          icon.classList.remove('fa-heart');
+          if (icon) { icon.classList.add('fa-spinner', 'fa-spin'); icon.classList.remove('fa-heart'); }
 
           fetch('/favorite', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(favoriteRequest)
           })
                   .then(response => {
-                    console.log('Response status:', response.status);
-                    console.log('Response ok:', response.ok);
-
-                    if (!response.ok) {
-                      return response.json().then(err => {
-                        console.error('Server error response:', err);
-                        throw err;
-                      });
-                    }
+                    if (!response.ok) return response.json().then(err => { throw err; });
                     return response.json();
                   })
                   .then(data => {
-                    console.log('Success response:', data);
-
                     if (data.httpStatus === 'OK') {
                       showToast(data.message || 'Đã thêm vào yêu thích', 'success');
-                      // Change to filled heart
-                      icon.classList.remove('far', 'fa-spinner', 'fa-spin');
-                      icon.classList.add('fas', 'fa-heart');
+                      if (icon) {
+                        icon.classList.remove('far', 'fa-spinner', 'fa-spin');
+                        icon.classList.add('fas', 'fa-heart');
+                      }
                       button.classList.remove('bg-red-100', 'text-red-500', 'hover:bg-red-200');
                       button.classList.add('bg-red-500', 'text-white');
                     } else {
                       showToast(data.message || 'Có lỗi xảy ra', 'error');
-                      // Restore original icon
-                      icon.classList.remove('fa-spinner', 'fa-spin');
-                      icon.classList.add('far', 'fa-heart');
+                      if (icon) { icon.classList.remove('fa-spinner', 'fa-spin'); icon.classList.add('far', 'fa-heart'); }
                     }
                   })
                   .catch(error => {
                     console.error('Fetch error:', error);
-                    const errorMessage = error.message || 'Bạn đã yêu thích rồi!';
-                    showToast(errorMessage, 'error');
-                    // Restore original icon
-                    icon.classList.remove('fa-spinner', 'fa-spin');
-                    icon.classList.add('far', 'fa-heart');
+                    showToast(error.message || 'Bạn đã yêu thích rồi!', 'error');
+                    if (icon) { icon.classList.remove('fa-spinner', 'fa-spin'); icon.classList.add('far', 'fa-heart'); }
                   })
-                  .finally(() => {
-                    button.disabled = false;
-                  });
+                  .finally(() => { button.disabled = false; });
         });
       });
 
-      // Toast notification function
+      // --- TOAST function ---
       function showToast(message, type = 'success') {
         const toast = document.getElementById('toast-notification');
         const toastMessage = document.getElementById('toast-message');
-
-        if (!toast || !toastMessage) {
-          console.error('Toast elements not found');
-          return;
-        }
-
+        if (!toast || !toastMessage) return;
         toastMessage.textContent = message;
         toast.classList.remove('bg-gray-800', 'bg-green-600', 'bg-red-600');
+        if (type === 'success') toast.classList.add('bg-green-600');
+        else if (type === 'error') toast.classList.add('bg-red-600');
+        else toast.classList.add('bg-gray-800');
+        toast.classList.remove('opacity-0');
+        setTimeout(() => toast.classList.add('opacity-0'), 3000);
+      }
 
-        if (type === 'success') {
-          toast.classList.add('bg-green-600');
-        } else if (type === 'error') {
-          toast.classList.add('bg-red-600');
-        } else {
-          toast.classList.add('bg-gray-800');
+      // --- PAGINATION ---
+      const itemsPerPage = 8;
+      const totalPages = cards.length ? Math.ceil(cards.length / itemsPerPage) : 0;
+      let currentPage = 1;
+
+      if (grid && cards.length > 0 && paginationContainer) {
+        function buildPagination() {
+          paginationContainer.innerHTML = '';
+          if (totalPages <= 1) return;
+
+          const prevBtn = document.createElement('button');
+          prevBtn.className = 'px-3 py-1 rounded-md border hover:bg-gray-100';
+          prevBtn.textContent = 'Prev';
+          prevBtn.disabled = currentPage === 1;
+          prevBtn.addEventListener('click', () => showPage(currentPage - 1));
+          paginationContainer.appendChild(prevBtn);
+
+          const maxButtons = 7;
+          let start = Math.max(1, currentPage - 2);
+          let end = Math.min(totalPages, start + maxButtons - 1);
+          if (end - start + 1 < maxButtons) start = Math.max(1, end - maxButtons + 1);
+
+          for (let i = start; i <= end; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'px-3 py-1 rounded-md border hover:bg-gray-100';
+            if (i === currentPage) btn.classList.add('bg-blue-600', 'text-white', 'border-transparent');
+            else btn.classList.add('bg-white', 'text-gray-700');
+            btn.textContent = i;
+            btn.addEventListener('click', () => showPage(i));
+            paginationContainer.appendChild(btn);
+          }
+
+          const nextBtn = document.createElement('button');
+          nextBtn.className = 'px-3 py-1 rounded-md border hover:bg-gray-100';
+          nextBtn.textContent = 'Next';
+          nextBtn.disabled = currentPage === totalPages;
+          nextBtn.addEventListener('click', () => showPage(currentPage + 1));
+          paginationContainer.appendChild(nextBtn);
         }
 
-        toast.classList.remove('opacity-0');
-        setTimeout(() => {
-          toast.classList.add('opacity-0');
-        }, 3000);
+        function showPage(pageNumber) {
+          if (pageNumber < 1) pageNumber = 1;
+          if (pageNumber > totalPages) pageNumber = totalPages;
+          currentPage = pageNumber;
+          const start = (currentPage - 1) * itemsPerPage;
+          const end = start + itemsPerPage;
+
+          cards.forEach((card, idx) => {
+            const i = parseInt(card.getAttribute('data-index') || idx, 10);
+            card.style.display = (i >= start && i < end) ? '' : 'none';
+          });
+
+          buildPagination();
+
+          // Cuộn mượt về grid
+          const topOffset = Math.max(grid.getBoundingClientRect().top + window.scrollY - 80, 0);
+          window.scrollTo({ top: topOffset, behavior: 'smooth' });
+        }
+
+        // Khởi tạo phân trang
+        showPage(1);
+      } else {
+        // Ẩn pagination nếu không có sản phẩm
+        if (paginationContainer) paginationContainer.style.display = 'none';
       }
     });
   </script>
-
 </section>

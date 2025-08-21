@@ -26,20 +26,20 @@ public class EvaluateController {
         return new ResponseEntity<>(listDTO, HttpStatus.OK);
     }
 
+    @DeleteMapping(value = "/evaluate/{id}")
+    public ResponseEntity<?> deleteEvaluate(@PathVariable Long id){
+        MessageDTO messageDTO = evaluateService.deleteRating(id);
+        if (messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){
+            return new ResponseEntity<>(messageDTO, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
+    }
+
     @PostMapping(value = "/evaluate")
     public ResponseEntity<?> createEvaluate(@RequestBody EvaluateRequest evaluateRequest){
         MessageDTO messageDTO = evaluateService.createRating(evaluateRequest);
         if (messageDTO.getHttpStatus() == HttpStatus.BAD_REQUEST){
             return new ResponseEntity<>(messageDTO, HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(messageDTO, HttpStatus.OK);
-    }
-
-    @DeleteMapping(value = "/evaluate/{id}")
-    public ResponseEntity<?> createEvaluate(@PathVariable Long id){
-        MessageDTO messageDTO = evaluateService.deleteRating(id);
-        if (messageDTO.getHttpStatus() == HttpStatus.NOT_FOUND){
-            return new ResponseEntity<>(messageDTO, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(messageDTO, HttpStatus.OK);
     }

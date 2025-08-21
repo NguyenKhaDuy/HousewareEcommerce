@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homeware - Lịch Sử Đơn Hàng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-button.active {
+            border-color: #2563eb; /* blue-600 */
+            color: #2563eb;
+            background-color: #eff6ff; /* blue-50 */
+        }
+        .pagination-link {
+            transition: all 0.3s ease;
+        }
+        .pagination-link.active {
+            background-color: #2563eb; /* bg-blue-600 */
+            color: white;
+            border-color: #2563eb; /* border-blue-600 */
+        }
+        .pagination-link:hover:not(.active) {
+            background-color: #f3f4f6; /* bg-gray-100 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+<div id="user-data"
+     th:data-user-id="${session.userid}"
+     th:data-is-logged-in="${session.userid != null}"
+     style="display: none;">
+</div>
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+            <!-- Logo -->
+            <a href="#" class="flex items-center space-x-2 text-xl font-bold text-gray-800">
+                <img src="/image/logo.png" alt="Homeware Logo" class="h-12 w-auto">
+                <span>Homeware <span class="text-blue-600">Pro</span></span>
+            </a>
+
+
+            <!-- Navigation Links - Desktop -->
+            <nav class="hidden md:flex items-center space-x-6">
+                <a th:href="@{/homepage}" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Trang Chủ</a>
+
+                <a th:href="@{/homepage}" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Về Chúng Tôi</a>
+                <a th:href="@{/homepage}" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Liên Hệ</a>
+            </nav>
+
+            <!-- Header Icons -->
+            <div class="flex items-center space-x-4">
+
+                <a th:if="${session.username}"
+                   th:href="@{/orders/user}"
+                   class="relative text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-box fa-lg"></i>
+                </a>
+
+                <a th:unless="${session.username}"
+                   th:href="@{/account/login}"
+                   class="relative text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span id=""
+                          class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </a>
+
+
+                <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
+          <span class="font-medium text-gray-700">
+              Chào, <span th:text="${session.username}">Tên người dùng</span>
+          </span>
+                    <a th:href="@{/account/logout}" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">
+                        Đăng xuất
+                    </a>
+                </div>
+
+                <a th:unless="${session.username}" th:href="@{/account/login}" class="hidden sm:block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+                    Đăng nhập
+                </a>
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+        <a th:href="@{/homepage}" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Trang Chủ</a>
+        <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Sản Phẩm</a>
+        <a href="#" id="promo-link" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Khuyến Mãi</a>
+        <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Liên Hệ</a>
+        <a href="#" class="block px-4 py-3 text-blue-600 font-bold hover:bg-gray-100">Đăng nhập</a>
+    </div>
+</header>
+
+<main class="container mx-auto px-4 py-8 md:py-12">
+    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Lịch sử đơn hàng</h1>
+        <p class="text-gray-500 mb-8">Kiểm tra trạng thái và thông tin chi tiết các đơn hàng của bạn.</p>
+
+        <!-- Tabs -->
+        <div class="border-b border-gray-200">
+            <nav class="-mb-px flex space-x-6" id="order-tabs">
+                <button data-tab="pending" class="tab-button active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    Đợi xử lý
+                </button>
+                <button data-tab="other" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    Đang xử lý
+                </button>
+
+                <button data-tab="cancelled" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    Đã hủy
+                </button>
+
+                <button data-tab="returned" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    Trả hàng
+                </button>
+
+                <button data-tab="completed" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    Hoàn tất
+                </button>
+            </nav>
+        </div>
+
+        <!-- Bảng Đơn Hàng Đang Xử Lý -->
+        <div id="pending-orders" class="tab-content">
+            <div class="overflow-x-auto mt-6">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-50">
+                    <tr>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600">Mã ĐH</th>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600">Ngày Đặt</th>
+                        <th class="text-right py-3 px-4 uppercase font-semibold text-sm text-gray-600">Tổng Tiền</th>
+                        <th class="text-center py-3 px-4 uppercase font-semibold text-sm text-gray-600">Hành Động</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                    <tr th:each="order : ${listDTO.data}" th:if="${order.statusCode == 'pending' or order.statusCode == 'Đang xử lý'}" class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="py-4 px-4 font-medium text-blue-600" th:text="'#' + ${order.id}">#12345</td>
+                        <td class="py-4 px-4" th:text="${#temporals.format(order.dateOrder, 'dd-MM-yyyy')}">01-01-2024</td>
+                        <td class="py-4 px-4 text-right font-semibold" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">5.000.000 ₫</td>
+                        <td class="py-4 px-4 text-center space-x-4">
+                            <a th:href="@{'/orders/detail/' + ${order.id}}" class="text-blue-600 hover:text-blue-800 font-medium">Xem</a>
+                            <!-- Nút Hủy chỉ hiển thị ở đây -->
+                            <button th:data-order-id="${order.id}" class="cancel-order-btn text-red-600 hover:text-red-800 font-medium">Hủy đơn</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="other-orders" class="tab-content hidden">
+            <div class="overflow-x-auto mt-6">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-50">
+                    <tr>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600">Mã ĐH</th>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600">Ngày Đặt</th>
+                        <th class="text-right py-3 px-4 uppercase font-semibold text-sm text-gray-600">Tổng Tiền</th>
+                        <th class="text-center py-3 px-4 uppercase font-semibold text-sm text-gray-600">Trạng Thái</th>
+                        <th class="text-center py-3 px-4 uppercase font-semibold text-sm text-gray-600">Hành Động</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                    <tr th:each="order : ${listDTO.data}" th:if="${order.statusCode == 'confirmed' or order.statusCode == 'processing' or order.statusCode == 'shipping'}" class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="py-4 px-4 font-medium text-blue-600" th:text="'#' + ${order.id}">#12346</td>
+                        <td class="py-4 px-4" th:text="${#temporals.format(order.dateOrder, 'dd-MM-yyyy')}">02-01-2024</td>
+                        <td class="py-4 px-4 text-right font-semibold" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">3.200.000 ₫</td>
+                        <td class="py-4 px-4 text-center">
+                                <span class="py-1 px-3 rounded-full text-xs font-medium"
+                                      th:text="${order.statusCode}"
+                                      th:classappend="${order.statusCode == 'confirmed' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                                    Đã giao
+                                </span>
+                        </td>
+                        <td class="py-4 px-4 text-center">
+                            <a th:href="@{'/orders/detail/' + ${order.id}}" class="text-blue-600 hover:text-blue-800 font-medium">Xem chi tiết</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="cancelled-orders" class="tab-content hidden">
+            <div class="overflow-x-auto mt-6">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-50">
+                    <tr>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600">Mã ĐH</th>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600">Ngày Đặt</th>
+                        <th class="text-right py-3 px-4 uppercase font-semibold text-sm text-gray-600">Tổng Tiền</th>
+                        <th class="text-center py-3 px-4 uppercase font-semibold text-sm text-gray-600">Trạng Thái</th>
+                        <th class="text-center py-3 px-4 uppercase font-semibold text-sm text-gray-600">Hành Động</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                    <tr th:each="order : ${listDTO.data}" th:if="${order.statusCode == 'cancelled'}" class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="py-4 px-4 font-medium text-blue-600" th:text="'#' + ${order.id}">#12347</td>
+                        <td class="py-4 px-4" th:text="${#temporals.format(order.dateOrder, 'dd-MM-yyyy')}">03-01-2024</td>
+                        <td class="py-4 px-4 text-right font-semibold" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">1.500.000 ₫</td>
+                        <td class="py-4 px-4 text-center">
+                    <span class="py-1 px-3 rounded-full text-xs font-medium bg-gray-200 text-gray-800"
+                          th:text="${order.statusCode}">
+                        Cancelled
+                    </span>
+                        </td>
+                        <td class="py-4 px-4 text-center">
+                            <a th:href="@{'/orders/detail/' + ${order.id}}" class="text-blue-600 hover:text-blue-800 font-medium">Xem chi tiết</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Bảng Trả Hàng -->
+        <div id="returned-orders" class="tab-content hidden">
+            <div class="overflow-x-auto mt-6">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-50">
+                    <tr>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600">Mã ĐH</th>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600">Ngày Đặt</th>
+                        <th class="text-right py-3 px-4 uppercase font-semibold text-sm text-gray-600">Tổng Tiền</th>
+                        <th class="text-center py-3 px-4 uppercase font-semibold text-sm text-gray-600">Trạng Thái</th>
+                        <th class="text-center py-3 px-4 uppercase font-semibold text-sm text-gray-600">Hành Động</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                    <tr th:each="order : ${listDTO.data}" th:if="${order.statusCode == 'returned'}" class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="py-4 px-4 font-medium text-blue-600" th:text="'#' + ${order.id}">#12348</td>
+                        <td class="py-4 px-4" th:text="${#temporals.format(order.dateOrder, 'dd-MM-yyyy')}">04-01-2024</td>
+                        <td class="py-4 px-4 text-right font-semibold" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">2.000.000 ₫</td>
+                        <td class="py-4 px-4 text-center">
+                    <span class="py-1 px-3 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700"
+                          th:text="${order.statusCode}">Returned</span>
+                        </td>
+                        <td class="py-4 px-4 text-center space-x-3">
+                            <a th:href="@{'/orders/detail/' + ${order.id}}" class="text-blue-600 hover:text-blue-800 font-medium">Xem chi tiết</a>
+                            <div th:each="detail : ${order.ordersDetailDTOS}">
+                                <button class="review-btn text-green-600 hover:text-green-800 font-medium"
+                                        th:data-order-id="${order.id}"
+                                        th:data-product-id="${detail.productId}"
+                                        th:text="'Đánh giá ' + ${detail.nameProduct}">
+                                    Đánh giá
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Bảng Hoàn Tất -->
+        <div id="completed-orders" class="tab-content hidden">
+            <div class="overflow-x-auto mt-6">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-50">
+                    <tr>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600">Mã ĐH</th>
+                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-gray-600">Ngày Đặt</th>
+                        <th class="text-right py-3 px-4 uppercase font-semibold text-sm text-gray-600">Tổng Tiền</th>
+                        <th class="text-center py-3 px-4 uppercase font-semibold text-sm text-gray-600">Trạng Thái</th>
+                        <th class="text-center py-3 px-4 uppercase font-semibold text-sm text-gray-600">Hành Động</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                    <tr th:each="order : ${listDTO.data}" th:if="${order.statusCode == 'delivered'}" class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="py-4 px-4 font-medium text-blue-600" th:text="'#' + ${order.id}">#12349</td>
+                        <td class="py-4 px-4" th:text="${#temporals.format(order.dateOrder, 'dd-MM-yyyy')}">05-01-2024</td>
+                        <td class="py-4 px-4 text-right font-semibold" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' ₫'">4.500.000 ₫</td>
+                        <td class="py-4 px-4 text-center">
+                    <span class="py-1 px-3 rounded-full text-xs font-medium bg-green-100 text-green-700"
+                          th:text="${order.statusCode}">Delivered</span>
+                        </td>
+                        <td class="py-4 px-4 text-center space-x-3">
+                            <a th:href="@{'/orders/detail/' + ${order.id}}" class="text-blue-600 hover:text-blue-800 font-medium">Xem chi tiết</a>
+                            <div th:each="detail : ${order.ordersDetailDTOS}">
+                                <button class="review-btn text-green-600 hover:text-green-800 font-medium"
+                                        th:data-order-id="${order.id}"
+                                        th:data-product-id="${detail.productId}"
+                                        th:text="'Đánh giá ' + ${detail.nameProduct}">
+                                    Đánh giá
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- Phân trang -->
+        <nav th:if="${listDTO != null and listDTO.totalPage > 1}" class="flex items-center justify-between pt-6" aria-label="Pagination">
+            <div class="hidden sm:block">
+                <p class="text-sm text-gray-600">
+                    Hiển thị trang
+                    <span class="font-medium" th:text="${listDTO.currentPage}">1</span>
+                    trên
+                    <span class="font-medium" th:text="${listDTO.totalPage}">10</span>
+                </p>
+            </div>
+            <div class="flex-1 flex justify-between sm:justify-end">
+                <a th:href="@{/orders/user(page=${listDTO.currentPage - 1})}"
+                   th:classappend="${listDTO.currentPage == 1} ? 'pointer-events-none opacity-50' : ''"
+                   class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Trước
+                </a>
+                <div class="hidden md:flex mx-2">
+                    <a th:each="i : ${#numbers.sequence(1, listDTO.totalPage)}"
+                       th:href="@{/orders/user(page=${i})}"
+                       th:text="${i}"
+                       th:classappend="${i == listDTO.currentPage} ? 'active' : ''"
+                       class="pagination-link relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white mx-1">
+                    </a>
+                </div>
+                <a th:href="@{/orders/user(page=${listDTO.currentPage + 1})}"
+                   th:classappend="${listDTO.currentPage == listDTO.totalPage} ? 'pointer-events-none opacity-50' : ''"
+                   class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    Sau
+                </a>
+            </div>
+        </nav>
+    </div>
+</main>
+
+<div id="cancel-confirmation-modal" class="fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6 md:p-8 transform transition-all">
+        <div class="flex flex-col items-center text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-exclamation-triangle fa-2x text-red-500"></i>
+            </div>
+
+            <h3 class="text-2xl font-bold text-gray-800 mb-2">Bạn có chắc chắn?</h3>
+
+            <p class="text-gray-600 mb-6">
+                Bạn sắp hủy đơn hàng <strong id="order-id-to-cancel" class="text-blue-600"></strong>. Hành động này không thể được hoàn tác.
+            </p>
+
+            <div class="flex justify-center space-x-4 w-full">
+                <button id="modal-cancel-btn" class="w-1/2 py-3 px-4 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition duration-300">
+                    Không, giữ lại
+                </button>
+                <button id="modal-confirm-btn" class="w-1/2 py-3 px-4 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition duration-300">
+                    Vâng, hủy đơn
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="review-modal" class="fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6 md:p-8">
+        <h3 class="text-2xl font-bold text-gray-800 mb-4">Đánh giá sản phẩm</h3>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-2">Số sao</label>
+            <select id="review-star" class="w-full border rounded-lg p-2">
+                <option value="5">⭐⭐⭐⭐⭐ (5 sao)</option>
+                <option value="4">⭐⭐⭐⭐ (4 sao)</option>
+                <option value="3">⭐⭐⭐ (3 sao)</option>
+                <option value="2">⭐⭐ (2 sao)</option>
+                <option value="1">⭐ (1 sao)</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-2">Nhận xét</label>
+            <textarea id="review-note" rows="4" class="w-full border rounded-lg p-2" placeholder="Nhập nhận xét của bạn..."></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium mb-2">Bình luận</label>
+            <textarea id="review-comment" rows="3" class="w-full border rounded-lg p-2" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."></textarea>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+            <button id="review-cancel" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Hủy</button>
+            <button id="review-submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Gửi</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const tabs = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Deactivate all tabs and hide content
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.add('hidden'));
+
+            // Activate clicked tab and show its content
+            tab.classList.add('active');
+            const tabId = tab.getAttribute('data-tab');
+            document.getElementById(tabId + '-orders').classList.remove('hidden');
+        });
+    });
+
+    const cancelModal = document.getElementById('cancel-confirmation-modal');
+    const orderIdToCancelSpan = document.getElementById('order-id-to-cancel');
+    const closeModalBtn = document.getElementById('modal-cancel-btn');
+    const confirmCancelBtn = document.getElementById('modal-confirm-btn');
+
+    const cancelButtons = document.querySelectorAll('.cancel-order-btn');
+
+    const showModal = (orderId) => {
+        orderIdToCancelSpan.textContent = '#' + orderId;
+        confirmCancelBtn.dataset.orderId = orderId;
+        cancelModal.classList.remove('hidden');
+    };
+
+    const hideModal = () => {
+        cancelModal.classList.add('hidden');
+    };
+
+    cancelButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const orderId = this.dataset.orderId;
+            showModal(orderId);
+        });
+    });
+
+    closeModalBtn.addEventListener('click', hideModal);
+
+    confirmCancelBtn.addEventListener('click', function() {
+        const orderId = this.dataset.orderId;
+
+        const orderData = {
+            id: orderId,
+            statusId: 6
+        };
+
+        fetch('/admin/orders', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        })
+            .then(response => {
+                if (response.ok) return response.json();
+                throw new Error('Hủy đơn hàng thất bại. Vui lòng thử lại.');
+            })
+            .then(data => {
+                alert('Đã hủy đơn hàng thành công!');
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(error.message);
+            })
+            .finally(() => {
+                hideModal();
+            });
+    });
+
+    cancelModal.addEventListener('click', function(event) {
+        if (event.target === cancelModal) {
+            hideModal();
+        }
+    });
+
+    const reviewModal = document.getElementById('review-modal');
+    const reviewBtns = document.querySelectorAll(".review-btn");
+    const reviewCancel = document.getElementById('review-cancel');
+    const reviewSubmit = document.getElementById('review-submit');
+
+    let selectedProductId = null;
+    let selectedOrderId = null;
+    const userId = document.getElementById("user-data").dataset.userId;
+
+    reviewBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            selectedProductId = btn.dataset.productId;
+            selectedOrderId = btn.dataset.orderId;
+            reviewModal.classList.remove('hidden');
+        });
+    });
+
+    reviewCancel.addEventListener('click', () => {
+        reviewModal.classList.add('hidden');
+    });
+
+
+    reviewSubmit.addEventListener('click', () => {
+        const star = document.getElementById('review-star').value;
+        const note = document.getElementById('review-note').value;
+        const comment = document.getElementById('review-comment').value; // Thêm dòng này
+
+        const evaluateRequest = {
+            star: parseInt(star),
+            note: note,
+            userId: userId,
+            productId: selectedProductId
+        };
+
+        // Thêm request tạo comment nếu có nội dung
+        const promises = [
+            fetch('/evaluate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(evaluateRequest)
+            })
+        ];
+
+        if (comment.trim()) {
+            const commentRequest = {
+                content: comment,
+                productId: selectedProductId,
+                userId: userId
+            };
+
+            promises.push(
+                fetch('/comment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(commentRequest)
+                })
+            );
+        }
+
+        Promise.all(promises)
+            .then(responses => {
+                const allOk = responses.every(res => res.ok);
+                if (!allOk) throw new Error("Gửi đánh giá/bình luận thất bại!");
+                return Promise.all(responses.map(res => res.json()));
+            })
+            .then(data => {
+                alert("Cảm ơn bạn đã đánh giá và bình luận!");
+                reviewModal.classList.add('hidden');
+                // Reset form
+                document.getElementById('review-note').value = '';
+                document.getElementById('review-comment').value = '';
+            })
+            .catch(err => {
+                alert(err.message);
+            });
+    });
+</script>
+
+</body>
+</html>

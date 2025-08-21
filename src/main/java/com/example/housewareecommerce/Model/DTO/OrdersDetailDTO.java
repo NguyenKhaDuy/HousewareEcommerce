@@ -12,6 +12,15 @@ public class OrdersDetailDTO {
     private Float priceQuotation;
     private Float totalAmount;
     private String nameProduct;
+    private Long productId;
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
 
     public Long getId() {
         return id;

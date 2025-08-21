@@ -14,17 +14,12 @@ public class ProductDTO {
     private Float price;
     private Long quantity;
     private Float importPrice;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Ho_Chi_Minh")
     private LocalDateTime created;
     private String categoryName;
-
     private String statusCode;
-
-    // Images
     private List<byte[]> images = new ArrayList<>();
     private List<String> imagesBase64 = new ArrayList<>();
-
     private List<Long> imageIds = new ArrayList<>();
 
     public ProductDTO(Long id, String nameProduct, String description, Float price, Long quantity, List<String> imagesBase64, String statusCode) {

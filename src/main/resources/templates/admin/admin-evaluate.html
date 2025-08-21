@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Quản lý Đánh giá</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<!-- Header -->
+<header class="bg-blue-600 text-white p-4 text-center text-xl font-bold">
+    Quản lý Đánh giá (Evaluate)
+</header>
+
+<main class="p-6">
+    <!-- Form tìm kiếm -->
+    <div class="bg-white shadow-md rounded p-4 mb-6">
+        <h2 class="text-lg font-semibold mb-4">Tìm đánh giá theo Product ID</h2>
+        <div class="flex space-x-4">
+            <input id="productIdInput" type="number" placeholder="Nhập Product ID"
+                   class="border p-2 rounded w-64">
+            <button onclick="searchEvaluate(1)"
+                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Tìm kiếm
+            </button>
+        </div>
+    </div>
+
+    <!-- Danh sách Evaluate -->
+    <div class="bg-white shadow-md rounded p-4">
+        <h2 class="text-lg font-semibold mb-4">Danh sách đánh giá</h2>
+        <table class="w-full table-auto border-collapse">
+            <thead>
+            <tr class="bg-gray-200">
+                <th class="p-2 border">ID</th>
+                <th class="p-2 border">User</th>
+                <th class="p-2 border">Sao</th>
+                <th class="p-2 border">Nội dung</th>
+                <th class="p-2 border">Ngày tạo</th>
+                <th class="p-2 border">Hành động</th>
+            </tr>
+            </thead>
+            <tbody id="evaluateTable"></tbody>
+        </table>
+
+        <!-- Phân trang -->
+        <div id="pagination" class="flex justify-center mt-4 space-x-2"></div>
+    </div>
+</main>
+
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-lg w-96 p-6">
+        <h2 class="text-lg font-semibold mb-4 text-gray-800">Xác nhận xóa</h2>
+        <p class="text-gray-600 mb-6">Bạn có chắc chắn muốn xóa đánh giá này không?</p>
+        <div class="flex justify-end space-x-3">
+            <button onclick="closeModal()"
+                    class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400">
+                Hủy
+            </button>
+            <button id="confirmDeleteBtn"
+                    class="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600">
+                Xóa
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    let currentProductId = null;
+    let totalPages = 0;
+    let evaluateToDelete = null;
+
+    // Tìm đánh giá theo productId
+    async function searchEvaluate(page = 1) {
+        const productId = document.getElementById("productIdInput").value;
+        if (!productId) {
+            alert("Vui lòng nhập Product ID!");
+            return;
+        }
+        currentProductId = productId;
+
+        const res = await fetch(`/evaluate/${productId}?page=${page}`);
+        if (!res.ok) {
+            alert("Không tìm thấy dữ liệu!");
+            return;
+        }
+        const data = await res.json();
+        totalPages = data.totalPage;
+
+        renderTable(data.data);
+        renderPagination(data.currentPage);
+    }
+
+    // Render bảng đánh giá
+    function renderTable(evaluates) {
+        const tbody = document.getElementById("evaluateTable");
+        tbody.innerHTML = "";
+        evaluates.forEach(ev => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+        <td class="p-2 border text-center">${ev.id}</td>
+        <td class="p-2 border">${ev.userName} (#${ev.userId})</td>
+        <td class="p-2 border text-center">${ev.star} ⭐</td>
+        <td class="p-2 border">${ev.note || ""}</td>
+        <td class="p-2 border text-center">${ev.created}</td>
+        <td class="p-2 border text-center">
+          <button onclick="openDeleteModal(${ev.id})"
+                  class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
+            Xóa
+          </button>
+        </td>
+      `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Render phân trang
+    function renderPagination(currentPage) {
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement("button");
+            btn.textContent = i;
+            btn.className = `px-3 py-1 rounded ${i === currentPage ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`;
+            btn.onclick = () => searchEvaluate(i);
+            pagination.appendChild(btn);
+        }
+    }
+
+    // ==== Modal xác nhận xóa ====
+    function openDeleteModal(id) {
+        evaluateToDelete = id;
+        document.getElementById("deleteModal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+        document.getElementById("deleteModal").classList.add("hidden");
+        evaluateToDelete = null;
+    }
+
+    async function confirmDelete() {
+        if (!evaluateToDelete) return;
+
+        const res = await fetch(`/evaluate/${evaluateToDelete}`, { method: "DELETE" });
+        const result = await res.json();
+        alert(result.message || "Xóa thành công!");
+
+        closeModal();
+        searchEvaluate(1);
+    }
+
+    // Gắn sự kiện cho nút xác nhận trong modal
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("confirmDeleteBtn").addEventListener("click", confirmDelete);
+    });
+</script>
+
+</body>
+</html>

@@ -32,21 +32,15 @@
             </a>
             <nav class="hidden md:flex items-center space-x-6">
                 <a href="/homepage" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Trang Chủ</a>
-                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Sản Phẩm</a>
-                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Khuyến Mãi</a>
-                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Về Chúng Tôi</a>
-                <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Liên Hệ</a>
+                <a href="/homepage" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Khuyến Mãi</a>
+                <a href="/homepage" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Về Chúng Tôi</a>
+                <a href="/homepage" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Liên Hệ</a>
             </nav>
             <div class="flex items-center space-x-4">
-                <button class="text-gray-600 hover:text-blue-600">
-                    <i class="fas fa-search fa-lg"></i>
-                </button>
-                <a href="#" class="relative text-gray-600 hover:text-blue-600">
-                    <i class="fas fa-heart fa-lg"></i>
-                </a>
-                <a href="/view/cart" class="relative text-gray-600 hover:text-blue-600">
-                    <i class="fas fa-shopping-cart fa-lg"></i>
-                    <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                <a th:if="${session.username}"
+                   th:href="@{/orders/user}"
+                   class="relative text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-box fa-lg"></i>
                 </a>
                 <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
                     <span class="font-medium text-gray-700">
@@ -158,9 +152,23 @@
                 </div>
 
                 <div class="flex justify-between items-center mb-4 border-t border-gray-200 pt-4">
-                    <span class="text-gray-600 text-lg">Tổng các mục đã chọn:</span>
-                    <span id="selected-total" class="font-semibold text-blue-600 text-xl">0 ₫</span>
+                    <span class="text-gray-600 text-lg">Tạm tính:</span>
+                    <span id="subtotal-amount" class="font-semibold text-gray-800 text-xl">0 ₫</span>
                 </div>
+
+                <!-- Discount Section -->
+                <div id="discount-section" class="mb-4 hidden">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-gray-600">Giảm giá (<span id="discount-percent">0</span>%):</span>
+                        <span id="discount-amount" class="font-semibold text-green-600">-0 ₫</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mb-4 border-t border-gray-200 pt-4">
+                    <span class="text-gray-800 text-lg font-bold">Tổng cộng:</span>
+                    <span id="final-total" class="font-bold text-blue-600 text-xl">0 ₫</span>
+                </div>
+
                 <!-- Payment Method -->
                 <div class="mb-4">
                     <label for="payment-method" class="block text-gray-600 mb-2">Phương thức thanh toán:</label>
@@ -179,12 +187,17 @@
                     <textarea id="order-note" rows="2" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Thêm ghi chú cho đơn hàng..."></textarea>
                 </div>
 
+                <!-- Discount Code -->
                 <div class="mb-4">
                     <label for="discount-code" class="block text-gray-600 mb-2">Mã giảm giá:</label>
                     <div class="flex">
-                        <input type="text" id="discount-code" class="w-full p-2 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Nhập mã giảm giá">
-                        <button id="apply-discount-btn" class="bg-gray-600 text-white px-4 rounded-r-lg hover:bg-gray-700 transition duration-300">Áp dụng</button>
+                        <input type="text" id="discount-code" class="flex-1 p-2 border border-gray-300 rounded-l-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Nhập mã giảm giá">
+                        <button id="apply-discount-btn" class="bg-gray-600 text-white px-4 rounded-r-lg hover:bg-gray-700 transition duration-300 flex items-center">
+                            <span id="discount-btn-text">Áp dụng</span>
+                            <i id="discount-spinner" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+                        </button>
                     </div>
+                    <div id="discount-status" class="mt-2 text-sm hidden"></div>
                 </div>
 
                 <button id="checkout-button" class="w-full mt-2 py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center">
@@ -206,16 +219,13 @@
     </div>
 </main>
 
-<!-- Footer -->
 <footer class="bg-gray-800 text-white mt-16">
-    <!-- ... (footer content remains the same) ... -->
+
 </footer>
 
-<!-- Global Message Modal -->
 <div id="message-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 hidden modal-backdrop">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 text-center modal-content scale-95">
         <div id="modal-icon" class="mx-auto mb-4">
-            <!-- Icon will be inserted here -->
         </div>
         <h3 id="modal-title" class="text-2xl font-bold text-gray-800 mb-2"></h3>
         <p id="modal-message" class="text-gray-600 mb-6"></p>
@@ -225,9 +235,11 @@
     </div>
 </div>
 
-
 <script>
-    // --- UTILITY FUNCTIONS ---
+    // Global variables for discount
+    let currentDiscountPercent = 0;
+    let appliedDiscountCode = '';
+
     function formatCurrency(num) {
         if (num == null || isNaN(num)) return '0 ₫';
         return Number(Math.round(num)).toLocaleString('vi-VN') + ' ₫';
@@ -260,17 +272,14 @@
 
     function hideModal() {
         const modal = document.getElementById('message-modal');
-
         setTimeout(() => modal.classList.add('hidden'), 300);
     }
 
-
-    // --- UI UPDATE FUNCTIONS ---
     function updateSelectedSummary() {
         const list = document.getElementById('selected-items-list');
         if (!list) return;
         list.innerHTML = '';
-        let total = 0;
+        let subtotal = 0;
         let selectedCount = 0;
 
         const cartItems = Array.from(document.querySelectorAll('.cart-item'));
@@ -282,7 +291,7 @@
                 const quantity = parseInt(item.querySelector('.product-quantity')?.textContent) || 0;
                 const subTotalText = item.querySelector('.sub-total')?.textContent || '';
                 const itemSub = parseFloat(subTotalText.replace(/[^\d.-]/g, '')) || 0;
-                total += itemSub;
+                subtotal += itemSub;
 
                 const row = document.createElement('div');
                 row.className = 'flex justify-between items-center text-sm';
@@ -290,9 +299,26 @@
                 list.appendChild(row);
             }
         });
-        document.getElementById('selected-total').textContent = formatCurrency(total);
 
-        // Update Select All checkbox state
+        // Update subtotal
+        document.getElementById('subtotal-amount').textContent = formatCurrency(subtotal);
+
+        // Calculate discount
+        let discountAmount = 0;
+        if (currentDiscountPercent > 0 && subtotal > 0) {
+            discountAmount = subtotal * (currentDiscountPercent / 100);
+            document.getElementById('discount-section').classList.remove('hidden');
+            document.getElementById('discount-percent').textContent = currentDiscountPercent;
+            document.getElementById('discount-amount').textContent = '-' + formatCurrency(discountAmount);
+        } else {
+            document.getElementById('discount-section').classList.add('hidden');
+        }
+
+        // Calculate final total
+        const finalTotal = subtotal - discountAmount;
+        document.getElementById('final-total').textContent = formatCurrency(finalTotal);
+
+        // Update select all checkbox
         const allCheckboxes = Array.from(document.querySelectorAll('.select-item'));
         const checkedCheckboxes = Array.from(document.querySelectorAll('.select-item:checked'));
         const selectAll = document.getElementById('select-all');
@@ -301,15 +327,100 @@
             selectAll.indeterminate = checkedCheckboxes.length > 0 && checkedCheckboxes.length < allCheckboxes.length;
         }
 
-        // Enable/disable checkout button
+        // Update checkout button
         const checkoutBtn = document.getElementById('checkout-button');
         if(checkoutBtn) {
             checkoutBtn.disabled = selectedCount === 0;
         }
     }
 
+    async function validateDiscountCode(discountCode) {
+        if (!discountCode || discountCode.trim() === '') {
+            return { valid: false, message: 'Vui lòng nhập mã giảm giá.' };
+        }
 
-    // --- API CALL FUNCTIONS ---
+        try {
+            const response = await fetch(`/user/validate/${encodeURIComponent(discountCode)}`);
+            const result = await response.json();
+
+            if (response.ok && result.valid) {
+                return {
+                    valid: true,
+                    percent: result.percentDiscount,
+                    message: `Áp dụng thành công! Giảm ${result.percentDiscount}%`
+                };
+            } else {
+                return {
+                    valid: false,
+                    message: result.message || 'Mã giảm giá không hợp lệ hoặc đã hết hạn.'
+                };
+            }
+        } catch (error) {
+            console.error('Discount validation error:', error);
+            return {
+                valid: false,
+                message: 'Không thể kết nối đến máy chủ. Vui lòng thử lại.'
+            };
+        }
+    }
+
+    async function applyDiscountCode() {
+        const discountInput = document.getElementById('discount-code');
+        const applyBtn = document.getElementById('apply-discount-btn');
+        const btnText = document.getElementById('discount-btn-text');
+        const spinner = document.getElementById('discount-spinner');
+        const statusDiv = document.getElementById('discount-status');
+
+        const discountCode = discountInput.value.trim();
+
+        // Reset previous discount if applying new code
+        if (discountCode !== appliedDiscountCode) {
+            currentDiscountPercent = 0;
+            appliedDiscountCode = '';
+        }
+
+        // If empty code, remove discount
+        if (discountCode === '') {
+            currentDiscountPercent = 0;
+            appliedDiscountCode = '';
+            statusDiv.classList.add('hidden');
+            updateSelectedSummary();
+            return;
+        }
+
+        // Show loading state
+        applyBtn.disabled = true;
+        btnText.textContent = 'Đang kiểm tra...';
+        spinner.classList.remove('hidden');
+        statusDiv.classList.add('hidden');
+
+        try {
+            const validation = await validateDiscountCode(discountCode);
+
+            if (validation.valid) {
+                currentDiscountPercent = validation.percent;
+                appliedDiscountCode = discountCode;
+                statusDiv.textContent = validation.message;
+                statusDiv.className = 'mt-2 text-sm text-green-600';
+                statusDiv.classList.remove('hidden');
+                updateSelectedSummary();
+                showModal('success', 'Thành công', validation.message);
+            } else {
+                currentDiscountPercent = 0;
+                appliedDiscountCode = '';
+                statusDiv.textContent = validation.message;
+                statusDiv.className = 'mt-2 text-sm text-red-600';
+                statusDiv.classList.remove('hidden');
+                updateSelectedSummary();
+                showModal('error', 'Lỗi', validation.message);
+            }
+        } finally {
+            applyBtn.disabled = false;
+            btnText.textContent = 'Áp dụng';
+            spinner.classList.add('hidden');
+        }
+    }
+
     async function updateQuantity(button, change) {
         const cartItem = button.closest('.cart-item');
         const quantitySpan = cartItem.querySelector('.product-quantity');
@@ -330,7 +441,7 @@
         const cartRequest = {
             userId: parseInt(userId),
             productId: parseInt(productId),
-            quantity: Math.abs(change), // API might expect positive delta
+            quantity: Math.abs(change),
             subTotal: 0
         };
 
@@ -407,7 +518,6 @@
         const btnText = document.getElementById('checkout-button-text');
         const spinner = document.getElementById('checkout-spinner');
 
-        // 1. Gather data
         const userId = document.getElementById('current-user')?.dataset.userId;
         if (!userId) {
             showModal('error', 'Chưa đăng nhập', 'Vui lòng đăng nhập để tiếp tục đặt hàng.');
@@ -420,11 +530,12 @@
             return;
         }
 
-        let totalPrice = 0;
+        // Calculate totals
+        let originalTotal = 0;
         const ordersDetailsRequests = selectedItems.map(checkbox => {
             const itemElement = checkbox.closest('.cart-item');
             const subTotal = parseFloat(itemElement.dataset.currentSubtotal);
-            totalPrice += subTotal;
+            originalTotal += subTotal;
             return {
                 productId: parseInt(itemElement.dataset.productId),
                 quality: parseInt(itemElement.querySelector('.product-quantity').textContent),
@@ -433,18 +544,20 @@
             };
         });
 
+        // Apply discount to final total
+        const discountAmount = currentDiscountPercent > 0 ? originalTotal * (currentDiscountPercent / 100) : 0;
+        const finalTotalPrice = originalTotal - discountAmount;
+
         const ordersRequest = {
             userId: parseInt(userId),
             statusId: 1, // Default status: Pending/Chờ xác nhận
             paymentMethodId: parseInt(document.getElementById('payment-method').value),
-            // === UPDATED: Get discount code from input ===
-            discoutCode: document.getElementById('discount-code').value.trim(),
-            totalPrice: totalPrice,
+            discoutCode: appliedDiscountCode || '', // Use applied discount code
+            totalPrice: finalTotalPrice, // Send final price after discount
             note: document.getElementById('order-note').value.trim(),
             ordersDetailsRequests: ordersDetailsRequests
         };
 
-        // 2. Send API request
         try {
             checkoutBtn.disabled = true;
             btnText.textContent = 'Đang xử lý...';
@@ -458,10 +571,13 @@
             const result = await response.json();
 
             if (response.ok) {
-                showModal('success', 'Đặt hàng thành công!', 'Cảm ơn bạn đã mua hàng. Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất.');
-                // Redirect after a delay
+                let successMessage = 'Cảm ơn bạn đã mua hàng. Chúng tôi sẽ xử lý đơn hàng của bạn sớm nhất.';
+                if (discountAmount > 0) {
+                    successMessage += ` Bạn đã tiết kiệm được ${formatCurrency(discountAmount)} với mã giảm giá "${appliedDiscountCode}".`;
+                }
+                showModal('success', 'Đặt hàng thành công!', successMessage);
                 setTimeout(() => {
-                    window.location.href = '/'; // Or to an order history page
+                    window.location.href = '/orders/user';
                 }, 3000);
             } else {
                 showModal('error', 'Đặt hàng thất bại', result.message || 'Đã có lỗi xảy ra, vui lòng thử lại.');
@@ -477,7 +593,6 @@
         }
     }
 
-    // --- EVENT BINDING ---
     function bindEvents() {
         document.querySelectorAll('.select-item').forEach(cb => {
             cb.addEventListener('change', updateSelectedSummary);
@@ -493,29 +608,45 @@
             });
         }
 
+        // Discount code events
+        const discountInput = document.getElementById('discount-code');
+        const applyDiscountBtn = document.getElementById('apply-discount-btn');
+
+        if (applyDiscountBtn) {
+            applyDiscountBtn.addEventListener('click', applyDiscountCode);
+        }
+
+        if (discountInput) {
+            // Apply discount on Enter key
+            discountInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    applyDiscountCode();
+                }
+            });
+
+            // Clear discount when input is cleared
+            discountInput.addEventListener('input', function(e) {
+                if (e.target.value.trim() === '' && appliedDiscountCode !== '') {
+                    currentDiscountPercent = 0;
+                    appliedDiscountCode = '';
+                    document.getElementById('discount-section').classList.add('hidden');
+                    document.getElementById('discount-status').classList.add('hidden');
+                    updateSelectedSummary();
+                }
+            });
+        }
+
         document.getElementById('checkout-button')?.addEventListener('click', handleCheckout);
         document.getElementById('modal-close-button')?.addEventListener('click', hideModal);
         document.getElementById('mobile-menu-button')?.addEventListener('click', () => {
             document.getElementById('mobile-menu')?.classList.toggle('hidden');
         });
-
-        // === NEW: Event listener for apply discount button ===
-        document.getElementById('apply-discount-btn')?.addEventListener('click', () => {
-            const code = document.getElementById('discount-code').value.trim();
-            if (code) {
-                // For now, this is just a client-side confirmation.
-                // A full implementation would require an API call to validate the code.
-                showModal('success', 'Đã áp dụng', `Mã giảm giá "${code}" sẽ được áp dụng. Chi tiết sẽ được hiển thị sau khi xác nhận đơn hàng.`);
-            } else {
-                showModal('error', 'Lỗi', 'Vui lòng nhập mã giảm giá.');
-            }
-        });
     }
 
-    // --- INITIALIZATION ---
     document.addEventListener('DOMContentLoaded', function () {
         bindEvents();
-        updateSelectedSummary(); // Initial calculation
+        updateSelectedSummary();
     });
 </script>
 

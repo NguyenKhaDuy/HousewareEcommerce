@@ -9,6 +9,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    html {
+      scroll-behavior: smooth;
+    }
     body {
       font-family: 'Inter', sans-serif;
     }
@@ -56,19 +59,26 @@
       <!-- Navigation Links - Desktop -->
       <nav class="hidden md:flex items-center space-x-6">
         <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Trang Chủ</a>
-        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Sản Phẩm</a>
-        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Khuyến Mãi</a>
-        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Về Chúng Tôi</a>
-        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Liên Hệ</a>
+        <a href="#" id="promo-link" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Khuyến Mãi</a>
+        <a href="#about-us" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Về Chúng Tôi</a>
+        <a href="#contact" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Liên Hệ</a>
       </nav>
 
       <!-- Header Icons -->
       <div class="flex items-center space-x-4">
-        <button class="text-gray-600 hover:text-blue-600">
-          <i class="fas fa-search fa-lg"></i>
-        </button>
 
-        <!-- CartEntity, CartItemEntity: Hiển thị giỏ hàng -->
+        <a th:if="${session.username}"
+           th:href="@{/user/favorite}"
+           class="relative text-gray-600 hover:text-blue-600">
+          <i class="fas fa-heart fa-lg"></i>
+        </a>
+
+        <a th:if="${session.username}"
+           th:href="@{/orders/user}"
+           class="relative text-gray-600 hover:text-blue-600">
+          <i class="fas fa-box fa-lg"></i>
+        </a>
+
         <a th:if="${session.username}"
            th:href="@{/view/cart}"
            class="relative text-gray-600 hover:text-blue-600">
@@ -108,9 +118,8 @@
   <!-- Mobile Menu -->
   <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
     <a th:href="@{/user/category/getAll}" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Trang Chủ</a>
-    <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Sản Phẩm</a>
     <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Khuyến Mãi</a>
-    <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Liên Hệ</a>
+    <a href="#contact" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Liên Hệ</a>
     <a href="#" class="block px-4 py-3 text-blue-600 font-bold hover:bg-gray-100">Đăng nhập</a>
   </div>
 </header>
@@ -182,130 +191,82 @@
 
 </main>
 
-<!-- Best-Selling Products Section -->
-<!-- Mỗi thẻ sản phẩm tương ứng với một ProductEntity -->
-<section class="py-16">
-  <div class="container mx-auto px-4">
-    <h2 class="text-3xl font-bold text-center text-gray-800 mb-2">Sản Phẩm Bán Chạy</h2>
-    <p class="text-center text-gray-500 mb-12">Những sản phẩm được khách hàng yêu thích và lựa chọn nhiều nhất.</p>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-      <!-- Product Card: Dữ liệu từ ProductEntity, ImageEntity, DiscountEntity, EvaluateEntity -->
-      <div class="bg-white rounded-lg shadow-lg overflow-hidden group flex flex-col">
-        <div class="relative">
-          <!-- ImageEntity -->
-          <img src="https://placehold.co/400x400/E2E8F0/334155?text=Nồi+chiên" alt="Nồi chiên không dầu" class="w-full h-64 object-cover">
-          <!-- DiscountEntity -->
-          <div class="absolute top-0 right-0 bg-red-500 text-white text-sm font-bold px-3 py-1 m-2 rounded-md">-25%</div>
-          <!-- FavoriteProductEntity -->
-          <button class="absolute top-2 left-2 bg-white rounded-full p-2 text-gray-600 hover:text-red-500 transition duration-300">
-            <i class="far fa-heart"></i>
-          </button>
+<section id="about-us" class="py-20 bg-gray-50">
+  <div class="container mx-auto px-6">
+    <!-- Tiêu đề -->
+    <div class="text-center mb-16">
+      <h2 class="text-4xl font-bold text-gray-800 mb-4">
+        Về <span class="text-blue-600">Homeware Pro</span>
+      </h2>
+      <p class="text-gray-600 max-w-2xl mx-auto text-lg">
+        Nâng tầm không gian sống – mang sự tiện nghi và hiện đại đến ngôi nhà bạn.
+      </p>
+    </div>
+
+    <!-- Nội dung chia 2 cột -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <!-- Text Content -->
+      <div class="space-y-8 text-gray-700">
+        <!-- Sứ mệnh -->
+        <div>
+          <h3 class="text-2xl font-semibold text-blue-600 mb-2 flex items-center gap-2">
+            <i class="fas fa-bullseye text-blue-500"></i> Sứ mệnh của chúng tôi
+          </h3>
+          <p class="text-lg leading-relaxed">
+            Homeware Pro cam kết mang đến những sản phẩm gia dụng chất lượng, đa dạng và tiện ích,
+            giúp bạn dễ dàng kiến tạo nên tổ ấm mơ ước.
+          </p>
         </div>
-        <div class="p-6 flex-grow flex flex-col">
-          <!-- ProductEntity: Name -->
-          <h3 class="text-lg font-semibold text-gray-800 mb-2 flex-grow">Nồi Chiên Không Dầu Thông Minh 12L</h3>
-          <!-- EvaluateEntity: Hiển thị đánh giá -->
-          <div class="flex items-center mb-2 text-sm">
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star-half-alt checked"></i>
-            <span class="text-gray-500 ml-2">(125 đánh giá)</span>
+
+        <!-- Ưu điểm -->
+        <div>
+          <h3 class="text-2xl font-semibold text-blue-600 mb-4 flex items-center gap-2">
+            <i class="fas fa-star text-yellow-500"></i> Tại sao chọn Homeware Pro?
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
+              <i class="fas fa-utensils text-blue-600 text-2xl mb-3"></i>
+              <h4 class="font-semibold text-gray-800">Đa dạng sản phẩm</h4>
+              <p class="text-sm text-gray-500 mt-1">Từ đồ bếp, gia dụng thông minh đến nội thất tiện ích.</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
+              <i class="fas fa-shield-alt text-blue-600 text-2xl mb-3"></i>
+              <h4 class="font-semibold text-gray-800">Chất lượng đảm bảo</h4>
+              <p class="text-sm text-gray-500 mt-1">Sản phẩm chính hãng, nguồn gốc rõ ràng, an toàn.</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
+              <i class="fas fa-tags text-blue-600 text-2xl mb-3"></i>
+              <h4 class="font-semibold text-gray-800">Giá cả hợp lý</h4>
+              <p class="text-sm text-gray-500 mt-1">Tối ưu chi phí để bạn luôn mua sắm thoải mái.</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow hover:shadow-lg transition">
+              <i class="fas fa-headset text-blue-600 text-2xl mb-3"></i>
+              <h4 class="font-semibold text-gray-800">Hỗ trợ tận tâm</h4>
+              <p class="text-sm text-gray-500 mt-1">Đội ngũ luôn sẵn sàng tư vấn và đồng hành cùng bạn.</p>
+            </div>
           </div>
-          <!-- ProductEntity: Price -->
-          <div class="flex items-center mb-4">
-            <span class="text-xl font-bold text-blue-600">2.250.000₫</span>
-            <span class="text-gray-500 line-through ml-3">3.000.000₫</span>
-          </div>
-          <!-- CartItemEntity: Thêm vào giỏ hàng -->
-          <button class="w-full mt-auto bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 transform group-hover:scale-105">
-            <i class="fas fa-cart-plus mr-2"></i>Thêm vào giỏ
-          </button>
-        </div>
-      </div>
-      <!-- Product Card 2 -->
-      <div class="bg-white rounded-lg shadow-lg overflow-hidden group flex flex-col">
-        <div class="relative">
-          <img src="https://placehold.co/400x400/E2E8F0/334155?text=Máy+hút+bụi" alt="Máy hút bụi" class="w-full h-64 object-cover">
-          <button class="absolute top-2 left-2 bg-white rounded-full p-2 text-gray-600 hover:text-red-500 transition duration-300">
-            <i class="far fa-heart"></i>
-          </button>
-        </div>
-        <div class="p-6 flex-grow flex flex-col">
-          <h3 class="text-lg font-semibold text-gray-800 mb-2 flex-grow">Máy Hút Bụi Cầm Tay Lực Hút Mạnh</h3>
-          <div class="flex items-center mb-2 text-sm">
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star checked"></i>
-            <span class="text-gray-500 ml-2">(98 đánh giá)</span>
-          </div>
-          <div class="flex items-center mb-4">
-            <span class="text-xl font-bold text-blue-600">3.500.000₫</span>
-          </div>
-          <button class="w-full mt-auto bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 transform group-hover:scale-105">
-            <i class="fas fa-cart-plus mr-2"></i>Thêm vào giỏ
-          </button>
         </div>
       </div>
-      <!-- Product Card 3 -->
-      <div class="bg-white rounded-lg shadow-lg overflow-hidden group flex flex-col">
-        <div class="relative">
-          <img src="https://placehold.co/400x400/E2E8F0/334155?text=Máy+lọc+kk" alt="Máy lọc không khí" class="w-full h-64 object-cover">
-          <div class="absolute top-0 right-0 bg-green-500 text-white text-sm font-bold px-3 py-1 m-2 rounded-md">Mới</div>
-          <button class="absolute top-2 left-2 bg-white rounded-full p-2 text-gray-600 hover:text-red-500 transition duration-300">
-            <i class="far fa-heart"></i>
-          </button>
-        </div>
-        <div class="p-6 flex-grow flex flex-col">
-          <h3 class="text-lg font-semibold text-gray-800 mb-2 flex-grow">Máy Lọc Không Khí Kháng Khuẩn Ion</h3>
-          <div class="flex items-center mb-2 text-sm">
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star checked"></i>
-            <i class="far fa-star text-gray-400"></i>
-            <span class="text-gray-500 ml-2">(55 đánh giá)</span>
-          </div>
-          <div class="flex items-center mb-4">
-            <span class="text-xl font-bold text-blue-600">4.190.000₫</span>
-          </div>
-          <button class="w-full mt-auto bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 transform group-hover:scale-105">
-            <i class="fas fa-cart-plus mr-2"></i>Thêm vào giỏ
-          </button>
-        </div>
-      </div>
-      <!-- Product Card 4 -->
-      <div class="bg-white rounded-lg shadow-lg overflow-hidden group flex flex-col">
-        <div class="relative">
-          <img src="https://placehold.co/400x400/E2E8F0/334155?text=Tủ+lạnh" alt="Tủ lạnh" class="w-full h-64 object-cover">
-          <button class="absolute top-2 left-2 bg-white rounded-full p-2 text-gray-600 hover:text-red-500 transition duration-300">
-            <i class="far fa-heart"></i>
-          </button>
-        </div>
-        <div class="p-6 flex-grow flex flex-col">
-          <h3 class="text-lg font-semibold text-gray-800 mb-2 flex-grow">Tủ Lạnh Side-by-Side Inverter 500L</h3>
-          <div class="flex items-center mb-2 text-sm">
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star checked"></i>
-            <i class="fas fa-star-half-alt checked"></i>
-            <span class="text-gray-500 ml-2">(210 đánh giá)</span>
-          </div>
-          <div class="flex items-center mb-4">
-            <span class="text-xl font-bold text-blue-600">15.990.000₫</span>
-          </div>
-          <button class="w-full mt-auto bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-300 transform group-hover:scale-105">
-            <i class="fas fa-cart-plus mr-2"></i>Thêm vào giỏ
-          </button>
+
+      <!-- Image -->
+      <div class="relative">
+        <img src="https://www.tkmaxx.com/medias/G22-CLP-Home-S4-010918-mp.jpg?context=bWFzdGVyfGNvbnRlbnQtaW1hZ2VzfDEwNzY3MXxpbWFnZS9qcGVnfGNvbnRlbnQtaW1hZ2VzL2g1YS9oNWIvMTAwMDAwMjY1NjY2ODYuanBnfDgzOTUxODJmMjZhZDk1ZmMzMzM1YTYyNjBkYTA0OWU0ZTM3OGJiNmNhNjBlOWQxZjEyZjZhOWVkYWI5MjU2NDg"
+             alt="Homeware Living"
+             class="rounded-2xl shadow-lg">
+        <div class="absolute -bottom-6 -right-6 bg-blue-600 text-white px-6 py-4 rounded-xl shadow-lg">
+          <p class="text-2xl font-bold">10.000+</p>
+          <p class="text-sm">Khách hàng tin dùng</p>
         </div>
       </div>
     </div>
+
+    <!-- Call to action -->
+    <div class="mt-16 text-center">
+      <p class="text-lg text-gray-600 mb-6">Khám phá ngay các danh mục sản phẩm của chúng tôi và trải nghiệm sự khác biệt!</p>
+    </div>
   </div>
 </section>
+
 
 <!-- Why Choose Us Section -->
 <section class="py-16 bg-white">
@@ -339,7 +300,7 @@
 </main>
 
 <!-- Footer -->
-<footer class="bg-gray-800 text-white pt-16 pb-8">
+<<footer id="contact" class="bg-gray-800 text-white pt-16 pb-8">
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
       <!-- About Us -->
@@ -385,8 +346,28 @@
   </div>
 </footer>
 
+<div id="promo-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full flex items-center justify-center z-50">
+  <div class="relative bg-white p-8 rounded-lg shadow-xl max-w-sm mx-auto">
+    <div class="text-center">
+      <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100">
+        <i class="fas fa-info-circle text-yellow-600 fa-lg"></i>
+      </div>
+      <h3 class="mt-4 text-xl leading-6 font-medium text-gray-900">Thông báo</h3>
+      <div class="mt-2">
+        <p class="text-sm text-gray-500">
+          Hiện tại không có khuyến mãi nào dành cho bạn.
+        </p>
+      </div>
+    </div>
+    <div class="mt-5 sm:mt-6">
+      <button id="close-modal" type="button" class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
+        Đóng
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
-  // Mobile menu toggle
   const mobileMenuButton = document.getElementById('mobile-menu-button');
   const mobileMenu = document.getElementById('mobile-menu');
 
@@ -398,7 +379,6 @@
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
 
-  // Nút điều hướng
   nextBtn.addEventListener('click', () => {
     slider.scrollBy({ left: 280, behavior: 'smooth' });
   });
@@ -406,12 +386,10 @@
     slider.scrollBy({ left: -280, behavior: 'smooth' });
   });
 
-  // Auto slide
   let autoSlide = setInterval(() => {
     slider.scrollBy({ left: 280, behavior: 'smooth' });
   }, 4000);
 
-  // Dừng auto slide khi hover
   slider.addEventListener('mouseenter', () => clearInterval(autoSlide));
   slider.addEventListener('mouseleave', () => {
     autoSlide = setInterval(() => {
@@ -419,7 +397,6 @@
     }, 4000);
   });
 
-  // Fade-in animation khi vào viewport
   const cards = document.querySelectorAll('.card');
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -432,7 +409,6 @@
 
   cards.forEach(card => observer.observe(card));
 
-  // Function to fetch and update cart count
   async function fetchCartItemCount(userId) {
     if (!userId) {
       console.warn("User ID not found, cannot fetch cart count.");
@@ -448,7 +424,6 @@
         }
         const count = await response.json();
         cartCountElement.textContent = count;
-        // Show the count badge if count > 0, otherwise hide it
         if (count > 0) {
           cartCountElement.classList.remove('hidden');
         } else {
@@ -456,11 +431,32 @@
         }
       } catch (error) {
         console.error("Could not fetch cart item count:", error);
-        cartCountElement.textContent = '0'; // Default to 0 on error
+        cartCountElement.textContent = '0';
         cartCountElement.classList.add('hidden');
       }
     }
   }
+
+  const promoLink = document.getElementById('promo-link');
+  const promoModal = document.getElementById('promo-modal');
+  const closeModalBtn = document.getElementById('close-modal');
+
+
+  promoLink.addEventListener('click', function(event) {
+    event.preventDefault();
+    promoModal.classList.remove('hidden');
+  });
+
+  // Sự kiện click để đóng pop-up
+  closeModalBtn.addEventListener('click', function() {
+    promoModal.classList.add('hidden');
+  });
+
+  promoModal.addEventListener('click', function(event) {
+    if (event.target === promoModal) {
+      promoModal.classList.add('hidden');
+    }
+  });
 
   document.addEventListener('DOMContentLoaded', function () {
     const userData = document.getElementById('user-data');

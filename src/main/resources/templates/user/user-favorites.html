@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Homeware - Yêu Thích</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .favorite-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(31,41,55,0.08); }
+    .pagination-link { transition: all 0.18s ease; }
+    .pagination-link.active { background-color: #2563eb; color: white; border-color: #2563eb; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  </style>
+</head>
+<body class="bg-gray-100">
+<!-- ====== HEADER (dùng header bạn đã cung cấp) ====== -->
+<header class="bg-white shadow-md sticky top-0 z-50">
+  <div class="container mx-auto px-4">
+    <div class="flex justify-between items-center py-4">
+      <!-- Logo -->
+      <a href="#" class="flex items-center space-x-2 text-xl font-bold text-gray-800">
+        <img src="/image/logo.png" alt="Homeware Logo" class="h-12 w-auto">
+        <span>Homeware <span class="text-blue-600">Pro</span></span>
+      </a>
+
+      <!-- Navigation Links - Desktop -->
+      <nav class="hidden md:flex items-center space-x-6">
+        <a th:href="@{/homepage}" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Trang Chủ</a>
+        <a th:href="@{/homepage}" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Về Chúng Tôi</a>
+        <a th:href="@{/homepage}" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Liên Hệ</a>
+      </nav>
+
+      <!-- Header Icons -->
+      <div class="flex items-center space-x-4">
+        <a th:if="${session.username}" th:href="@{/orders/user}" class="relative text-gray-600 hover:text-blue-600">
+          <i class="fas fa-box fa-lg"></i>
+        </a>
+
+        <a th:unless="${session.username}" th:href="@{/account/login}" class="relative text-gray-600 hover:text-blue-600">
+          <i class="fas fa-shopping-cart fa-lg"></i>
+          <span class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+        </a>
+
+        <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
+                    <span class="font-medium text-gray-700">
+                        Chào, <span th:text="${session.username}">Tên người dùng</span>
+                    </span>
+          <a th:href="@{/account/logout}" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">Đăng xuất</a>
+        </div>
+
+        <a th:unless="${session.username}" th:href="@{/account/login}" class="hidden sm:block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">Đăng nhập</a>
+
+        <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue-600">
+          <i class="fas fa-bars fa-lg"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+    <a th:href="@{/homepage}" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Trang Chủ</a>
+    <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Sản Phẩm</a>
+    <a href="#" id="promo-link" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Khuyến Mãi</a>
+    <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Liên Hệ</a>
+    <a href="#" class="block px-4 py-3 text-blue-600 font-bold hover:bg-gray-100">Đăng nhập</a>
+  </div>
+</header>
+
+<!-- hidden dữ liệu session (bạn đã có) -->
+<div id="user-data"
+     th:data-user-id="${session.userid}"
+     th:data-is-logged-in="${session.userid != null}"
+     style="display: none;">
+</div>
+
+<!-- Main content -->
+<main class="container mx-auto px-4 py-10">
+  <div class="bg-white rounded-2xl shadow p-6">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-semibold text-gray-800"><i class="fas fa-heart text-red-500 mr-3"></i> Sản phẩm yêu thích của tôi</h1>
+      <div id="fav-count" class="text-gray-600"></div>
+    </div>
+
+    <!-- Grid danh sách -->
+    <div id="favorites-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <!-- Cards will be injected here -->
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-8 flex items-center justify-center">
+      <nav id="pagination" class="inline-flex items-center space-x-2" data-current-page="1"></nav>
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" class="hidden text-center py-14 text-gray-500">
+      <i class="fas fa-heart-broken fa-2x mb-4"></i>
+      <p class="mt-2">Bạn chưa có sản phẩm nào trong danh sách yêu thích.</p>
+      <a th:href="@{/homepage}" class="inline-block mt-4 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Tiếp tục mua sắm</a>
+    </div>
+  </div>
+</main>
+
+<script>
+  // Helper: convert byte-array (Array of numbers) to base64 string
+  function bytesToBase64(bytes) {
+    if (!bytes) return null;
+    if (typeof bytes === 'string') return bytes;
+    const chunkSize = 0x8000;
+    let binary = '';
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const slice = bytes.slice(i, i + chunkSize);
+      binary += String.fromCharCode.apply(null, slice);
+    }
+    return btoa(binary);
+  }
+
+  function imageSrcFromProduct(imageProduct) {
+    if (!imageProduct) return '/image/placeholder.png';
+    if (typeof imageProduct === 'string') {
+      if (imageProduct.startsWith('data:')) return imageProduct;
+      return 'data:image/png;base64,' + imageProduct;
+    }
+    if (Array.isArray(imageProduct) || imageProduct instanceof Uint8Array) {
+      const b64 = bytesToBase64(Array.from(imageProduct));
+      return 'data:image/png;base64,' + b64;
+    }
+    return '/image/placeholder.png';
+  }
+
+  async function fetchFavorites(userId, page = 1) {
+    try {
+      const res = await fetch(`/favorite/${userId}?page=${page}`, {
+        headers: { 'Accept': 'application/json' }
+      });
+      if (!res.ok) {
+        throw new Error('Không thể lấy dữ liệu favorites: ' + res.status);
+      }
+      return await res.json();
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/[&<>\"']/g, function (m) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m];
+    });
+  }
+
+  // --- Modal delete logic (giữ nguyên) ---
+  let pendingDelete = null;
+  function showDeleteModal(productId, productName) {
+    const modal = document.getElementById('delete-modal');
+    const modalProductName = document.getElementById('modal-product-name');
+    modalProductName.textContent = productName;
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      modal.classList.add('opacity-100');
+      modal.querySelector('.transform').classList.remove('scale-95');
+      modal.querySelector('.transform').classList.add('scale-100');
+    }, 10);
+    pendingDelete = { productId, productName };
+  }
+  function hideDeleteModal() {
+    const modal = document.getElementById('delete-modal');
+    modal.classList.remove('opacity-100');
+    modal.querySelector('.transform').classList.remove('scale-100');
+    modal.querySelector('.transform').classList.add('scale-95');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 300);
+    pendingDelete = null;
+  }
+  async function confirmDelete() {
+    if (!pendingDelete) return;
+    const { productId } = pendingDelete;
+    const userData = document.getElementById('user-data');
+    const userId = userData ? userData.dataset.userId : null;
+
+    const body = {
+      productId: productId ? Number(productId) : null,
+      userId: userId ? Number(userId) : null,
+      created: null
+    };
+
+    try {
+      const csrfMeta = document.querySelector('meta[name="_csrf"]');
+      const csrfHeaderMeta = document.querySelector('meta[name="_csrf_header"]');
+      const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+      if (csrfMeta && csrfHeaderMeta) {
+        headers[csrfHeaderMeta.content] = csrfMeta.content;
+      }
+
+      const delRes = await fetch('/favorite', {
+        method: 'DELETE',
+        headers: headers,
+        body: JSON.stringify(body)
+      });
+
+      if (delRes.status === 400) {
+        const err = await delRes.json().catch(()=>({ message: 'Yêu cầu không hợp lệ' }));
+        alert(err.message || 'Yêu cầu xóa không hợp lệ (400).');
+        return;
+      } else if (delRes.status === 404) {
+        const err = await delRes.json().catch(()=>({ message: 'Không tìm thấy mục' }));
+        alert(err.message || 'Không tìm thấy mục yêu thích (404).');
+        return;
+      } else if (!delRes.ok) {
+        throw new Error('Xóa thất bại: ' + delRes.status);
+      }
+
+      hideDeleteModal();
+      const currentPage = parseInt(document.getElementById('pagination').dataset.currentPage || '1', 10);
+      await loadAndRender(currentPage);
+    } catch (err) {
+      console.error(err);
+      alert('Xóa thất bại. Vui lòng thử lại.');
+    }
+  }
+
+  // Toast notification (dùng chung)
+  function showToast(message, type = 'success') {
+    let toast = document.getElementById('toast-notification');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'toast-notification';
+      toast.className = 'fixed top-5 right-5 bg-gray-800 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity duration-300 opacity-0 z-50';
+      const p = document.createElement('p'); p.id = 'toast-message';
+      toast.appendChild(p);
+      document.body.appendChild(toast);
+    }
+
+    const toastMessage = document.getElementById('toast-message');
+    toastMessage.textContent = message;
+    toast.classList.remove('bg-gray-800', 'bg-green-600', 'bg-red-600');
+
+    if (type === 'success') {
+      toast.classList.add('bg-green-600');
+    } else if (type === 'error') {
+      toast.classList.add('bg-red-600');
+    } else {
+      toast.classList.add('bg-gray-800');
+    }
+
+    toast.classList.remove('opacity-0');
+    setTimeout(() => {
+      toast.classList.add('opacity-0');
+    }, 3000);
+  }
+
+  // fetch cart count (if you have an endpoint)
+  async function fetchCartItemCount(userId) {
+    if (!userId) return;
+    try {
+      const response = await fetch(`/api/count/${userId}`);
+      if (!response.ok) return;
+      const count = await response.json();
+      const el = document.getElementById('cart-item-count');
+      if (el) {
+        el.textContent = count;
+        if (count > 0) el.classList.remove('hidden'); else el.classList.add('hidden');
+      }
+    } catch (err) {
+      console.warn('Không thể lấy số lượng giỏ hàng', err);
+    }
+  }
+
+  function renderFavorites(listDTO) {
+    const container = document.getElementById('favorites-list');
+    const emptyState = document.getElementById('empty-state');
+    const favCount = document.getElementById('fav-count');
+
+    container.innerHTML = '';
+    if (!listDTO || !Array.isArray(listDTO.data) || listDTO.data.length === 0) {
+      emptyState.classList.remove('hidden');
+      favCount.textContent = '';
+      return;
+    }
+    emptyState.classList.add('hidden');
+
+    const currentPage = listDTO.currentPage || 1;
+    const totalPage = listDTO.totalPage || listDTO.totalPages || 1;
+    favCount.textContent = `Trang ${currentPage} / ${totalPage}`;
+
+    listDTO.data.forEach(fav => {
+      const imgSrc = imageSrcFromProduct(fav.imageProduct);
+      const createdStr = fav.created ? new Date(fav.created).toLocaleDateString('vi-VN') : '';
+      const productUrl = `/product/${fav.productId}`;
+      const price = Number(fav.price || fav.productPrice || 0);
+
+      const card = document.createElement('div');
+      card.className = 'favorite-card bg-white rounded-xl overflow-hidden border border-gray-100 p-3 transition-transform duration-150';
+      card.innerHTML = `
+                <a href="${productUrl}" class="block">
+                    <div class="w-full h-44 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                        <img src="${imgSrc}" alt="${escapeHtml(fav.productName)}" class="object-contain max-h-full max-w-full">
+                    </div>
+                    <div class="mt-3">
+                        <h3 class="text-sm font-medium text-gray-800 line-clamp-1">${escapeHtml(fav.productName || 'Sản phẩm')}</h3>
+                        <p class="text-xs text-gray-500 mt-1">Thêm vào: ${createdStr}</p>
+                    </div>
+                </a>
+                <div class="mt-3 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <div class="flex items-center border border-gray-300 rounded-lg">
+                        <button class="qty-decrease px-3 py-1 text-gray-600">-</button>
+                        <input type="text" value="1" class="qty-input w-12 text-center border-none focus:ring-0" data-max="${fav.quantity || 999}">
+                        <button class="qty-increase px-3 py-1 text-gray-600">+</button>
+                      </div>
+                      <button
+                        data-product-id="${fav.productId || ''}"
+                        data-product-price="${price}"
+                        class="btn-add-to-cart inline-flex items-center gap-2 px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                        <i class="fas fa-shopping-cart"></i> Thêm
+                      </button>
+                    </div>
+                    <button
+                        data-product-id="${fav.productId || ''}"
+                        data-product-name="${escapeHtml(fav.productName || 'Sản phẩm')}"
+                        class="btn-remove inline-flex items-center gap-2 px-3 py-1 text-sm bg-red-50 text-red-600 border border-red-100 rounded-md hover:bg-red-100">
+                        <i class="fas fa-trash"></i> Xóa
+                    </button>
+                </div>
+            `;
+      container.appendChild(card);
+
+      const qtyInput = card.querySelector('.qty-input');
+      const btnInc = card.querySelector('.qty-increase');
+      const btnDec = card.querySelector('.qty-decrease');
+      const btnAddCart = card.querySelector('.btn-add-to-cart');
+      const btnRemove = card.querySelector('.btn-remove');
+
+      btnInc?.addEventListener('click', () => {
+        const max = parseInt(qtyInput.dataset.max) || 999;
+        let v = parseInt(qtyInput.value) || 1; v = Math.min(max, v + 1); qtyInput.value = v;
+      });
+      btnDec?.addEventListener('click', () => {
+        let v = parseInt(qtyInput.value) || 1; v = Math.max(1, v - 1); qtyInput.value = v;
+      });
+
+      btnAddCart?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const userData = document.getElementById('user-data');
+        const userId = userData ? userData.dataset.userId : null;
+        const isLoggedIn = userData ? userData.dataset.isLoggedIn === 'true' : false;
+        if (!isLoggedIn || !userId) {
+          showToast('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!', 'error');
+          setTimeout(() => { window.location.href = '/account/login'; }, 1200);
+          return;
+        }
+
+        const productId = parseInt(btnAddCart.dataset.productId);
+        const price = Number(btnAddCart.dataset.productPrice) || 0;
+        const quantity = Math.max(1, parseInt(qtyInput.value) || 1);
+        const cartRequest = {
+          userId: parseInt(userId),
+          productId: productId,
+          quantity: quantity,
+          subTotal: price * quantity
+        };
+
+        btnAddCart.disabled = true;
+        const originalText = btnAddCart.innerHTML;
+        btnAddCart.innerHTML = '<i class="fas fa-spinner fa-spin"></i>...';
+
+        try {
+          const res = await fetch('/api/cart/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(cartRequest)
+          });
+          const result = await res.json().catch(()=>({ message: '' }));
+          if (res.ok) {
+            showToast(result.message || 'Thêm vào giỏ hàng thành công', 'success');
+            fetchCartItemCount(userId);
+          } else {
+            showToast(result.message || 'Có lỗi xảy ra, vui lòng thử lại.', 'error');
+          }
+        } catch (err) {
+          console.error('Lỗi khi thêm vào giỏ hàng:', err);
+          showToast('Lỗi kết nối. Vui lòng thử lại.', 'error');
+        } finally {
+          btnAddCart.disabled = false;
+          btnAddCart.innerHTML = originalText;
+        }
+      });
+
+      btnRemove?.addEventListener('click', (e) => {
+        const productId = btnRemove.dataset.productId;
+        const productName = btnRemove.dataset.productName;
+        showDeleteModal(productId, productName);
+      });
+
+    });
+  }
+
+  function renderPagination(currentPage, totalPage) {
+    const nav = document.getElementById('pagination');
+    nav.dataset.currentPage = currentPage;
+    nav.innerHTML = '';
+
+    if (!totalPage || totalPage <= 1) return;
+
+    const createPageLink = (page, label = null, isActive = false) => {
+      const btn = document.createElement('button');
+      btn.className = 'pagination-link px-3 py-1 border rounded-md';
+      if (isActive) btn.classList.add('active');
+      btn.textContent = label || page;
+      btn.dataset.page = page;
+      btn.addEventListener('click', () => loadAndRender(page));
+      return btn;
+    };
+
+    const prev = document.createElement('button');
+    prev.className = 'px-3 py-1 border rounded-md';
+    prev.textContent = 'Prev';
+    prev.disabled = currentPage <= 1;
+    prev.addEventListener('click', () => loadAndRender(currentPage - 1));
+    nav.appendChild(prev);
+
+    const maxButtons = 7;
+    let start = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+    let end = Math.min(totalPage, start + maxButtons - 1);
+    if (end - start + 1 < maxButtons) {
+      start = Math.max(1, end - maxButtons + 1);
+    }
+
+    if (start > 1) {
+      nav.appendChild(createPageLink(1, '1', 1 === currentPage));
+      if (start > 2) {
+        const dots = document.createElement('span'); dots.className = 'px-2'; dots.textContent = '...';
+        nav.appendChild(dots);
+      }
+    }
+
+    for (let p = start; p <= end; p++) {
+      nav.appendChild(createPageLink(p, null, p === currentPage));
+    }
+
+    if (end < totalPage) {
+      if (end < totalPage - 1) {
+        const dots = document.createElement('span'); dots.className = 'px-2'; dots.textContent = '...';
+        nav.appendChild(dots);
+      }
+      nav.appendChild(createPageLink(totalPage, String(totalPage), totalPage === currentPage));
+    }
+
+    const next = document.createElement('button');
+    next.className = 'px-3 py-1 border rounded-md';
+    next.textContent = 'Next';
+    next.disabled = currentPage >= totalPage;
+    next.addEventListener('click', () => loadAndRender(currentPage + 1));
+    nav.appendChild(next);
+  }
+
+  async function loadAndRender(page = 1) {
+    const userData = document.getElementById('user-data');
+    const userId = userData ? userData.dataset.userId : null;
+    const isLoggedIn = userData ? userData.dataset.isLoggedIn === 'true' : false;
+    if (!isLoggedIn || !userId) {
+      window.location.href = '/account/login';
+      return;
+    }
+
+    const listDTO = await fetchFavorites(userId, page);
+    if (!listDTO) {
+      document.getElementById('favorites-list').innerHTML = '<p class="text-red-500">Không thể tải danh sách. Vui lòng thử lại sau.</p>';
+      return;
+    }
+
+    renderFavorites(listDTO);
+    const currentPage = listDTO.currentPage || page;
+    const totalPage = listDTO.totalPage || listDTO.totalPages || 1;
+    renderPagination(currentPage, totalPage);
+
+    // update cart count
+    fetchCartItemCount(userId);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadAndRender(1);
+    document.getElementById('cancel-delete').addEventListener('click', hideDeleteModal);
+    document.getElementById('confirm-delete').addEventListener('click', confirmDelete);
+    document.getElementById('delete-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'delete-modal') {
+        hideDeleteModal();
+      }
+    });
+  });
+</script>
+
+<!-- Delete confirmation modal (giữ nguyên) -->
+<div id="delete-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300 opacity-0">
+  <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm transform transition-transform duration-300 scale-95">
+    <div class="text-center">
+      <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+        <i class="fas fa-trash-alt text-red-600 text-3xl"></i>
+      </div>
+      <h3 class="mt-4 text-xl font-semibold text-gray-900">Xác nhận xóa</h3>
+      <p class="mt-2 text-sm text-gray-500">Bạn chắc chắn muốn xóa sản phẩm này khỏi danh sách yêu thích?</p>
+      <p id="modal-product-name" class="mt-1 text-sm font-medium text-gray-700"></p>
+    </div>
+    <div class="mt-6 flex justify-end space-x-3">
+      <button id="cancel-delete" type="button" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition">Hủy</button>
+      <button id="confirm-delete" type="button" class="inline-flex items-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 transition">Xóa</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

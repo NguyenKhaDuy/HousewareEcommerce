@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class DiscountServiceImpl implements DiscoutService {
@@ -29,6 +30,8 @@ public class DiscountServiceImpl implements DiscoutService {
 
     @Autowired
     StatusRepository statusRepository;
+
+    private static final Long ACTIVE_STATUS_ID = 38L;
 
     @Autowired
     ModelMapper modelMapper;
@@ -142,5 +145,10 @@ public class DiscountServiceImpl implements DiscoutService {
             messageDTO.setData(null);
         }
         return messageDTO;
+    }
+
+    @Override
+    public Optional<Float> validateDiscountCode(String discountCode) {
+        return discoutRepository.findPercentDiscountByValidCode(discountCode);
     }
 }
