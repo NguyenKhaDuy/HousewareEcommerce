@@ -24,7 +24,7 @@ body {
 .logo {
     display: block;
     margin: 0 auto 15px;
-    width: 80px;
+    width: 150px;
     animation: pop 0.6s ease;
 }
 
@@ -36,7 +36,7 @@ body {
 h2 {
     text-align: center;
     margin-bottom: 20px;
-    color: #6d4c41;
+    color: #007bff;
     font-weight: 600;
 }
 
@@ -58,7 +58,7 @@ h2 {
 }
 
 .input-group input:focus {
-    border-color: #8d6e63;
+    border-color: #007bff;
     box-shadow: 0 0 6px rgba(141, 110, 99, 0.3);
     background-color: white;
 }
@@ -75,7 +75,7 @@ h2 {
 button {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(135deg, #8d6e63, #a1887f);
+    background: linear-gradient(135deg, #007bff, #92c3f6);
     color: white;
     border: none;
     border-radius: 12px;
@@ -88,7 +88,7 @@ button {
 }
 
 button:hover {
-    background: linear-gradient(135deg, #6d4c41, #8d6e63);
+    background: linear-gradient(135deg, #0b3e73, #549ae8);
     transform: translateY(-1px);
 }
 
@@ -99,10 +99,11 @@ button:active {
 .links {
     text-align: center;
     margin-top: 15px;
+    color: #007bff;
 }
 
 .links a {
-    color: #8d6e63;
+    color: #007bff;
     text-decoration: none;
     font-size: 14px;
     margin: 0 5px;
@@ -111,7 +112,7 @@ button:active {
 
 .links a:hover {
     text-decoration: underline;
-    color: #6d4c41;
+    color: #007bff;
 }
 
 .hidden {
@@ -156,13 +157,13 @@ button:active {
 
 .gender-option input[type="radio"] {
     margin: 0;
-    accent-color: #8d6e63;
+    accent-color: #007bff;
     cursor: pointer;
 }
 
 .gender-option label {
     font-size: 14px;
-    color: #6d4c41;
+    color: #007bff;
     cursor: pointer;
     font-weight: 500;
 }
@@ -214,7 +215,7 @@ button:active {
 
 .popup-content h3 {
     margin: 0 0 15px 0;
-    color: #6d4c41;
+    color: #007bff;
     font-size: 24px;
     font-weight: 600;
 }
@@ -239,11 +240,11 @@ button:active {
     transition: all 0.3s ease;
     box-sizing: border-box;
     font-weight: 600;
-    color: #6d4c41;
+    color: #007bff;
 }
 
 .otp-input:focus {
-    border-color: #8d6e63;
+    border-color: #007bff;
     outline: none;
     box-shadow: 0 0 8px rgba(141, 110, 99, 0.3);
     background-color: white;
@@ -269,13 +270,13 @@ button:active {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #8d6e63, #a1887f);
+    background: linear-gradient(135deg, #007bff, #92c3f6);
     color: white;
     box-shadow: 0 4px 8px rgba(141, 110, 99, 0.2);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #6d4c41, #8d6e63);
+    background: linear-gradient(135deg, #0b3e73, #549ae8);
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(141, 110, 99, 0.3);
 }
@@ -297,7 +298,7 @@ button:active {
 }
 
 .resend-link {
-    color: #8d6e63;
+    color: #007bff;
     cursor: pointer;
     text-decoration: underline;
     font-size: 14px;
@@ -418,13 +419,13 @@ button:disabled {
 
 button:disabled:hover {
     transform: none !important;
-    background: linear-gradient(135deg, #8d6e63, #a1887f) !important;
+    background: linear-gradient(135deg, #007bff, #92c3f6) !important;
 }
 
 /* Focus and accessibility */
 button:focus,
 .btn:focus {
-    outline: 2px solid #8d6e63;
+    outline: 2px solid #007bff;
     outline-offset: 2px;
 }
 

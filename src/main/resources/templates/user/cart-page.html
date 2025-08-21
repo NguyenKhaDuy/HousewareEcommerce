@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/image/logo.png">
     <title>Giỏ hàng của bạn</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -25,12 +26,12 @@
 <header class="bg-white shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4">
         <div class="flex justify-between items-center py-4">
-            <a href="/" class="text-2xl font-bold text-gray-800">
-                <i class="fas fa-home text-blue-600"></i>
-                Gia Dụng <span class="text-blue-600">Pro</span>
+            <a href="#" class="flex items-center space-x-2 text-xl font-bold text-gray-800">
+                <img src="/image/logo.png" alt="Homeware Logo" class="h-12 w-auto">
+                <span>Homeware <span class="text-blue-600">Pro</span></span>
             </a>
             <nav class="hidden md:flex items-center space-x-6">
-                <a href="/" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Trang Chủ</a>
+                <a href="/homepage" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Trang Chủ</a>
                 <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Sản Phẩm</a>
                 <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Khuyến Mãi</a>
                 <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Về Chúng Tôi</a>
@@ -198,7 +199,7 @@
         <div th:unless="${cartDto != null and not #lists.isEmpty(cartDto.cartItemDTOS)}" id="empty-cart-message" class="text-center py-16 bg-white rounded-lg shadow-md">
             <i class="fas fa-shopping-cart fa-5x text-gray-300 mb-4"></i>
             <p class="text-gray-600 text-lg mb-4">Giỏ hàng của bạn đang trống!</p>
-            <a href="/" class="py-2 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+            <a href="/static" class="py-2 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
                 <i class="fas fa-arrow-left mr-2"></i> Tiếp tục mua sắm
             </a>
         </div>
