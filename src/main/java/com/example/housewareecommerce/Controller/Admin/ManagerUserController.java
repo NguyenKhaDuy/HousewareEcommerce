@@ -45,7 +45,7 @@ public class ManagerUserController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", userPage.getTotalPages());
 
-        model.addAttribute("content", "user/user-list");
+        model.addAttribute("content", "admin/user-list");
         return "AdminHome";
     }
 
@@ -79,7 +79,7 @@ public class ManagerUserController {
 
                 model.addAttribute("user", user);
                 model.addAttribute("statuses", statuses);
-                model.addAttribute("content", "user/user-edit");
+                model.addAttribute("content", "admin/user-edit");
                 return "AdminHome";
             }
         } catch (Exception e) {

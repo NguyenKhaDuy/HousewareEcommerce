@@ -1,6 +1,5 @@
 package com.example.housewareecommerce.Controller.Client;
 
-import com.example.housewareecommerce.Entity.ImageEntity;
 import com.example.housewareecommerce.Entity.ProductEntity;
 import com.example.housewareecommerce.Model.DTO.CategoryDTO;
 import com.example.housewareecommerce.Model.DTO.ProductDTO;
@@ -94,7 +93,7 @@ public class ClientProductController {
             System.out.println("Product Images size: " + product.getImageEntities().size());
 
 
-            return "ProductDetails";
+            return "user/ProductDetails";
 
         } catch (Exception e) {
             e.printStackTrace();

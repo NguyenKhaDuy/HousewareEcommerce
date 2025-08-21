@@ -73,7 +73,7 @@ body {
   top: 0;
   width: 280px;
   height: 100vh;
-  background: linear-gradient(180deg, #5a6fbf 0%, #4a5ba8 100%);
+  background: linear-gradient(180deg, #c6ddfc 0%, #007bff 100%);
   color: white;
   overflow-y: auto;
   z-index: 1001;

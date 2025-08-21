@@ -23,7 +23,7 @@ public class ViewCartController {
 
     @GetMapping("/cart")
     public ModelAndView getCart(HttpSession session) {
-        ModelAndView mav = new ModelAndView("cart-page");
+        ModelAndView mav = new ModelAndView("user/cart-page");
         Long userId = (Long) session.getAttribute("userid"); // Lấy userId từ session
 
         if (userId != null) {

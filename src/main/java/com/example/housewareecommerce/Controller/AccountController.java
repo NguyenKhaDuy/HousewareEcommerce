@@ -47,14 +47,14 @@ public class AccountController {
             session.setAttribute("userid", userDTO.get().getId());
 
             if(userDTO.get().getRole() == 1){
-                model.addAttribute("content", "admin/order-management");
                 session.setAttribute("role", userDTO.get().getRole().toString());
-                return "AdminHome";
+                model.addAttribute("content", "admin/order-management");
+                return "admin/AdminHome";
             }
             List<CategoryDTO> categories = categoryService.getAll();
             model.addAttribute("categories", categories);
             model.addAttribute("showProducts", false);
-            return "UserHome";
+            return "redirect:/homepage";
         }else{
             model.addAttribute("message","Email hoặc mật khẩu không đúng!");
         }
