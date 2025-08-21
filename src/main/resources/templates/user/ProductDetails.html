@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="${product.nameProduct} + ' - Gia Dụng Pro'">Chi Tiết Sản Phẩm</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" type="image/png" href="/image/logo.png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -34,7 +35,7 @@
         Gia Dụng <span class="text-blue-600">Pro</span>
       </a>
       <nav class="hidden md:flex items-center space-x-6">
-        <a th:href="@{/user/category/getAll}" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Trang Chủ</a>
+        <a href="/homepage" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Trang Chủ</a>
         <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Sản Phẩm</a>
         <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Khuyến Mãi</a>
         <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Về Chúng Tôi</a>
@@ -47,10 +48,20 @@
         <a href="#" class="relative text-gray-600 hover:text-blue-600">
           <i class="fas fa-heart fa-lg"></i>
         </a>
-        <a href="/view/cart" class="relative text-gray-600 hover:text-blue-600">
+        <!-- CartEntity, CartItemEntity: Hiển thị giỏ hàng -->
+        <a th:if="${session.username}"
+           th:href="@{/view/cart}"
+           class="relative text-gray-600 hover:text-blue-600">
           <i class="fas fa-shopping-cart fa-lg"></i>
-          <!-- Dynamic cart item count, updated by JavaScript -->
           <span id="cart-item-count"
+                class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+        </a>
+
+        <a th:unless="${session.username}"
+           th:href="@{/account/login}"
+           class="relative text-gray-600 hover:text-blue-600">
+          <i class="fas fa-shopping-cart fa-lg"></i>
+          <span id=""
                 class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
         </a>
         <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
@@ -252,7 +263,7 @@
   <div class="container mx-auto px-4 py-12">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
       <div>
-        <h3 class="text-lg font-semibold mb-4">Gia Dụng Pro</h3>
+        <h3 class="text-lg font-semibold mb-4">Homeware Pro</h3>
         <p class="text-gray-400">Chuyên cung cấp các sản phẩm gia dụng thông minh, chất lượng cao.</p>
       </div>
       <div>
@@ -266,9 +277,12 @@
       <div>
         <h3 class="text-lg font-semibold mb-4">Liên hệ</h3>
         <ul class="space-y-2 text-gray-400">
-          <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-3"></i>123 Đường ABC, Quận 1, TP.HCM</li>
-          <li class="flex items-center"><i class="fas fa-phone-alt mr-3"></i>(028) 3812 3456</li>
-          <li class="flex items-center"><i class="fas fa-envelope mr-3"></i>contact@giadungpro.vn</li>
+          <h3 class="text-xl font-bold mb-4">Thông Tin Liên Hệ</h3>
+          <ul class="space-y-2 text-gray-400">
+            <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-3 w-4"></i>Số 19 Đ.Quản Trọng Hoàng, Phường Ninh Kiều, TP.Cần Thơ</li>
+            <li class="flex items-center"><i class="fas fa-phone-alt mr-3 w-4"></i>(0292) 123 4567</li>
+            <li class="flex items-center"><i class="fas fa-envelope mr-3 w-4"></i>support@homewarepro.vn</li>
+          </ul>
         </ul>
       </div>
       <div>
@@ -281,7 +295,7 @@
       </div>
     </div>
     <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500 text-sm">
-      &copy; 2024 Gia Dụng Pro. All Rights Reserved.
+      &copy; 2024 Homeware pro. All Rights Reserved.
     </div>
   </div>
 </footer>

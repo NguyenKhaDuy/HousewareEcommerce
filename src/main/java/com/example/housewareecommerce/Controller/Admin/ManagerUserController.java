@@ -46,7 +46,7 @@ public class ManagerUserController {
         model.addAttribute("totalPages", userPage.getTotalPages());
 
         model.addAttribute("content", "admin/user-list");
-        return "AdminHome";
+        return "/admin/AdminHome";
     }
 
     @DeleteMapping("/delete/{id}")
@@ -80,7 +80,7 @@ public class ManagerUserController {
                 model.addAttribute("user", user);
                 model.addAttribute("statuses", statuses);
                 model.addAttribute("content", "admin/user-edit");
-                return "AdminHome";
+                return "/admin/AdminHome";
             }
         } catch (Exception e) {
             System.err.println("Error finding user: " + e.getMessage());

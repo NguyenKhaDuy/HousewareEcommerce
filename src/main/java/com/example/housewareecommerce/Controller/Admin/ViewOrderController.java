@@ -12,6 +12,6 @@ public class ViewOrderController {
     @GetMapping("/view/order")
     public String categoryManagementPage(Model model) {
         model.addAttribute("content", "admin/order-management");
-        return "AdminHome";
+        return "/admin/AdminHome";
     }
 }
