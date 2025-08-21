@@ -69,12 +69,22 @@
         </button>
 
         <!-- CartEntity, CartItemEntity: Hiển thị giỏ hàng -->
-        <a href="/view/cart" class="relative text-gray-600 hover:text-blue-600">
+        <a th:if="${session.username}"
+           th:href="@{/view/cart}"
+           class="relative text-gray-600 hover:text-blue-600">
           <i class="fas fa-shopping-cart fa-lg"></i>
-          <!-- Dynamic cart item count, updated by JavaScript -->
           <span id="cart-item-count"
                 class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
         </a>
+
+        <a th:unless="${session.username}"
+           th:href="@{/account/login}"
+           class="relative text-gray-600 hover:text-blue-600">
+          <i class="fas fa-shopping-cart fa-lg"></i>
+          <span id=""
+                class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+        </a>
+
 
         <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
           <span class="font-medium text-gray-700">

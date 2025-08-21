@@ -64,7 +64,7 @@ public class AccountController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/account/login";
+        return "redirect:/homepage";
     }
 
     @PostMapping("/register")
