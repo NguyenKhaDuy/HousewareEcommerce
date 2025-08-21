@@ -24,7 +24,7 @@ public class ViewCategoryController {
     @GetMapping("/categories")
     public String categoryManagementPage(Model model) {
         model.addAttribute("content", "admin/categoryManagement");
-        return "AdminHome";
+        return "/admin/AdminHome";
     }
 
     // Get all categories

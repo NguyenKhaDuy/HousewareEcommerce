@@ -12,6 +12,6 @@ public class ViewDiscountController {
     @GetMapping("/view/discount")
     public String showDiscountPage(Model model) {
         model.addAttribute("content", "admin/discount-management");
-        return "AdminHome";
+        return "/admin/AdminHome";
     }
 }

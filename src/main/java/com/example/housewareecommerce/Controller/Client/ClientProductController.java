@@ -73,10 +73,10 @@ public class ClientProductController {
             model.addAttribute("products", products);
             model.addAttribute("showProducts", "user/products-by-category");
 
-            return "UserHome";
+            return "/user/UserHome";
         } catch (Exception e) {
             model.addAttribute("error", "Không thể tải sản phẩm cho danh mục này: " + e.getMessage());
-            return "UserHome";
+            return "/user/UserHome";
         }
     }
 

@@ -48,8 +48,7 @@ public class AccountController {
 
             if(userDTO.get().getRole() == 1){
                 session.setAttribute("role", userDTO.get().getRole().toString());
-                model.addAttribute("content", "admin/order-management");
-                return "admin/AdminHome";
+                return "redirect:/admin/homepage";
             }
             List<CategoryDTO> categories = categoryService.getAll();
             model.addAttribute("categories", categories);

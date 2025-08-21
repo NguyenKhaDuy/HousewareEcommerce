@@ -81,30 +81,38 @@ public class CartServiceImpl implements CartService {
             ProductEntity productEntity = productRepository.findById(cartRequest.getProductId()).get();
             //Tìm kiếm sản phẩm trong giỏ hàng thông qua product và cart
             CartItemEntity cartItemEntity = cartItemRepository.findByProductEntityAndAndCartEntity(productEntity,cartEntity);
+
+
             //Kiểm tra xem giỏ hàng đã có product này hay chưa
             if(cartEntity.getCartItemEntities().contains(cartItemEntity)){
                 //nếu có rồi thì tiến hành cộng số lượng vừa mới thêm vào và số lượng có sẵn trong giỏ hàng
                 Long quality = cartItemEntity.getQuantity() + cartRequest.getQuantity();
-                //kiểm tra số lượng có vượt quá số lượng sản phẩm tồn kho không
                 if(productEntity.getQuantity() < quality){
                     messageDTO.setMessage("Số lượng vượt quá số lượng trong kho");
                     messageDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
                     messageDTO.setData(null);
                     return messageDTO;
-                }else{
+                }else {
                     //nếu không vượt thì thêm số lượng mới vào cartItem
                     cartItemEntity.setQuantity(quality);
                     cartItemEntity.setSubTotal(cartItemEntity.getSubTotal() + cartRequest.getSubTotal());
                     cartItemRepository.save(cartItemEntity);
                 }
             }else {
-                //nếu product chưa có trong cartitem thì tiến hành thêm mới
-                CartItemEntity cartItem = new CartItemEntity();
-                cartItem.setProductEntity(productEntity);
-                cartItem.setQuantity(cartRequest.getQuantity());
-                cartItem.setSubTotal(cartRequest.getSubTotal());
-                cartItem.setCartEntity(cartEntity);
-                cartItemRepository.save(cartItem);
+                if(productEntity.getQuantity() < cartRequest.getQuantity()){
+                    messageDTO.setMessage("Số lượng vượt quá số lượng trong kho");
+                    messageDTO.setHttpStatus(HttpStatus.BAD_REQUEST);
+                    messageDTO.setData(null);
+                    return messageDTO;
+                }else {
+                    //nếu product chưa có trong cartitem thì tiến hành thêm mới
+                    CartItemEntity cartItem = new CartItemEntity();
+                    cartItem.setProductEntity(productEntity);
+                    cartItem.setQuantity(cartRequest.getQuantity());
+                    cartItem.setSubTotal(cartRequest.getSubTotal());
+                    cartItem.setCartEntity(cartEntity);
+                    cartItemRepository.save(cartItem);
+                }
             }
 
             messageDTO.setMessage("Thêm vào giỏ hàng thành công");
