@@ -26,5 +26,12 @@ public class HomeController {
             return "error";
         }
     }
+
+    @GetMapping("/user/edit")
+    public String userEdit() {
+       return "user/profile-edit";
+    }
+
+
 }
 

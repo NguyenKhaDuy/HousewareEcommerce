@@ -48,14 +48,9 @@
             Quản lý đơn hàng
         </a>
 
-        <a th:href="@{/admin/get/evaluate}" class="menu-item highlighted" data-menu="danh-gia">
+        <a th:href="@{/admin/get/comeva}" class="menu-item highlighted" data-menu="comeva">
             <span class="menu-icon">📝</span>
-            Quản lý đánh giá
-        </a>
-
-        <a th:href="@{/admin/get/comment}" class="menu-item highlighted" data-menu="binh-luan">
-            <span class="menu-icon">💬</span>
-            Quản lý bình luận
+            Quản lý phản hồi
         </a>
 
         <a th:href="@{/admin/user/getAll}" class="menu-item highlighted" data-menu="nguoi-dung">
@@ -115,15 +110,11 @@
              title: 'Quản Lý Trạng Thái Đơn Hàng',
              breadcrumb: 'Admin > Trạng Thái Đơn Hàng'
          },
-         'danh-gia': {
-             title: 'Quản Lý Đánh giá',
-             breadcrumb: 'Admin > Đánh giá'
+         'comeva': {
+             title: 'Quản Lý Phản hồi',
+             breadcrumb: 'Admin > Phản hồi'
          },
 
-         'binh-luan': {
-             title: 'Quản Lý Bình luận',
-             breadcrumb: 'Admin > Bình luận'
-         },
          'nguoi-dung': {
              title: 'Quản Lý Người Dùng',
              breadcrumb: 'Admin > Người Dùng'

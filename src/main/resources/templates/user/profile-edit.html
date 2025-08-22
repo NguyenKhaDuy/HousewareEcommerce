@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Cập nhật thông tin cá nhân</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+<div id="user-data"
+     th:data-user-id="${session.userid}"
+     th:data-is-logged-in="${session.userid != null}"
+     style="display: none;">
+</div>
+
+
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+            <a href="#" class="flex items-center space-x-2 text-xl font-bold text-gray-800">
+                <img src="/image/logo.png" alt="Homeware Logo" class="h-12 w-auto">
+                <span>Homeware <span class="text-blue-600">Pro</span></span>
+            </a>
+
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="/homepage" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Trang Chủ</a>
+                <a href="#" id="promo-link" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Khuyến Mãi</a>
+                <a href="#about-us" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Về Chúng Tôi</a>
+                <a href="#contact" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Liên Hệ</a>
+            </nav>
+
+            <!-- Header Icons -->
+            <div class="flex items-center space-x-4">
+
+                <a th:if="${session.username}"
+                   th:href="@{/user/favorite}"
+                   class="relative text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-heart fa-lg"></i>
+                </a>
+
+                <a th:if="${session.username}"
+                   th:href="@{/orders/user}"
+                   class="relative text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-box fa-lg"></i>
+                </a>
+
+                <a th:if="${session.username}"
+                   th:href="@{/view/cart}"
+                   class="relative text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span id="cart-item-count"
+                          class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </a>
+
+                <a th:unless="${session.username}"
+                   th:href="@{/account/login}"
+                   class="relative text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span id=""
+                          class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </a>
+
+                <div th:if="${session.username}" class="hidden sm:flex items-center space-x-4">
+          <span class="font-medium text-gray-700">
+              Chào, <span th:text="${session.username}">Tên người dùng</span>
+          </span>
+
+                    <div class="relative">
+                        <button id="user-menu-button" class="text-gray-600 hover:text-blue-600 focus:outline-none">
+                            <i class="fas fa-user-circle fa-2x"></i>
+                        </button>
+
+                        <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5">
+                            <a th:href="@{/user/edit}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out">Chỉnh sửa tài khoản</a>
+                            <a th:href="@{/account/logout}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out">Đăng xuất</a>
+                        </div>
+                    </div>
+                </div>
+
+                <a th:unless="${session.username}" th:href="@{/account/login}" class="hidden sm:block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+                    Đăng nhập
+                </a>
+
+                <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+        <a th:href="@{/user/category/getAll}" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Trang Chủ</a>
+        <a href="#" class="block px-4 py-3 text-blue-600 font-bold hover:bg-gray-100">Đăng nhập</a>
+    </div>
+</header>
+<div class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-lg">
+    <h2 class="text-2xl font-bold text-gray-700 mb-6 text-center">Cập nhật thông tin cá nhân</h2>
+
+    <div th:if="${user != null}">
+        <form th:action="@{/user/profile/edit}" method="post" class="space-y-4">
+
+            <div>
+                <label for="name" class="block font-medium text-gray-600">Họ và tên:</label>
+                <input type="text" id="name" name="name" th:value="${user.name}"
+                       class="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-indigo-200" required />
+            </div>
+
+            <div>
+                <label for="email" class="block font-medium text-gray-600">Email:</label>
+                <input type="email" id="email" name="email" th:value="${user.email}"
+                       class="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-indigo-200" required />
+            </div>
+
+            <div>
+                <label for="address" class="block font-medium text-gray-600">Địa chỉ:</label>
+                <input type="text" id="address" name="address" th:value="${user.address}"
+                       class="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-indigo-200" />
+            </div>
+
+            <div>
+                <label for="phoneNumber" class="block font-medium text-gray-600">Số điện thoại:</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" th:value="${user.phoneNumber}"
+                       class="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-indigo-200" />
+            </div>
+
+            <div>
+                <label for="gender" class="block font-medium text-gray-600">Giới tính:</label>
+                <select id="gender" name="gender"
+                        class="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-indigo-200">
+                    <option value="">Chọn giới tính</option>
+                    <option value="MALE" th:selected="${user.gender == 'MALE'}">Nam</option>
+                    <option value="FEMALE" th:selected="${user.gender == 'FEMALE'}">Nữ</option>
+                    <option value="OTHER" th:selected="${user.gender == 'OTHER'}">Khác</option>
+                </select>
+            </div>
+
+            <div>
+                <button type="submit"
+                        class="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition duration-300">
+                    Cập nhật
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div th:unless="${user != null}" class="text-center text-red-500 font-semibold">
+        <h3>Lỗi: Không tìm thấy thông tin người dùng</h3>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const message = urlParams.get('message');
+        const type = urlParams.get('type');
+        if (message && type) {
+            showNotification(type, message);
+        }
+    });
+
+    function showNotification(type, message) {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-5 right-5 px-6 py-3 rounded-lg shadow-lg text-white font-semibold ${
+            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        }`;
+        notification.innerHTML = `
+        ${message}
+        <button class="ml-4 font-bold" onclick="this.parentElement.remove()">×</button>
+      `;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 4000);
+    }
+</script>
+</body>
+</html>

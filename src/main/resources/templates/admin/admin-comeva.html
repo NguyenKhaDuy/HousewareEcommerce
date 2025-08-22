@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Quản lý Sản phẩm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<!-- Header -->
+<header class="bg-blue-600 text-white p-4 text-center text-xl font-bold">
+    Quản lý Sản phẩm - Đánh giá & Bình luận
+</header>
+
+<main class="p-6">
+    <!-- Form tìm kiếm -->
+    <div class="bg-white shadow-md rounded p-4 mb-6">
+        <h2 class="text-lg font-semibold mb-4">Tìm sản phẩm theo tên</h2>
+        <div class="flex space-x-4">
+            <input id="productNameInput" type="text" placeholder="Nhập tên sản phẩm"
+                   class="border p-2 rounded w-64">
+            <button onclick="searchProducts(1)"
+                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                Tìm kiếm
+            </button>
+        </div>
+    </div>
+
+    <!-- Danh sách Sản phẩm -->
+    <div class="bg-white shadow-md rounded p-4">
+        <h2 class="text-lg font-semibold mb-4">Danh sách sản phẩm</h2>
+        <table class="w-full table-auto border-collapse">
+            <thead>
+            <tr class="bg-gray-200">
+                <th class="p-2 border">ID</th>
+                <th class="p-2 border">Tên sản phẩm</th>
+                <th class="p-2 border">Danh mục</th>
+                <th class="p-2 border">Giá</th>
+                <th class="p-2 border">Số lượng</th>
+                <th class="p-2 border">Hành động</th>
+            </tr>
+            </thead>
+            <tbody id="productTable">
+            <!-- Dữ liệu sản phẩm sẽ được render ở đây -->
+            </tbody>
+        </table>
+
+        <!-- Phân trang -->
+        <div id="pagination" class="flex justify-center mt-4 space-x-2"></div>
+    </div>
+</main>
+
+<!-- Modal xem đánh giá -->
+<div id="evaluateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-lg w-4/5 max-w-4xl max-h-4/5 overflow-hidden">
+        <div class="bg-blue-600 text-white p-4 flex justify-between items-center">
+            <h2 class="text-lg font-semibold">Đánh giá sản phẩm: <span id="evaluateProductName"></span></h2>
+            <button onclick="closeEvaluateModal()" class="text-white hover:text-gray-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="p-4 overflow-y-auto max-h-96">
+            <table class="w-full table-auto border-collapse">
+                <thead>
+                <tr class="bg-gray-100">
+                    <th class="p-2 border text-left">ID</th>
+                    <th class="p-2 border text-left">Người dùng</th>
+                    <th class="p-2 border text-center">Sao</th>
+                    <th class="p-2 border text-left">Nội dung</th>
+                    <th class="p-2 border text-center">Ngày tạo</th>
+                    <th class="p-2 border text-center">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody id="evaluateTable">
+                <!-- Dữ liệu đánh giá -->
+                </tbody>
+            </table>
+            <div id="evaluatePagination" class="flex justify-center mt-4 space-x-2"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xem bình luận -->
+<div id="commentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-lg w-4/5 max-w-4xl max-h-4/5 overflow-hidden">
+        <div class="bg-green-600 text-white p-4 flex justify-between items-center">
+            <h2 class="text-lg font-semibold">Bình luận sản phẩm: <span id="commentProductName"></span></h2>
+            <button onclick="closeCommentModal()" class="text-white hover:text-gray-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="p-4 overflow-y-auto max-h-96">
+            <table class="w-full table-auto border-collapse">
+                <thead>
+                <tr class="bg-gray-100">
+                    <th class="p-2 border text-left">ID</th>
+                    <th class="p-2 border text-left">Người dùng</th>
+                    <th class="p-2 border text-left">Nội dung</th>
+                    <th class="p-2 border text-center">Ngày</th>
+                    <th class="p-2 border text-center">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody id="commentTable">
+                <!-- Dữ liệu bình luận -->
+                </tbody>
+            </table>
+            <div id="commentPagination" class="flex justify-center mt-4 space-x-2"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal xác nhận xóa -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-lg w-96 p-6">
+        <h2 class="text-lg font-semibold mb-4 text-gray-800">Xác nhận xóa</h2>
+        <p class="text-gray-600 mb-6" id="deleteMessage">Bạn có chắc chắn muốn xóa mục này không?</p>
+        <div class="flex justify-end space-x-3">
+            <button onclick="closeDeleteModal()"
+                    class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400">
+                Hủy
+            </button>
+            <button id="confirmDeleteBtn"
+                    class="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600">
+                Xóa
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentPage = 1;
+    let totalPages = 0;
+    let currentProductId = null;
+    let currentProductName = "";
+    let deleteType = ""; // "evaluate" hoặc "comment"
+    let deleteId = null;
+
+    // State cho evaluate modal
+    let evaluateCurrentPage = 1;
+    let evaluateTotalPages = 0;
+
+    // State cho comment modal
+    let commentCurrentPage = 1;
+    let commentTotalPages = 0;
+
+    // Tìm sản phẩm theo tên
+    async function searchProducts(page = 1) {
+        const productName = document.getElementById("productNameInput").value.trim();
+        if (!productName) {
+            alert("Vui lòng nhập tên sản phẩm!");
+            return;
+        }
+
+        currentPage = page;
+
+        try {
+            const res = await fetch(`/admin/product/search?page=${page}&nameproduct=${encodeURIComponent(productName)}`);
+            if (!res.ok) {
+                throw new Error('Không tìm thấy sản phẩm!');
+            }
+
+            const data = await res.json();
+            totalPages = data.totalPage;
+
+            renderProductTable(data.data);
+            renderProductPagination();
+        } catch (error) {
+            alert(error.message);
+            document.getElementById("productTable").innerHTML =
+                '<tr><td colspan="6" class="p-4 text-center text-gray-500">Không tìm thấy sản phẩm nào</td></tr>';
+        }
+    }
+
+    // Render bảng sản phẩm
+    function renderProductTable(products) {
+        const tbody = document.getElementById("productTable");
+        tbody.innerHTML = "";
+
+        products.forEach(product => {
+            const tr = document.createElement("tr");
+            tr.className = "hover:bg-gray-50";
+            tr.innerHTML = `
+                <td class="p-2 border text-center">${product.id}</td>
+                <td class="p-2 border">${product.nameProduct}</td>
+                <td class="p-2 border">${product.categoryName || 'N/A'}</td>
+                <td class="p-2 border text-right">${product.price ? product.price.toLocaleString('vi-VN') + ' ₫' : 'N/A'}</td>
+                <td class="p-2 border text-center">${product.quantity || 0}</td>
+                <td class="p-2 border text-center">
+                    <div class="flex space-x-2 justify-center">
+                        <button onclick="openEvaluateModal(${product.id}, '${product.nameProduct.replace(/'/g, "\\'")}')"
+                                class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600">
+                            Đánh giá
+                        </button>
+                        <button onclick="openCommentModal(${product.id}, '${product.nameProduct.replace(/'/g, "\\'")}')"
+                                class="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600">
+                            Bình luận
+                        </button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Render phân trang sản phẩm
+    function renderProductPagination() {
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+
+        for (let i = 1; i <= totalPages; i++) {
+            const btn = document.createElement("button");
+            btn.textContent = i;
+            btn.className = `px-3 py-1 rounded ${i === currentPage ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`;
+            btn.onclick = () => searchProducts(i);
+            pagination.appendChild(btn);
+        }
+    }
+
+    // ==== EVALUATE MODAL ====
+    async function openEvaluateModal(productId, productName) {
+        currentProductId = productId;
+        currentProductName = productName;
+        document.getElementById("evaluateProductName").textContent = productName;
+        document.getElementById("evaluateModal").classList.remove("hidden");
+
+        await loadEvaluates(1);
+    }
+
+    function closeEvaluateModal() {
+        document.getElementById("evaluateModal").classList.add("hidden");
+        currentProductId = null;
+        evaluateCurrentPage = 1;
+    }
+
+    async function loadEvaluates(page = 1) {
+        if (!currentProductId) return;
+
+        evaluateCurrentPage = page;
+
+        try {
+            const res = await fetch(`/evaluate/${currentProductId}?page=${page}`);
+            if (!res.ok) {
+                throw new Error('API response not ok');
+            }
+
+            const data = await res.json();
+            evaluateTotalPages = data.totalPage;
+
+            // Kiểm tra nếu không có dữ liệu
+            if (!data.data || data.data.length === 0) {
+                document.getElementById("evaluateTable").innerHTML =
+                    '<tr><td colspan="6" class="p-4 text-center text-gray-500">Không có đánh giá nào</td></tr>';
+                document.getElementById("evaluatePagination").innerHTML = "";
+                return;
+            }
+
+            renderEvaluateTable(data.data);
+            renderEvaluatePagination();
+        } catch (error) {
+            console.error('Load evaluates error:', error);
+            document.getElementById("evaluateTable").innerHTML =
+                '<tr><td colspan="6" class="p-4 text-center text-red-500">Lỗi tải đánh giá</td></tr>';
+            document.getElementById("evaluatePagination").innerHTML = "";
+        }
+    }
+
+    function renderEvaluateTable(evaluates) {
+        const tbody = document.getElementById("evaluateTable");
+        tbody.innerHTML = "";
+
+        evaluates.forEach(ev => {
+            const tr = document.createElement("tr");
+            tr.className = "hover:bg-gray-50";
+            tr.innerHTML = `
+                <td class="p-2 border">${ev.id}</td>
+                <td class="p-2 border">${ev.userName} (#${ev.userId})</td>
+                <td class="p-2 border text-center">${ev.star} ⭐</td>
+                <td class="p-2 border">${ev.note || ""}</td>
+                <td class="p-2 border text-center">${ev.created}</td>
+                <td class="p-2 border text-center">
+                    <button onclick="openDeleteModal('evaluate', ${ev.id}, 'đánh giá này')"
+                            class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">
+                        Xóa
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function renderEvaluatePagination() {
+        const pagination = document.getElementById("evaluatePagination");
+        pagination.innerHTML = "";
+
+        for (let i = 1; i <= evaluateTotalPages; i++) {
+            const btn = document.createElement("button");
+            btn.textContent = i;
+            btn.className = `px-3 py-1 rounded ${i === evaluateCurrentPage ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`;
+            btn.onclick = () => loadEvaluates(i);
+            pagination.appendChild(btn);
+        }
+    }
+
+    // ==== COMMENT MODAL ====
+    async function openCommentModal(productId, productName) {
+        currentProductId = productId;
+        currentProductName = productName;
+        document.getElementById("commentProductName").textContent = productName;
+        document.getElementById("commentModal").classList.remove("hidden");
+
+        await loadComments(1);
+    }
+
+    function closeCommentModal() {
+        document.getElementById("commentModal").classList.add("hidden");
+        currentProductId = null;
+        commentCurrentPage = 1;
+    }
+
+    async function loadComments(page = 1) {
+        if (!currentProductId) return;
+
+        commentCurrentPage = page;
+
+        try {
+            const res = await axios.get(`/comment/${currentProductId}?page=${page}`);
+            const data = res.data;
+            commentTotalPages = data.totalPage;
+
+            // Kiểm tra nếu không có dữ liệu
+            if (!data.data || data.data.length === 0) {
+                document.getElementById("commentTable").innerHTML =
+                    '<tr><td colspan="5" class="p-4 text-center text-gray-500">Không có bình luận nào</td></tr>';
+                document.getElementById("commentPagination").innerHTML = "";
+                return;
+            }
+
+            renderCommentTable(data.data);
+            renderCommentPagination();
+        } catch (error) {
+            console.error('Load comments error:', error);
+            document.getElementById("commentTable").innerHTML =
+                '<tr><td colspan="5" class="p-4 text-center text-red-500">Lỗi tải bình luận</td></tr>';
+            document.getElementById("commentPagination").innerHTML = "";
+        }
+    }
+
+    function renderCommentTable(comments) {
+        const tbody = document.getElementById("commentTable");
+        tbody.innerHTML = "";
+
+        comments.forEach(c => {
+            const tr = document.createElement("tr");
+            tr.className = "hover:bg-gray-50";
+            tr.innerHTML = `
+                <td class="p-2 border">${c.id}</td>
+                <td class="p-2 border">${c.userName || 'Ẩn danh'}</td>
+                <td class="p-2 border">${c.content}</td>
+                <td class="p-2 border text-center">${c.createdDate || ''}</td>
+                <td class="p-2 border text-center">
+                    <button onclick="openDeleteModal('comment', ${c.id}, 'bình luận này')"
+                            class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">
+                        Xóa
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function renderCommentPagination() {
+        const pagination = document.getElementById("commentPagination");
+        pagination.innerHTML = "";
+
+        for (let i = 1; i <= commentTotalPages; i++) {
+            const btn = document.createElement("button");
+            btn.textContent = i;
+            btn.className = `px-3 py-1 rounded ${i === commentCurrentPage ? "bg-green-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`;
+            btn.onclick = () => loadComments(i);
+            pagination.appendChild(btn);
+        }
+    }
+
+    // ==== DELETE MODAL ====
+    function openDeleteModal(type, id, itemName) {
+        deleteType = type;
+        deleteId = id;
+        document.getElementById("deleteMessage").textContent = `Bạn có chắc chắn muốn xóa ${itemName} không?`;
+        document.getElementById("deleteModal").classList.remove("hidden");
+    }
+
+    function closeDeleteModal() {
+        document.getElementById("deleteModal").classList.add("hidden");
+        deleteType = "";
+        deleteId = null;
+    }
+
+    document.getElementById("confirmDeleteBtn").onclick = async function() {
+        if (!deleteId || !deleteType) return;
+
+        try {
+            if (deleteType === 'evaluate') {
+                const res = await fetch(`/evaluate/${deleteId}`, { method: "DELETE" });
+                if (res.ok) {
+                    const result = await res.json();
+                    alert(result.message || "Đã xóa đánh giá thành công!");
+
+                    // Đóng modal xác nhận trước
+                    closeDeleteModal();
+
+                    // Reload đánh giá với timeout để đảm bảo server đã xử lý xong
+                    setTimeout(async () => {
+                        await loadEvaluates(evaluateCurrentPage);
+                    }, 100);
+                } else {
+                    throw new Error('Không thể xóa đánh giá');
+                }
+            } else if (deleteType === 'comment') {
+                // Sử dụng endpoint đúng theo controller của bạn
+                const res = await axios.delete(`/comment/${deleteId}`);
+
+                if (res.status === 200) {
+                    alert(res.data.message || "Đã xóa bình luận thành công!");
+
+                    // Đóng modal xác nhận trước
+                    closeDeleteModal();
+
+                    // Reload bình luận với timeout để đảm bảo server đã xử lý xong
+                    setTimeout(async () => {
+                        await loadComments(commentCurrentPage);
+                    }, 100);
+                } else {
+                    throw new Error('Phản hồi không hợp lệ từ server');
+                }
+            }
+        } catch (error) {
+            console.error('Delete error:', error);
+
+            // Nếu lỗi 404, có thể item đã được xóa bởi user khác
+            if (error.response?.status === 404) {
+                alert(`${deleteType === 'evaluate' ? 'Đánh giá' : 'Bình luận'} có thể đã được xóa. Đang tải lại danh sách...`);
+                closeDeleteModal();
+
+                // Vẫn reload để cập nhật danh sách
+                setTimeout(async () => {
+                    if (deleteType === 'evaluate') {
+                        await loadEvaluates(evaluateCurrentPage);
+                    } else {
+                        await loadComments(commentCurrentPage);
+                    }
+                }, 100);
+            } else {
+                const errorMsg = error.response?.data?.message || error.message || 'Lỗi không xác định';
+                alert(`Lỗi xóa ${deleteType === 'evaluate' ? 'đánh giá' : 'bình luận'}: ${errorMsg}`);
+            }
+        }
+    };
+
+    // Enter key support cho ô tìm kiếm
+    document.getElementById("productNameInput").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            searchProducts(1);
+        }
+    });
+</script>
+
+</body>
+</html>
