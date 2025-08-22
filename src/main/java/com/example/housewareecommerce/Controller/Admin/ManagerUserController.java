@@ -6,6 +6,7 @@ import com.example.housewareecommerce.Model.DTO.MessageDTO;
 import com.example.housewareecommerce.Model.DTO.UserDTO;
 import com.example.housewareecommerce.Service.StatusService;
 import com.example.housewareecommerce.Service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -69,18 +70,23 @@ public class ManagerUserController {
     }
 
     @GetMapping("/edit/{id}")
-    public String showEditUserForm(@PathVariable Long id, Model model) {
+    public String showEditUserForm(@PathVariable Long id, Model model, HttpSession session) {
         try {
             Optional<UserEntity> userOpt = userService.getUserById(id);
             if (userOpt.isPresent()) {
                 UserEntity user = userOpt.get();
-
-                List<StatusEntity> statuses = statusService.findByIdIn(Arrays.asList(37L, 38L));
-
                 model.addAttribute("user", user);
-                model.addAttribute("statuses", statuses);
-                model.addAttribute("content", "admin/user-edit");
-                return "/admin/AdminHome";
+
+                Integer role = (Integer) session.getAttribute("role");
+
+                if (role != null && role == 2) {
+                    return "user/profile-edit";
+                } else {
+                    List<StatusEntity> statuses = statusService.findByIdIn(Arrays.asList(37L, 38L));
+                    model.addAttribute("statuses", statuses);
+                    model.addAttribute("content", "admin/user-edit");
+                    return "/admin/AdminHome";
+                }
             }
         } catch (Exception e) {
             System.err.println("Error finding user: " + e.getMessage());
@@ -89,7 +95,7 @@ public class ManagerUserController {
         return "redirect:/admin/user/getAll?message=Không%20tìm%20thấy%20người%20dùng&type=error";
     }
 
-    // Chỉnh sửa user
+
     @PostMapping("/edit/{id}")
     public String updateUser(@PathVariable Long id,
                              @RequestParam("name") String name,
@@ -119,4 +125,5 @@ public class ManagerUserController {
         }
         return "redirect:/admin/user/getAll";
     }
+
 }

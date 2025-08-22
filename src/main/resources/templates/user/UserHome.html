@@ -96,26 +96,36 @@
         </a>
 
 
-        <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
+        <!-- User Menu (Logged In) -->
+        <div th:if="${session.username}" class="hidden sm:flex items-center space-x-4">
           <span class="font-medium text-gray-700">
               Chào, <span th:text="${session.username}">Tên người dùng</span>
           </span>
-          <a th:href="@{/account/logout}" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">
-            Đăng xuất
-          </a>
+          <!-- User Dropdown -->
+          <div class="relative">
+            <button id="user-menu-button" class="text-gray-600 hover:text-blue-600 focus:outline-none">
+              <i class="fas fa-user-circle fa-2x"></i>
+            </button>
+            <!-- Dropdown Menu -->
+            <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5">
+              <a th:href="@{/user/profile/edit}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out">Chỉnh sửa tài khoản</a>
+              <a th:href="@{/account/logout}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out">Đăng xuất</a>
+            </div>
+          </div>
         </div>
 
         <a th:unless="${session.username}" th:href="@{/account/login}" class="hidden sm:block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
           Đăng nhập
         </a>
-        <!-- Mobile Menu Button -->
+
+
         <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue-600">
           <i class="fas fa-bars fa-lg"></i>
         </button>
       </div>
     </div>
   </div>
-  <!-- Mobile Menu -->
+
   <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
     <a th:href="@{/user/category/getAll}" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Trang Chủ</a>
     <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Khuyến Mãi</a>
@@ -300,7 +310,7 @@
 </main>
 
 <!-- Footer -->
-<<footer id="contact" class="bg-gray-800 text-white pt-16 pb-8">
+<footer id="contact" class="bg-gray-800 text-white pt-16 pb-8">
   <div class="container mx-auto px-4">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
       <!-- About Us -->
@@ -368,47 +378,97 @@
 </div>
 
 <script>
-  const mobileMenuButton = document.getElementById('mobile-menu-button');
-  const mobileMenu = document.getElementById('mobile-menu');
+  document.addEventListener('DOMContentLoaded', function () {
+    // Mobile Menu Toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
 
-  mobileMenuButton.addEventListener('click', () => {
-    mobileMenu.classList.toggle('hidden');
-  });
+    // Category Slider
+    const slider = document.getElementById('categorySlider');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    if (slider) {
+      nextBtn.addEventListener('click', () => {
+        slider.scrollBy({ left: 280, behavior: 'smooth' });
+      });
+      prevBtn.addEventListener('click', () => {
+        slider.scrollBy({ left: -280, behavior: 'smooth' });
+      });
 
-  const slider = document.getElementById('categorySlider');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
+      let autoSlide = setInterval(() => {
+        slider.scrollBy({ left: 280, behavior: 'smooth' });
+      }, 4000);
 
-  nextBtn.addEventListener('click', () => {
-    slider.scrollBy({ left: 280, behavior: 'smooth' });
-  });
-  prevBtn.addEventListener('click', () => {
-    slider.scrollBy({ left: -280, behavior: 'smooth' });
-  });
+      slider.addEventListener('mouseenter', () => clearInterval(autoSlide));
+      slider.addEventListener('mouseleave', () => {
+        autoSlide = setInterval(() => {
+          slider.scrollBy({ left: 280, behavior: 'smooth' });
+        }, 4000);
+      });
+    }
 
-  let autoSlide = setInterval(() => {
-    slider.scrollBy({ left: 280, behavior: 'smooth' });
-  }, 4000);
+    // Card Animation on Scroll
+    const cards = document.querySelectorAll('.card');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove("opacity-0", "translate-y-4");
+          entry.target.classList.add("opacity-100", "translate-y-0");
+        }
+      });
+    }, { threshold: 0.2 });
+    cards.forEach(card => observer.observe(card));
 
-  slider.addEventListener('mouseenter', () => clearInterval(autoSlide));
-  slider.addEventListener('mouseleave', () => {
-    autoSlide = setInterval(() => {
-      slider.scrollBy({ left: 280, behavior: 'smooth' });
-    }, 4000);
-  });
-
-  const cards = document.querySelectorAll('.card');
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.remove("opacity-0", "translate-y-4");
-        entry.target.classList.add("opacity-100", "translate-y-0");
+    // Promo Modal
+    const promoLink = document.getElementById('promo-link');
+    const promoModal = document.getElementById('promo-modal');
+    const closeModalBtn = document.getElementById('close-modal');
+    promoLink.addEventListener('click', function(event) {
+      event.preventDefault();
+      promoModal.classList.remove('hidden');
+    });
+    closeModalBtn.addEventListener('click', function() {
+      promoModal.classList.add('hidden');
+    });
+    promoModal.addEventListener('click', function(event) {
+      if (event.target === promoModal) {
+        promoModal.classList.add('hidden');
       }
     });
-  }, { threshold: 0.2 });
 
-  cards.forEach(card => observer.observe(card));
+    // User Data and Cart Count
+    const userData = document.getElementById('user-data');
+    const currentUserId = userData.dataset.userId;
+    const isLoggedIn = userData.dataset.isLoggedIn === 'true';
 
+    if (isLoggedIn) {
+      fetchCartItemCount(currentUserId);
+    }
+
+    // --- NEW: User Dropdown Menu ---
+    const userMenuButton = document.getElementById('user-menu-button');
+    const userMenu = document.getElementById('user-menu');
+
+    if (userMenuButton) {
+      // Toggle dropdown on button click
+      userMenuButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent the window click event from firing immediately
+        userMenu.classList.toggle('hidden');
+      });
+
+      // Close dropdown when clicking outside of it
+      window.addEventListener('click', (e) => {
+        if (!userMenu.classList.contains('hidden')) {
+          userMenu.classList.add('hidden');
+        }
+      });
+    }
+  });
+
+  // Function to fetch cart item count
   async function fetchCartItemCount(userId) {
     if (!userId) {
       console.warn("User ID not found, cannot fetch cart count.");
@@ -436,38 +496,6 @@
       }
     }
   }
-
-  const promoLink = document.getElementById('promo-link');
-  const promoModal = document.getElementById('promo-modal');
-  const closeModalBtn = document.getElementById('close-modal');
-
-
-  promoLink.addEventListener('click', function(event) {
-    event.preventDefault();
-    promoModal.classList.remove('hidden');
-  });
-
-  // Sự kiện click để đóng pop-up
-  closeModalBtn.addEventListener('click', function() {
-    promoModal.classList.add('hidden');
-  });
-
-  promoModal.addEventListener('click', function(event) {
-    if (event.target === promoModal) {
-      promoModal.classList.add('hidden');
-    }
-  });
-
-  document.addEventListener('DOMContentLoaded', function () {
-    const userData = document.getElementById('user-data');
-    const currentUserId = userData.dataset.userId;
-    const isLoggedIn = userData.dataset.isLoggedIn === 'true';
-
-    if (isLoggedIn) {
-      fetchCartItemCount(currentUserId);
-    }
-  });
-
 </script>
 
 </body>

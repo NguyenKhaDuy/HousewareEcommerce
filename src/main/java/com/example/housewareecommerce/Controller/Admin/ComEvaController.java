@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/admin")
-public class AdminCommentController {
+public class ComEvaController {
 
-    @GetMapping("/get/comment")
+    @GetMapping("/get/comeva")
     public String getEvaluate(Model model) {
-        model.addAttribute("content", "admin/admin-comment");
+        model.addAttribute("content", "admin/admin-comeva");
         return "admin/AdminHome";
     }
 }
