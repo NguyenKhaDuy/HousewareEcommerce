@@ -81,16 +81,37 @@
             </div>
           </div>
 
+<!--          sao đánh giá-->
+<!--          <div class="flex items-center mb-3">-->
+<!--            <div class="flex text-yellow-400 text-sm">-->
+<!--              <i class="fas fa-star"></i>-->
+<!--              <i class="fas fa-star"></i>-->
+<!--              <i class="fas fa-star"></i>-->
+<!--              <i class="fas fa-star"></i>-->
+<!--              <i class="fas fa-star-half-alt"></i>-->
+<!--            </div>-->
+<!--            <span class="text-sm text-gray-500 ml-2">(4.5) 128 đánh giá</span>-->
+<!--          </div>-->
+
+
           <div class="flex items-center mb-3">
             <div class="flex text-yellow-400 text-sm">
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star"></i>
-              <i class="fas fa-star-half-alt"></i>
+              <!-- Lặp qua 5 sao -->
+              <span th:each="i : ${#numbers.sequence(1,5)}">
+            <!-- Nếu i <= product.evaluate thì hiện sao đầy -->
+            <i class="fas fa-star" th:if="${i <= product.evaluate}"></i>
+
+                <!-- Nếu i > product.evaluate và i - product.evaluate < 1 thì hiện nửa sao -->
+            <i class="fas fa-star-half-alt"
+               th:if="${i > product.evaluate and i - product.evaluate <= 0.5}"></i>
+
+                <!-- Nếu lớn hơn thì hiện sao rỗng -->
+            <i class="far fa-star" th:if="${i > product.evaluate and i - product.evaluate > 0.5}"></i>
+        </span>
             </div>
-            <span class="text-sm text-gray-500 ml-2">(4.5) 128 đánh giá</span>
+            <span class="text-sm text-gray-500 ml-2">(<span th:text="${product.evaluate}"></span>)</span>
           </div>
+
 
           <div class="flex space-x-2">
             <a th:href="'/user/product/' + ${product.id}"

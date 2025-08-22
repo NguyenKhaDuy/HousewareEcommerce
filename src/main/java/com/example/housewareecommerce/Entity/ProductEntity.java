@@ -170,4 +170,19 @@ public class ProductEntity {
     public void setOrderDetails(List<OrderDetailsEntity> orderDetails) {
         this.orderDetails = orderDetails;
     }
+
+    @Transient
+    private Integer averageRating;
+
+    public Integer getAverageRating() {
+        if (evaluateEntities == null || evaluateEntities.isEmpty()) {
+            return 0;
+        }
+        Integer sum = 0;
+        for (EvaluateEntity e : evaluateEntities) {
+            sum = sum + e.getStar();
+        }
+        return sum / evaluateEntities.size();
+    }
+
 }

@@ -17,9 +17,10 @@
       <select id="statusFilter" class="px-3 py-2 border rounded-lg">
         <option value="">Tất cả trạng thái</option>
         <option value="PENDING">PENDING</option>
-        <option value="PAID">PAID</option>
-        <option value="SHIPPED">SHIPPED</option>
+        <option value="RETURNED">RETURNED</option>
+        <option value="DELIVERED">DELIVERED</option>
         <option value="CANCELLED">CANCELLED</option>
+        <option value="PROCESSING">PROCESSING</option>
       </select>
       <input id="fromDate" type="date" class="px-3 py-2 border rounded-lg" />
       <input id="toDate" type="date" class="px-3 py-2 border rounded-lg" />
@@ -109,9 +110,10 @@
           <label class="block text-sm">Trạng thái <span class="text-red-500">*</span></label>
           <select id="statusCode" class="w-full px-3 py-2 border rounded">
             <option value="PENDING">PENDING</option>
-            <option value="PAID">PAID</option>
-            <option value="SHIPPED">SHIPPED</option>
+            <option value="RETURNED">RETURNED</option>
+            <option value="DELIVERED">DELIVERED</option>
             <option value="CANCELLED">CANCELLED</option>
+            <option value="PROCESSING">PROCESSING</option>
           </select>
         </div>
       </div>
@@ -385,9 +387,10 @@
   function getStatusIdByCode(statusCode) {
     const statusMap = {
       'PENDING': 1,
-      'PAID': 2,
-      'SHIPPED': 3,
-      'CANCELLED': 4
+      'RETURNED': 7,
+      'DELIVERED': 5,
+      'CANCELLED': 6,
+      'PROCESSING': 3
     };
     return statusMap[statusCode] || 1;
   }

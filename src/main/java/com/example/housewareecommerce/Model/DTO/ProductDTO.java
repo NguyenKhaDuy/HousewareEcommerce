@@ -21,8 +21,10 @@ public class ProductDTO {
     private List<byte[]> images = new ArrayList<>();
     private List<String> imagesBase64 = new ArrayList<>();
     private List<Long> imageIds = new ArrayList<>();
+    private Integer evaluate;
 
-    public ProductDTO(Long id, String nameProduct, String description, Float price, Long quantity, List<String> imagesBase64, String statusCode) {
+
+    public ProductDTO(Long id, String nameProduct, String description, Float price, Long quantity, List<String> imagesBase64, String statusCode, Integer evaluate) {
         this.id = id;
         this.nameProduct = nameProduct;
         this.description = description;
@@ -30,6 +32,7 @@ public class ProductDTO {
         this.quantity = quantity;
         this.imagesBase64 = imagesBase64;
         this.statusCode = statusCode;
+        this.evaluate = evaluate;
     }
 
     public ProductDTO() {
@@ -129,5 +132,13 @@ public class ProductDTO {
 
     public void setImages(List<byte[]> images) {
         this.images = images;
+    }
+
+    public Integer getEvaluate() {
+        return evaluate;
+    }
+
+    public void setEvaluate(Integer evaluate) {
+        this.evaluate = evaluate;
     }
 }

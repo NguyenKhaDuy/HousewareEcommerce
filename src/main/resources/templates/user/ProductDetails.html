@@ -1,21 +1,44 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="${product.nameProduct} + ' - Gia Dụng Pro'">Chi Tiết Sản Phẩm</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" type="image/png" href="/image/logo.png">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .thumbnail-active { border-color: #2563eb; opacity: 1; }
-    .tab-active { border-color: #2563eb; color: #2563eb; background-color: #eff6ff; }
-    .prose { max-width: 65ch; color: #374151; }
-    .prose ul { list-style-type: disc; padding-left: 1.5em; }
-    .prose ul > li { margin-top: 0.5em; margin-bottom: 0.5em; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${product.nameProduct} + ' - Gia Dụng Pro'">Chi Tiết Sản Phẩm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="/image/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .thumbnail-active {
+            border-color: #2563eb;
+            opacity: 1;
+        }
+
+        .tab-active {
+            border-color: #2563eb;
+            color: #2563eb;
+            background-color: #eff6ff;
+        }
+
+        .prose {
+            max-width: 65ch;
+            color: #374151;
+        }
+
+        .prose ul {
+            list-style-type: disc;
+            padding-left: 1.5em;
+        }
+
+        .prose ul > li {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
 
@@ -28,544 +51,618 @@
 
 <!-- Header -->
 <header class="bg-white shadow-md sticky top-0 z-50">
-  <div class="container mx-auto px-4">
-    <div class="flex justify-between items-center py-4">
-      <a href="/static" class="text-2xl font-bold text-gray-800">
-        <i class="fas fa-home text-blue-600"></i>
-        Gia Dụng <span class="text-blue-600">Pro</span>
-      </a>
-      <nav class="hidden md:flex items-center space-x-6">
-        <a href="/homepage" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Trang Chủ</a>
-        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Sản Phẩm</a>
-        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Khuyến Mãi</a>
-        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Về Chúng Tôi</a>
-        <a href="#" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Liên Hệ</a>
-      </nav>
-      <div class="flex items-center space-x-4">
-        <button class="text-gray-600 hover:text-blue-600">
-          <i class="fas fa-search fa-lg"></i>
-        </button>
-        <a href="#" class="relative text-gray-600 hover:text-blue-600">
-          <i class="fas fa-heart fa-lg"></i>
-        </a>
-        <!-- CartEntity, CartItemEntity: Hiển thị giỏ hàng -->
-        <a th:if="${session.username}"
-           th:href="@{/view/cart}"
-           class="relative text-gray-600 hover:text-blue-600">
-          <i class="fas fa-shopping-cart fa-lg"></i>
-          <span id="cart-item-count"
-                class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
-        </a>
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+            <a href="#" class="flex items-center space-x-2 text-xl font-bold text-gray-800">
+                <img src="/image/logo.png" alt="Homeware Logo" class="h-12 w-auto">
+                <span>Homeware <span class="text-blue-600">Pro</span></span>
+            </a>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="/homepage" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Trang
+                    Chủ</a>
+                <a href="#" id="promo-link" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Khuyến
+                    Mãi</a>
+                <a href="#about-us" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Về
+                    Chúng Tôi</a>
+                <a href="#contact" class="text-gray-600 hover:text-blue-600 font-medium transition duration-300">Liên
+                    Hệ</a>
+            </nav>
+            <div class="flex items-center space-x-4">
+                <button class="text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-search fa-lg"></i>
+                </button>
+                <a href="#" class="relative text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-heart fa-lg"></i>
+                </a>
+                <!-- CartEntity, CartItemEntity: Hiển thị giỏ hàng -->
+                <a th:if="${session.username}"
+                   th:href="@{/view/cart}"
+                   class="relative text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span id="cart-item-count"
+                          class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </a>
 
-        <a th:unless="${session.username}"
-           th:href="@{/account/login}"
-           class="relative text-gray-600 hover:text-blue-600">
-          <i class="fas fa-shopping-cart fa-lg"></i>
-          <span id=""
-                class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
-        </a>
-        <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
+                <a th:unless="${session.username}"
+                   th:href="@{/account/login}"
+                   class="relative text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-shopping-cart fa-lg"></i>
+                    <span id=""
+                          class="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </a>
+                <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
                     <span class="font-medium text-gray-700">
                         Chào, <span th:text="${session.username}">Tên người dùng</span>
                     </span>
-          <a th:href="@{/account/logout}" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">
-            Đăng xuất
-          </a>
+                    <a th:href="@{/account/logout}"
+                       class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">
+                        Đăng xuất
+                    </a>
+                </div>
+                <a th:unless="${session.username}" th:href="@{/account/login}"
+                   class="hidden sm:block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
+                    Đăng nhập
+                </a>
+                <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue-600">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+            </div>
         </div>
-        <a th:unless="${session.username}" th:href="@{/account/login}" class="hidden sm:block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
-          Đăng nhập
-        </a>
-        <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue-600">
-          <i class="fas fa-bars fa-lg"></i>
-        </button>
-      </div>
     </div>
-  </div>
-  <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
-    <a th:href="@{/user/category/getAll}" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Trang Chủ</a>
-    <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Sản Phẩm</a>
-    <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Khuyến Mãi</a>
-    <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Liên Hệ</a>
-    <div th:if="${session.username}" class="flex items-center justify-between p-4 border-t">
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+        <a th:href="@{/user/category/getAll}"
+           class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Trang Chủ</a>
+        <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Sản Phẩm</a>
+        <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Khuyến Mãi</a>
+        <a href="#" class="block px-4 py-3 text-gray-600 hover:bg-gray-100 hover:text-blue-600">Liên Hệ</a>
+        <div th:if="${session.username}" class="flex items-center justify-between p-4 border-t">
           <span class="font-medium text-gray-700">
               Chào, <span th:text="${session.username}">Tên người dùng</span>
           </span>
-      <a th:href="@{/account/logout}" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">
-        Đăng xuất
-      </a>
+            <a th:href="@{/account/logout}"
+               class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">
+                Đăng xuất
+            </a>
+        </div>
+        <a th:unless="${session.username}" th:href="@{/account/login}"
+           class="block p-4 text-center bg-blue-600 text-white hover:bg-blue-700 transition duration-300">
+            Đăng nhập
+        </a>
     </div>
-    <a th:unless="${session.username}" th:href="@{/account/login}" class="block p-4 text-center bg-blue-600 text-white hover:bg-blue-700 transition duration-300">
-      Đăng nhập
-    </a>
-  </div>
 </header>
 
 <!-- Rest of the page remains the same -->
 <main class="py-12">
-  <div class="container mx-auto px-4">
-    <!-- Breadcrumb -->
-    <div class="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-      <a th:href="@{/user/category/getAll}" class="hover:text-blue-600 transition duration-300">
-        <i class="fas fa-home"></i> Trang Chủ
-      </a>
-      <i class="fas fa-chevron-right text-gray-400"></i>
-      <a th:href="@{/user/category/{id}(id=${product.categoryEntity.id})}"
-         class="hover:text-blue-600 transition duration-300"
-         th:text="${product.categoryEntity.nameCategory}">Tên Category</a>
-      <i class="fas fa-chevron-right text-gray-400"></i>
-      <span class="text-gray-800 font-medium" th:text="${product.nameProduct}">Tên Sản Phẩm</span>
-    </div>
+    <div class="container mx-auto px-4">
+        <!-- Breadcrumb -->
+        <div class="flex items-center space-x-2 text-sm text-gray-600 mb-8">
+            <a th:href="@{/user/category/getAll}" class="hover:text-blue-600 transition duration-300">
+                <i class="fas fa-home"></i> Trang Chủ
+            </a>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+            <a th:href="@{/user/category/{id}(id=${product.categoryEntity.id})}"
+               class="hover:text-blue-600 transition duration-300"
+               th:text="${product.categoryEntity.nameCategory}">Tên Category</a>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+            <span class="text-gray-800 font-medium" th:text="${product.nameProduct}">Tên Sản Phẩm</span>
+        </div>
 
-    <!-- Product Detail Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-      <!-- Image Gallery -->
-      <div>
-        <div class="relative bg-white rounded-lg shadow-md p-4 mb-4">
-          <img id="mainImage"
-               th:src="${not #lists.isEmpty(product.imageEntities)
+        <!-- Product Detail Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Image Gallery -->
+            <div>
+                <div class="relative bg-white rounded-lg shadow-md p-4 mb-4">
+                    <img id="mainImage"
+                         th:src="${not #lists.isEmpty(product.imageEntities)
               ? 'data:image/jpeg;base64,' + product.imageEntities[0].base64Image
               : 'https://placehold.co/600x600/e2e8f0/a0aec0?text=No+Image'}"
-               th:alt="${product.nameProduct}"
-               class="w-full h-auto max-h-[500px] object-contain rounded-lg"/>
-          <button id="prevImage" class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md text-gray-600 hover:text-blue-600 focus:outline-none">
-            <i class="fas fa-chevron-left fa-lg"></i>
-          </button>
-          <button id="nextImage" class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md text-gray-600 hover:text-blue-600 focus:outline-none">
-            <i class="fas fa-chevron-right fa-lg"></i>
-          </button>
-        </div>
-        <div class="grid grid-cols-5 gap-2"
-             th:if="${product.imageEntities != null and #lists.size(product.imageEntities) > 1}">
-          <th:block th:each="img, iterStat : ${product.imageEntities}">
-            <img th:src="'data:image/jpeg;base64,' + ${img.base64Image}"
-                 alt="Product thumbnail"
-                 class="w-full h-24 object-cover rounded-md cursor-pointer border-2 border-transparent opacity-70 hover:opacity-100 hover:border-blue-500 transition"
-                 th:classappend="${iterStat.index == 0} ? 'thumbnail-active'">
-          </th:block>
-        </div>
-      </div>
+                         th:alt="${product.nameProduct}"
+                         class="w-full h-auto max-h-[500px] object-contain rounded-lg"/>
+                    <button id="prevImage"
+                            class="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md text-gray-600 hover:text-blue-600 focus:outline-none">
+                        <i class="fas fa-chevron-left fa-lg"></i>
+                    </button>
+                    <button id="nextImage"
+                            class="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md text-gray-600 hover:text-blue-600 focus:outline-none">
+                        <i class="fas fa-chevron-right fa-lg"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-5 gap-2"
+                     th:if="${product.imageEntities != null and #lists.size(product.imageEntities) > 1}">
+                    <th:block th:each="img, iterStat : ${product.imageEntities}">
+                        <img th:src="'data:image/jpeg;base64,' + ${img.base64Image}"
+                             alt="Product thumbnail"
+                             class="w-full h-24 object-cover rounded-md cursor-pointer border-2 border-transparent opacity-70 hover:opacity-100 hover:border-blue-500 transition"
+                             th:classappend="${iterStat.index == 0} ? 'thumbnail-active'">
+                    </th:block>
+                </div>
+            </div>
 
-      <!-- Product Info -->
-      <div class="bg-white rounded-lg shadow-md p-6">
-        <h1 class="text-3xl font-bold text-gray-800 mb-3" th:text="${product.nameProduct}">Tên sản phẩm</h1>
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center">
+            <!-- Product Info -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-3" th:text="${product.nameProduct}">Tên sản phẩm</h1>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
                         <span th:if="${product.statusEntity != null and product.statusEntity.statusCode == 'ACTIVE'}"
                               class="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full flex items-center">
                             <i class="fas fa-check-circle mr-2"></i>Còn hàng
                         </span>
-            <span th:if="${product.statusEntity != null and product.statusEntity.statusCode == 'OUT_OF_STOCK'}"
-                  class="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full flex items-center">
+                        <span th:if="${product.statusEntity != null and product.statusEntity.statusCode == 'OUT_OF_STOCK'}"
+                              class="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full flex items-center">
                             <i class="fas fa-times-circle mr-2"></i>Hết hàng
                         </span>
-            <span th:if="${product.statusEntity != null and product.statusEntity.statusCode == 'DISCONTINUED'}"
-                  class="px-3 py-1 bg-gray-100 text-gray-800 text-sm font-medium rounded-full flex items-center">
+                        <span th:if="${product.statusEntity != null and product.statusEntity.statusCode == 'DISCONTINUED'}"
+                              class="px-3 py-1 bg-gray-100 text-gray-800 text-sm font-medium rounded-full flex items-center">
                             <i class="fas fa-ban mr-2"></i>Ngừng bán
                         </span>
-          </div>
-          <div class="flex items-center">
-            <div class="flex text-yellow-400">
-              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
-            </div>
-            <span class="text-sm text-gray-500 ml-2"
-                  th:text="'(' + ${product.evaluateEntities != null ? #lists.size(product.evaluateEntities) : 0} + ' đánh giá)'">(0 đánh giá)</span>
-          </div>
-        </div>
-        <div class="mb-6">
+                    </div>
+                    <div class="flex items-center">
+
+
+                        <div class="flex text-yellow-400">
+                            <!-- sao đầy -->
+                            <span th:if="${product.getAverageRating() > 0}"
+                                  th:each="i : ${#numbers.sequence(1, product.getAverageRating())}">
+                              <i class="fas fa-star"></i>
+                           </span>
+
+                            <!-- sao rỗng -->
+                            <span th:if="${product.getAverageRating() < 5}"
+                                  th:each="i : ${#numbers.sequence(1, 5 - product.getAverageRating())}">
+                              <i class="far fa-star"></i>
+                            </span>
+                        </div>
+
+
+                        <span class="text-sm text-gray-500 ml-2"
+                              th:text="'(' + ${product.getEvaluateEntities() != null ? #lists.size(product.getEvaluateEntities()) : 0} + ' đánh giá)'">(0 đánh giá)</span>
+                    </div>
+                </div>
+                <div class="mb-6">
                     <span class="text-4xl font-bold text-blue-600"
                           th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</span>
-        </div>
-        <p class="text-gray-600 mb-6" th:text="${product.description}">Mô tả ngắn gọn về sản phẩm.</p>
-        <div class="flex items-center space-x-4 mb-6">
-          <div class="flex items-center border border-gray-300 rounded-lg">
-            <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-l-lg" onclick="updateQuantity(-1)">-</button>
-            <input id="quantityInput" type="text" value="1" class="w-12 text-center border-none focus:ring-0" th:attr="data-max=${product.quantity}">
-            <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-r-lg" onclick="updateQuantity(1)">+</button>
-          </div>
-          <button id="addToCartButton"
-                  class="flex-1 py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
-                  th:attr="data-product-id=${product.id}, data-product-price=${product.price}">
-            <i class="fas fa-shopping-cart mr-2"></i>
-            <span>Thêm vào giỏ hàng</span>
-          </button>
-
-          <button class="add-to-favorite-btn p-3 rounded-lg transition duration-300"
-                  th:data-product-id="${product.id}"
-                  th:classappend="${favoriteProductIds != null and favoriteProductIds.contains(product.id)} ? 'bg-red-500 text-white' : 'bg-red-100 text-red-500 hover:bg-red-200'"
-                  th:disabled="${favoriteProductIds != null and favoriteProductIds.contains(product.id)}">
-            <i class="fa-lg" th:classappend="${favoriteProductIds != null and favoriteProductIds.contains(product.id)} ? 'fas fa-heart' : 'far fa-heart'"></i>
-          </button>
-
-        </div>
-        <div class="text-sm text-gray-500 space-y-2">
-          <p><span class="font-medium text-gray-700">Mã sản phẩm:</span> <span th:text="${product.id}">SP001</span></p>
-          <p><span class="font-medium text-gray-700">Danh mục:</span>
-            <a th:href="@{/user/category/{id}(id=${product.categoryEntity.id})}"
-               class="text-blue-600 hover:underline"
-               th:text="${product.categoryEntity.nameCategory}">Tên Category</a>
-          </p>
-          <p><span class="font-medium text-gray-700">Số lượng có sẵn:</span> <span th:text="${product.quantity}">0</span></p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="mt-16 bg-white rounded-lg shadow-md">
-      <div class="border-b border-gray-200">
-        <nav class="flex -mb-px space-x-6 px-6" id="tab-buttons">
-          <button class="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-lg tab-active" data-tab="description">Mô tả</button>
-          <button class="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-lg" data-tab="specs">Thông số kỹ thuật</button>
-          <button class="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-lg"
-                  data-tab="reviews"
-                  th:text="'Đánh giá (' + ${product.evaluateEntities != null ? #lists.size(product.evaluateEntities) : 0} + ')'">Đánh giá (0)</button>
-        </nav>
-      </div>
-      <div class="p-6" id="tab-contents">
-        <div id="description" class="prose max-w-none" th:utext="${product.description}"><p>Nội dung mô tả.</p></div>
-        <div id="specs" class="hidden">
-          <table class="min-w-full divide-y divide-gray-200">
-            <tbody class="bg-white divide-y divide-gray-200">
-            <tr><td class="px-6 py-4 font-medium text-gray-900">Ngày tạo</td><td class="px-6 py-4 text-gray-500" th:text="${product.created != null ? #temporals.format(product.created, 'dd-MM-yyyy HH:mm') : 'N/A'}">N/A</td></tr>
-            <tr><td class="px-6 py-4 font-medium text-gray-900">Mã sản phẩm</td><td class="px-6 py-4 text-gray-500" th:text="${product.id}">N/A</td></tr>
-            <tr><td class="px-6 py-4 font-medium text-gray-900">Danh mục</td><td class="px-6 py-4 text-gray-500" th:text="${product.categoryEntity != null ? product.categoryEntity.nameCategory : 'N/A'}">N/A</td></tr>
-            <tr><td class="px-6 py-4 font-medium text-gray-900">Số lượng</td><td class="px-6 py-4 text-gray-500" th:text="${product.quantity}">N/A</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div id="reviews" class="hidden">
-          <div th:if="${product.evaluateEntities == null or #lists.isEmpty(product.evaluateEntities)}" class="text-center text-gray-500 py-8">
-            <i class="fas fa-comment-slash fa-3x mb-3"></i><p>Chưa có đánh giá nào.</p>
-          </div>
-          <div th:if="${product.evaluateEntities != null and not #lists.isEmpty(product.evaluateEntities)}" class="space-y-6">
-            <div th:each="evaluate, iterStat : ${product.evaluateEntities}" class="flex space-x-4" th:classappend="${iterStat.index > 0} ? 'border-t border-gray-200 pt-6' : ''">
-              <img src="https://placehold.co/48x48/e2e8f0/a0aec0?text=U" alt="User avatar" class="w-12 h-12 rounded-full">
-              <div>
-                <div class="flex items-center mb-1">
-                  <span class="font-semibold" th:text="${evaluate.userEntity != null ? evaluate.userEntity.fullName : 'Người dùng ẩn danh'}">Tên</span>
-                  <span class="text-xs text-gray-400 mx-2">&bull;</span>
-                  <span class="text-xs text-gray-500" th:text="${evaluate.created != null ? #temporals.format(evaluate.created, 'dd-MM-yyyy') : 'N/A'}">Ngày</span>
                 </div>
-                <div class="flex text-yellow-400 mb-2">
-                  <th:block th:each="i : ${#numbers.sequence(1, 5)}"><i th:class="${evaluate.rating != null and i <= evaluate.rating} ? 'fas fa-star' : 'far fa-star'"></i></th:block>
+                <p class="text-gray-600 mb-6" th:text="${product.description}">Mô tả ngắn gọn về sản phẩm.</p>
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="flex items-center border border-gray-300 rounded-lg">
+                        <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-l-lg"
+                                onclick="updateQuantity(-1)">-
+                        </button>
+                        <input id="quantityInput" type="text" value="1"
+                               class="w-12 text-center border-none focus:ring-0" th:attr="data-max=${product.quantity}">
+                        <button class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-r-lg"
+                                onclick="updateQuantity(1)">+
+                        </button>
+                    </div>
+                    <button id="addToCartButton"
+                            class="flex-1 py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
+                            th:attr="data-product-id=${product.id}, data-product-price=${product.price}">
+                        <i class="fas fa-shopping-cart mr-2"></i>
+                        <span>Thêm vào giỏ hàng</span>
+                    </button>
+
+                    <button class="add-to-favorite-btn p-3 rounded-lg transition duration-300"
+                            th:data-product-id="${product.id}"
+                            th:classappend="${favoriteProductIds != null and favoriteProductIds.contains(product.id)} ? 'bg-red-500 text-white' : 'bg-red-100 text-red-500 hover:bg-red-200'"
+                            th:disabled="${favoriteProductIds != null and favoriteProductIds.contains(product.id)}">
+                        <i class="fa-lg"
+                           th:classappend="${favoriteProductIds != null and favoriteProductIds.contains(product.id)} ? 'fas fa-heart' : 'far fa-heart'"></i>
+                    </button>
+
                 </div>
-                <p class="text-gray-700" th:text="${evaluate.comment}">Nội dung.</p>
-              </div>
+                <div class="text-sm text-gray-500 space-y-2">
+                    <p><span class="font-medium text-gray-700">Mã sản phẩm:</span> <span
+                            th:text="${product.id}">SP001</span></p>
+                    <p><span class="font-medium text-gray-700">Danh mục:</span>
+                        <a th:href="@{/user/category/{id}(id=${product.categoryEntity.id})}"
+                           class="text-blue-600 hover:underline"
+                           th:text="${product.categoryEntity.nameCategory}">Tên Category</a>
+                    </p>
+                    <p><span class="font-medium text-gray-700">Số lượng có sẵn:</span> <span
+                            th:text="${product.quantity}">0</span></p>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
+
+        <!-- Tabs -->
+        <div class="mt-16 bg-white rounded-lg shadow-md">
+            <div class="border-b border-gray-200">
+                <nav class="flex -mb-px space-x-6 px-6" id="tab-buttons">
+                    <button class="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-lg tab-active"
+                            data-tab="description">Mô tả
+                    </button>
+                    <button class="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-lg"
+                            data-tab="specs">Thông số kỹ thuật
+                    </button>
+                    <button class="py-4 px-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-lg"
+                            data-tab="reviews"
+                            th:text="'Đánh giá (' + ${product.evaluateEntities != null ? #lists.size(product.evaluateEntities) : 0} + ')'">
+                        Đánh giá (0)
+                    </button>
+                </nav>
+            </div>
+            <div class="p-6" id="tab-contents">
+                <div id="description" class="prose max-w-none" th:utext="${product.description}"><p>Nội dung mô tả.</p>
+                </div>
+                <div id="specs" class="hidden">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td class="px-6 py-4 font-medium text-gray-900">Ngày tạo</td>
+                            <td class="px-6 py-4 text-gray-500"
+                                th:text="${product.created != null ? #temporals.format(product.created, 'dd-MM-yyyy HH:mm') : 'N/A'}">
+                                N/A
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-medium text-gray-900">Mã sản phẩm</td>
+                            <td class="px-6 py-4 text-gray-500" th:text="${product.id}">N/A</td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-medium text-gray-900">Danh mục</td>
+                            <td class="px-6 py-4 text-gray-500"
+                                th:text="${product.categoryEntity != null ? product.categoryEntity.nameCategory : 'N/A'}">
+                                N/A
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-6 py-4 font-medium text-gray-900">Số lượng</td>
+                            <td class="px-6 py-4 text-gray-500" th:text="${product.quantity}">N/A</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="reviews" class="hidden">
+                    <div th:if="${product.getEvaluateEntities() == null or #lists.isEmpty(product.getEvaluateEntities())}"
+                         class="text-center text-gray-500 py-8">
+                        <i class="fas fa-comment-slash fa-3x mb-3"></i>
+                        <p>Chưa có đánh giá nào.</p>
+                    </div>
+                    <div th:if="${product.getEvaluateEntities() != null and not #lists.isEmpty(product.getEvaluateEntities())}"
+                         class="space-y-6">
+                        <div th:each="evaluate, iterStat : ${product.getEvaluateEntities()}" class="flex space-x-4"
+                             th:classappend="${iterStat.index > 0} ? 'border-t border-gray-200 pt-6' : ''">
+                            <img src="https://placehold.co/48x48/e2e8f0/a0aec0?text=U" alt="User avatar"
+                                 class="w-12 h-12 rounded-full">
+                            <div>
+                                <div class="flex items-center mb-1">
+                                    <span class="font-semibold"
+                                          th:text="${evaluate.userEntity != null ? evaluate.userEntity.getName() : 'Người dùng ẩn danh'}">Tên</span>
+                                    <span class="text-xs text-gray-400 mx-2">&bull;</span>
+                                    <span class="text-xs text-gray-500"
+                                          th:text="${evaluate.getCreated() != null ? #temporals.format(evaluate.getCreated(), 'dd-MM-yyyy') : 'N/A'}">Ngày</span>
+                                </div>
+                                <div class="flex text-yellow-400 mb-2">
+                                    <th:block th:each="i : ${#numbers.sequence(1, 5)}"><i
+                                            th:class="${evaluate.getStar() != null and i <= evaluate.getStar()} ? 'fas fa-star' : 'far fa-star'"></i>
+                                    </th:block>
+                                </div>
+                                <p class="text-gray-700" th:text="${evaluate.getNote()}">Nội dung.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </main>
 
 <!-- Footer -->
 <footer class="bg-gray-800 text-white mt-16">
-  <div class="container mx-auto px-4 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-      <div>
-        <h3 class="text-lg font-semibold mb-4">Homeware Pro</h3>
-        <p class="text-gray-400">Chuyên cung cấp các sản phẩm gia dụng thông minh, chất lượng cao.</p>
-      </div>
-      <div>
-        <h3 class="text-lg font-semibold mb-4">Liên kết nhanh</h3>
-        <ul class="space-y-2">
-          <li><a href="#" class="text-gray-400 hover:text-white">Về chúng tôi</a></li>
-          <li><a href="#" class="text-gray-400 hover:text-white">Sản phẩm</a></li>
-          <li><a href="#" class="text-gray-400 hover:text-white">Chính sách</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="text-lg font-semibold mb-4">Liên hệ</h3>
-        <ul class="space-y-2 text-gray-400">
-          <h3 class="text-xl font-bold mb-4">Thông Tin Liên Hệ</h3>
-          <ul class="space-y-2 text-gray-400">
-            <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-3 w-4"></i>Số 19 Đ.Quản Trọng Hoàng, Phường Ninh Kiều, TP.Cần Thơ</li>
-            <li class="flex items-center"><i class="fas fa-phone-alt mr-3 w-4"></i>(0292) 123 4567</li>
-            <li class="flex items-center"><i class="fas fa-envelope mr-3 w-4"></i>support@homewarepro.vn</li>
-          </ul>
-        </ul>
-      </div>
-      <div>
-        <h3 class="text-lg font-semibold mb-4">Đăng ký nhận tin</h3>
-        <p class="text-gray-400 mb-4">Nhận thông tin về sản phẩm mới và khuyến mãi.</p>
-        <form class="flex">
-          <input type="email" placeholder="Email của bạn" class="w-full rounded-l-lg px-4 py-2 text-gray-800 focus:outline-none">
-          <button class="bg-blue-600 px-4 rounded-r-lg hover:bg-blue-700"><i class="fas fa-paper-plane"></i></button>
-        </form>
-      </div>
+    <div class="container mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Homeware Pro</h3>
+                <p class="text-gray-400">Chuyên cung cấp các sản phẩm gia dụng thông minh, chất lượng cao.</p>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Liên kết nhanh</h3>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-white">Về chúng tôi</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">Sản phẩm</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white">Chính sách</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Liên hệ</h3>
+                <ul class="space-y-2 text-gray-400">
+                    <h3 class="text-xl font-bold mb-4">Thông Tin Liên Hệ</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li class="flex items-start"><i class="fas fa-map-marker-alt mt-1 mr-3 w-4"></i>Số 19 Đ.Quản
+                            Trọng Hoàng, Phường Ninh Kiều, TP.Cần Thơ
+                        </li>
+                        <li class="flex items-center"><i class="fas fa-phone-alt mr-3 w-4"></i>(0292) 123 4567</li>
+                        <li class="flex items-center"><i class="fas fa-envelope mr-3 w-4"></i>support@homewarepro.vn
+                        </li>
+                    </ul>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Đăng ký nhận tin</h3>
+                <p class="text-gray-400 mb-4">Nhận thông tin về sản phẩm mới và khuyến mãi.</p>
+                <form class="flex">
+                    <input type="email" placeholder="Email của bạn"
+                           class="w-full rounded-l-lg px-4 py-2 text-gray-800 focus:outline-none">
+                    <button class="bg-blue-600 px-4 rounded-r-lg hover:bg-blue-700"><i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500 text-sm">
+            &copy; 2024 Homeware pro. All Rights Reserved.
+        </div>
     </div>
-    <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500 text-sm">
-      &copy; 2024 Homeware pro. All Rights Reserved.
-    </div>
-  </div>
 </footer>
 
 <!-- Toast Notification -->
-<div id="toast-notification" class="fixed top-5 right-5 bg-gray-800 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity duration-300 opacity-0 z-50">
-  <p id="toast-message"></p>
+<div id="toast-notification"
+     class="fixed top-5 right-5 bg-gray-800 text-white py-2 px-4 rounded-lg shadow-lg transition-opacity duration-300 opacity-0 z-50">
+    <p id="toast-message"></p>
 </div>
 
 
 <script>
-  // Mobile menu toggle
-  document.getElementById('mobile-menu-button')?.addEventListener('click', () => {
-    document.getElementById('mobile-menu')?.classList.toggle('hidden');
-  });
-
-  // Image Gallery
-  const mainImage = document.getElementById('mainImage');
-  const thumbnails = document.querySelectorAll('.grid.grid-cols-5 img');
-  if (mainImage && thumbnails.length > 0) {
-    let currentImageIndex = 0;
-    const imageUrls = Array.from(thumbnails).map(img => img.src);
-
-    const updateImage = () => {
-      mainImage.src = imageUrls[currentImageIndex];
-      thumbnails.forEach((thumb, index) => {
-        thumb.classList.toggle('thumbnail-active', index === currentImageIndex);
-      });
-    };
-
-    document.getElementById('prevImage')?.addEventListener('click', () => {
-      currentImageIndex = (currentImageIndex - 1 + imageUrls.length) % imageUrls.length;
-      updateImage();
+    // Mobile menu toggle
+    document.getElementById('mobile-menu-button')?.addEventListener('click', () => {
+        document.getElementById('mobile-menu')?.classList.toggle('hidden');
     });
 
-    document.getElementById('nextImage')?.addEventListener('click', () => {
-      currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
-      updateImage();
-    });
+    // Image Gallery
+    const mainImage = document.getElementById('mainImage');
+    const thumbnails = document.querySelectorAll('.grid.grid-cols-5 img');
+    if (mainImage && thumbnails.length > 0) {
+        let currentImageIndex = 0;
+        const imageUrls = Array.from(thumbnails).map(img => img.src);
 
-    thumbnails.forEach((thumb, index) => {
-      thumb.addEventListener('click', () => {
-        currentImageIndex = index;
-        updateImage();
-      });
-    });
-  }
-
-  // Quantity Input
-  function updateQuantity(amount) {
-    const quantityInput = document.getElementById('quantityInput');
-    const maxQuantity = parseInt(quantityInput.dataset.max) || 999;
-    let currentValue = parseInt(quantityInput.value) || 1;
-    let newValue = Math.max(1, Math.min(currentValue + amount, maxQuantity));
-    quantityInput.value = newValue;
-  }
-
-  // Tabs
-  const tabButtons = document.querySelectorAll('#tab-buttons button');
-  tabButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      tabButtons.forEach(btn => btn.classList.remove('tab-active'));
-      document.querySelectorAll('#tab-contents > div').forEach(content => content.classList.add('hidden'));
-      button.classList.add('tab-active');
-      document.getElementById(button.dataset.tab)?.classList.remove('hidden');
-    });
-  });
-
-  // Function to fetch and update cart count
-  async function fetchCartItemCount(userId) {
-    if (!userId) {
-      console.warn("User ID not found, cannot fetch cart count.");
-      return;
-    }
-
-    const cartCountElement = document.getElementById('cart-item-count');
-    if (cartCountElement) {
-      try {
-        const response = await fetch(`/api/count/${userId}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const count = await response.json();
-        cartCountElement.textContent = count;
-        // Show the count badge if count > 0, otherwise hide it
-        if (count > 0) {
-          cartCountElement.classList.remove('hidden');
-        } else {
-          cartCountElement.classList.add('hidden');
-        }
-      } catch (error) {
-        console.error("Could not fetch cart item count:", error);
-        cartCountElement.textContent = '0'; // Default to 0 on error
-        cartCountElement.classList.remove('hidden');
-      }
-    }
-  }
-
-  document.addEventListener('DOMContentLoaded', function () {
-    const userData = document.getElementById('user-data');
-    const currentUserId = userData.dataset.userId;
-    const isLoggedIn = userData.dataset.isLoggedIn === 'true';
-
-    const addToCartButton = document.getElementById('addToCartButton');
-    const addToCartText = addToCartButton.querySelector('span');
-    const favoriteButton = document.querySelector('.add-to-favorite-btn');
-    const favoriteIcon = favoriteButton.querySelector('i');
-
-    // Initial fetch of cart count if user is logged in
-    if (isLoggedIn) {
-      fetchCartItemCount(currentUserId);
-      addToCartButton.disabled = false;
-      addToCartButton.classList.remove('disabled:bg-gray-400');
-      addToCartText.textContent = 'Thêm vào giỏ hàng';
-    } else {
-      addToCartButton.disabled = true;
-      addToCartButton.classList.add('disabled:bg-gray-400');
-      addToCartText.textContent = 'Đăng nhập để thêm vào giỏ';
-    }
-
-    // Event listener for the "Add to Cart" button
-    if (addToCartButton) {
-      addToCartButton.addEventListener('click', async function(event) {
-        event.preventDefault();
-
-        if (this.disabled) {
-          showToast('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!', 'error');
-          setTimeout(() => {
-            window.location.href = '/account/login';
-          }, 1500);
-          return;
-        }
-
-        // Lấy dữ liệu cần thiết từ DOM
-        const productId = this.dataset.productId;
-        const price = this.dataset.productPrice;
-        const quantity = parseInt(document.getElementById('quantityInput').value);
-
-        // Tạo đối tượng request
-        const cartRequest = {
-          userId: parseInt(currentUserId),
-          productId: parseInt(productId),
-          quantity: quantity,
-          subTotal: price * quantity
+        const updateImage = () => {
+            mainImage.src = imageUrls[currentImageIndex];
+            thumbnails.forEach((thumb, index) => {
+                thumb.classList.toggle('thumbnail-active', index === currentImageIndex);
+            });
         };
 
-        try {
-          const response = await fetch('/api/cart/add', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(cartRequest)
-          });
+        document.getElementById('prevImage')?.addEventListener('click', () => {
+            currentImageIndex = (currentImageIndex - 1 + imageUrls.length) % imageUrls.length;
+            updateImage();
+        });
 
-          const result = await response.json();
+        document.getElementById('nextImage')?.addEventListener('click', () => {
+            currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
+            updateImage();
+        });
 
-          if (response.ok) {
-            showToast(result.message || 'Thêm vào giỏ hàng thành công', 'success');
-            // After successful addition, fetch the updated count
+        thumbnails.forEach((thumb, index) => {
+            thumb.addEventListener('click', () => {
+                currentImageIndex = index;
+                updateImage();
+            });
+        });
+    }
+
+    // Quantity Input
+    function updateQuantity(amount) {
+        const quantityInput = document.getElementById('quantityInput');
+        const maxQuantity = parseInt(quantityInput.dataset.max) || 999;
+        let currentValue = parseInt(quantityInput.value) || 1;
+        let newValue = Math.max(1, Math.min(currentValue + amount, maxQuantity));
+        quantityInput.value = newValue;
+    }
+
+    // Tabs
+    const tabButtons = document.querySelectorAll('#tab-buttons button');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            tabButtons.forEach(btn => btn.classList.remove('tab-active'));
+            document.querySelectorAll('#tab-contents > div').forEach(content => content.classList.add('hidden'));
+            button.classList.add('tab-active');
+            document.getElementById(button.dataset.tab)?.classList.remove('hidden');
+        });
+    });
+
+    // Function to fetch and update cart count
+    async function fetchCartItemCount(userId) {
+        if (!userId) {
+            console.warn("User ID not found, cannot fetch cart count.");
+            return;
+        }
+
+        const cartCountElement = document.getElementById('cart-item-count');
+        if (cartCountElement) {
+            try {
+                const response = await fetch(`/api/count/${userId}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const count = await response.json();
+                cartCountElement.textContent = count;
+                // Show the count badge if count > 0, otherwise hide it
+                if (count > 0) {
+                    cartCountElement.classList.remove('hidden');
+                } else {
+                    cartCountElement.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error("Could not fetch cart item count:", error);
+                cartCountElement.textContent = '0'; // Default to 0 on error
+                cartCountElement.classList.remove('hidden');
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const userData = document.getElementById('user-data');
+        const currentUserId = userData.dataset.userId;
+        const isLoggedIn = userData.dataset.isLoggedIn === 'true';
+
+        const addToCartButton = document.getElementById('addToCartButton');
+        const addToCartText = addToCartButton.querySelector('span');
+        const favoriteButton = document.querySelector('.add-to-favorite-btn');
+        const favoriteIcon = favoriteButton.querySelector('i');
+
+        // Initial fetch of cart count if user is logged in
+        if (isLoggedIn) {
             fetchCartItemCount(currentUserId);
-          } else {
-            showToast(result.message || 'Có lỗi xảy ra, vui lòng thử lại.', 'error');
-          }
-        } catch (error) {
-          console.error('Lỗi khi thêm vào giỏ hàng:', error);
-          showToast('Đã xảy ra lỗi kết nối. Vui lòng thử lại.', 'error');
-        }
-      });
-    }
-
-    // Add event listener for the Favorite button
-    if (favoriteButton) {
-      favoriteButton.addEventListener('click', function (event) {
-        event.preventDefault();
-
-        if (!isLoggedIn) {
-          showToast('Vui lòng đăng nhập để thêm sản phẩm yêu thích!', 'error');
-          setTimeout(() => {
-            window.location.href = '/account/login';
-          }, 1500);
-          return;
+            addToCartButton.disabled = false;
+            addToCartButton.classList.remove('disabled:bg-gray-400');
+            addToCartText.textContent = 'Thêm vào giỏ hàng';
+        } else {
+            addToCartButton.disabled = true;
+            addToCartButton.classList.add('disabled:bg-gray-400');
+            addToCartText.textContent = 'Đăng nhập để thêm vào giỏ';
         }
 
-        // If the button is already disabled (e.g., already favorited), do nothing.
-        if (this.disabled) {
-          return;
+        // Event listener for the "Add to Cart" button
+        if (addToCartButton) {
+            addToCartButton.addEventListener('click', async function (event) {
+                event.preventDefault();
+
+                if (this.disabled) {
+                    showToast('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!', 'error');
+                    setTimeout(() => {
+                        window.location.href = '/account/login';
+                    }, 1500);
+                    return;
+                }
+
+                // Lấy dữ liệu cần thiết từ DOM
+                const productId = this.dataset.productId;
+                const price = this.dataset.productPrice;
+                const quantity = parseInt(document.getElementById('quantityInput').value);
+
+                // Tạo đối tượng request
+                const cartRequest = {
+                    userId: parseInt(currentUserId),
+                    productId: parseInt(productId),
+                    quantity: quantity,
+                    subTotal: price * quantity
+                };
+
+                try {
+                    const response = await fetch('/api/cart/add', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(cartRequest)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        showToast(result.message || 'Thêm vào giỏ hàng thành công', 'success');
+                        // After successful addition, fetch the updated count
+                        fetchCartItemCount(currentUserId);
+                    } else {
+                        showToast(result.message || 'Có lỗi xảy ra, vui lòng thử lại.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Lỗi khi thêm vào giỏ hàng:', error);
+                    showToast('Đã xảy ra lỗi kết nối. Vui lòng thử lại.', 'error');
+                }
+            });
         }
 
-        const productId = parseInt(this.dataset.productId);
-        const favoriteRequest = {
-          userId: parseInt(currentUserId),
-          productId: productId
-        };
+        // Add event listener for the Favorite button
+        if (favoriteButton) {
+            favoriteButton.addEventListener('click', function (event) {
+                event.preventDefault();
 
-        // Disable button and show loading spinner
-        this.disabled = true;
-        favoriteIcon.classList.add('fa-spinner', 'fa-spin');
-        favoriteIcon.classList.remove('fa-heart', 'far', 'fas');
+                if (!isLoggedIn) {
+                    showToast('Vui lòng đăng nhập để thêm sản phẩm yêu thích!', 'error');
+                    setTimeout(() => {
+                        window.location.href = '/account/login';
+                    }, 1500);
+                    return;
+                }
 
-        fetch('/favorite', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(favoriteRequest)
-        })
-                .then(response => {
-                  if (!response.ok) {
-                    return response.json().then(err => { throw err; });
-                  }
-                  return response.json();
+                // If the button is already disabled (e.g., already favorited), do nothing.
+                if (this.disabled) {
+                    return;
+                }
+
+                const productId = parseInt(this.dataset.productId);
+                const favoriteRequest = {
+                    userId: parseInt(currentUserId),
+                    productId: productId
+                };
+
+                // Disable button and show loading spinner
+                this.disabled = true;
+                favoriteIcon.classList.add('fa-spinner', 'fa-spin');
+                favoriteIcon.classList.remove('fa-heart', 'far', 'fas');
+
+                fetch('/favorite', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(favoriteRequest)
                 })
-                .then(data => {
-                  if (data.httpStatus === 'OK') {
-                    showToast(data.message || 'Đã thêm vào yêu thích', 'success');
-                    // Change to filled heart and update styles
-                    favoriteIcon.classList.remove('far', 'fa-spinner', 'fa-spin');
-                    favoriteIcon.classList.add('fas', 'fa-heart');
-                    this.classList.remove('bg-red-100', 'text-red-500', 'hover:bg-red-200');
-                    this.classList.add('bg-red-500', 'text-white');
-                    // Keep it disabled
-                    this.disabled = true;
-                  } else {
-                    showToast(data.message || 'Có lỗi xảy ra', 'error');
-                    // Restore original icon if fails
-                    favoriteIcon.classList.remove('fa-spinner', 'fa-spin');
-                    favoriteIcon.classList.add('far', 'fa-heart');
-                    this.disabled = false; // Re-enable on failure
-                  }
-                })
-                .catch(error => {
-                  console.error('Fetch error:', error);
-                  const errorMessage = error.message || 'Đã yêu thích rồi!';
-                  showToast(errorMessage, 'error');
-                  // Restore original icon on error
-                  favoriteIcon.classList.remove('fa-spinner', 'fa-spin');
-                  favoriteIcon.classList.add('far', 'fa-heart');
-                  this.disabled = false; // Re-enable on error
-                });
-      });
-    }
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => {
+                                throw err;
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.httpStatus === 'OK') {
+                            showToast(data.message || 'Đã thêm vào yêu thích', 'success');
+                            // Change to filled heart and update styles
+                            favoriteIcon.classList.remove('far', 'fa-spinner', 'fa-spin');
+                            favoriteIcon.classList.add('fas', 'fa-heart');
+                            this.classList.remove('bg-red-100', 'text-red-500', 'hover:bg-red-200');
+                            this.classList.add('bg-red-500', 'text-white');
+                            // Keep it disabled
+                            this.disabled = true;
+                        } else {
+                            showToast(data.message || 'Có lỗi xảy ra', 'error');
+                            // Restore original icon if fails
+                            favoriteIcon.classList.remove('fa-spinner', 'fa-spin');
+                            favoriteIcon.classList.add('far', 'fa-heart');
+                            this.disabled = false; // Re-enable on failure
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Fetch error:', error);
+                        const errorMessage = error.message || 'Đã yêu thích rồi!';
+                        showToast(errorMessage, 'error');
+                        // Restore original icon on error
+                        favoriteIcon.classList.remove('fa-spinner', 'fa-spin');
+                        favoriteIcon.classList.add('far', 'fa-heart');
+                        this.disabled = false; // Re-enable on error
+                    });
+            });
+        }
 
-    // Toast notification function
-    function showToast(message, type = 'success') {
-      const toast = document.getElementById('toast-notification');
-      const toastMessage = document.getElementById('toast-message');
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast-notification');
+            const toastMessage = document.getElementById('toast-message');
 
-      if (!toast || !toastMessage) {
-        console.error('Toast elements not found');
-        return;
-      }
+            if (!toast || !toastMessage) {
+                console.error('Toast elements not found');
+                return;
+            }
 
-      toastMessage.textContent = message;
-      toast.classList.remove('bg-gray-800', 'bg-green-600', 'bg-red-600');
+            toastMessage.textContent = message;
+            toast.classList.remove('bg-gray-800', 'bg-green-600', 'bg-red-600');
 
-      if (type === 'success') {
-        toast.classList.add('bg-green-600');
-      } else if (type === 'error') {
-        toast.classList.add('bg-red-600');
-      } else {
-        toast.classList.add('bg-gray-800');
-      }
+            if (type === 'success') {
+                toast.classList.add('bg-green-600');
+            } else if (type === 'error') {
+                toast.classList.add('bg-red-600');
+            } else {
+                toast.classList.add('bg-gray-800');
+            }
 
-      toast.classList.remove('opacity-0');
-      setTimeout(() => {
-        toast.classList.add('opacity-0');
-      }, 3000);
-    }
-  });
+            toast.classList.remove('opacity-0');
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+            }, 3000);
+        }
+    });
 </script>
 
 </body>
