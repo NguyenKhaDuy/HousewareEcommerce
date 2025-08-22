@@ -33,14 +33,20 @@
             <thead>
             <tr class="bg-gray-200">
                 <th class="p-2 border">ID</th>
-                <th class="p-2 border">User</th>
-                <th class="p-2 border">Sao</th>
-                <th class="p-2 border">Nội dung</th>
-                <th class="p-2 border">Ngày tạo</th>
+                <th class="p-2 border">Tên sản phẩm</th>
+                <th class="p-2 border">Danh mục</th>
                 <th class="p-2 border">Hành động</th>
+<!--                <th class="p-2 border">ID</th>-->
+<!--                <th class="p-2 border">User</th>-->
+<!--                <th class="p-2 border">Sao</th>-->
+<!--                <th class="p-2 border">Nội dung</th>-->
+<!--                <th class="p-2 border">Ngày tạo</th>-->
+<!--                <th class="p-2 border">Hành động</th>-->
             </tr>
             </thead>
-            <tbody id="evaluateTable"></tbody>
+            <tbody id="evaluateTable">
+
+            </tbody>
         </table>
 
         <!-- Phân trang -->
@@ -121,7 +127,7 @@
             const btn = document.createElement("button");
             btn.textContent = i;
             btn.className = `px-3 py-1 rounded ${i === currentPage ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"}`;
-            btn.onclick = () => searchEvaluate(i);
+            btn.onclick = () => loadProducts(i);
             pagination.appendChild(btn);
         }
     }
@@ -148,10 +154,6 @@
         searchEvaluate(1);
     }
 
-    // Gắn sự kiện cho nút xác nhận trong modal
-    document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("confirmDeleteBtn").addEventListener("click", confirmDelete);
-    });
 </script>
 
 </body>

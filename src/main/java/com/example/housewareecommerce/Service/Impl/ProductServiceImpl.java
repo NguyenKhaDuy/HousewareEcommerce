@@ -205,6 +205,8 @@ public class ProductServiceImpl implements ProductService {
                     .collect(Collectors.toList());
         }
 
+        Integer evaluateRating = averageRating(product.getId());
+
         return new ProductDTO(
                 product.getId(),
                 product.getNameProduct(),
@@ -212,7 +214,8 @@ public class ProductServiceImpl implements ProductService {
                 product.getPrice(),
                 product.getQuantity(),
                 imageList,
-                product.getStatusEntity().getStatusCode()
+                product.getStatusEntity().getStatusCode(),
+                evaluateRating
         );
     }
 
@@ -223,6 +226,8 @@ public class ProductServiceImpl implements ProductService {
         List<ProductDTO> results = new ArrayList<>();
         for(ProductEntity productEntity : productEntities){
             ProductDTO productDTO = new ProductDTO();
+            Integer evaluateRating = averageRating(productEntity.getId());
+            productDTO.setEvaluate(evaluateRating);
             modelMapper.map(productEntity, productDTO);
             productDTO.setCategoryName(productEntity.getCategoryEntity().getNameCategory());
             productDTO.setStatusCode(productEntity.getStatusEntity().getStatusCode());
@@ -274,8 +279,9 @@ public class ProductServiceImpl implements ProductService {
         MessageDTO messageDTO = new MessageDTO();
         try {
             ProductEntity productEntity = productRepository.findById(id).get();
-            Integer evaluateRating = averageRating(id);
             ProductDTO productDTO = new ProductDTO();
+            Integer evaluateRating = averageRating(id);
+            productDTO.setEvaluate(evaluateRating);
             modelMapper.map(productEntity, productDTO);
             productDTO.setCategoryName(productEntity.getCategoryEntity().getNameCategory());
             productDTO.setStatusCode(productEntity.getStatusEntity().getStatusCode());
@@ -327,7 +333,6 @@ public class ProductServiceImpl implements ProductService {
             sumStar += it.getStar();
         }
 
-        // :))))))))))))))))))
         return sumStar / evaluateEntities.size();
     }
 
