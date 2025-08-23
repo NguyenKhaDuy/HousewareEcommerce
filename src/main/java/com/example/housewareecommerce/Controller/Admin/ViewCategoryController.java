@@ -58,7 +58,7 @@ public class ViewCategoryController {
     // Create category
     @PostMapping(value = "/category")
     @ResponseBody
-    public ResponseEntity<?> createCategory(@RequestBody CategoryRequest categoryRequest) {
+    public ResponseEntity<?> createCategory(@ModelAttribute CategoryRequest categoryRequest) {
         try {
             MessageDTO messageDTO = categoryService.createCategory(categoryRequest);
 
@@ -81,7 +81,7 @@ public class ViewCategoryController {
     // Update category
     @PutMapping(value = "/category")
     @ResponseBody
-    public ResponseEntity<?> updateCategory(@RequestBody CategoryRequest categoryRequest) {
+    public ResponseEntity<?> updateCategory(@ModelAttribute CategoryRequest categoryRequest) {
         try {
             if (categoryRequest.getId() == null) {
                 MessageDTO errorMessage = new MessageDTO();

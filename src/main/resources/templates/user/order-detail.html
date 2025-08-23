@@ -54,13 +54,21 @@
                 </a>
 
 
-                <div th:if="${session.username}" class="hidden sm:flex items-center space-x-2">
-          <span class="font-medium text-gray-700">
-              Chào, <span th:text="${session.username}">Tên người dùng</span>
-          </span>
-                    <a th:href="@{/account/logout}" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-300">
-                        Đăng xuất
-                    </a>
+                <div th:if="${session.username}" class="hidden sm:flex items-center space-x-4">
+                    <span class="font-medium text-gray-700">
+                        Chào, <span th:text="${session.username}">Tên người dùng</span>
+                    </span>
+                    <!-- User Dropdown -->
+                    <div class="relative">
+                        <button id="user-menu-button" class="text-gray-600 hover:text-blue-600 focus:outline-none">
+                            <i class="fas fa-user-circle fa-2x"></i>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5">
+                            <a th:href="@{/user/profile/edit}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out">Chỉnh sửa tài khoản</a>
+                            <a th:href="@{/account/logout}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition duration-150 ease-in-out">Đăng xuất</a>
+                        </div>
+                    </div>
                 </div>
 
                 <a th:unless="${session.username}" th:href="@{/account/login}" class="hidden sm:block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300">
@@ -160,6 +168,27 @@
         </div>
     </div>
 </main>
+
+<script>
+    // --- NEW: User Dropdown Menu ---
+    const userMenuButton = document.getElementById('user-menu-button');
+    const userMenu = document.getElementById('user-menu');
+
+    if (userMenuButton) {
+        // Toggle dropdown on button click
+        userMenuButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent the window click event from firing immediately
+            userMenu.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside of it
+        window.addEventListener('click', (e) => {
+            if (!userMenu.classList.contains('hidden')) {
+                userMenu.classList.add('hidden');
+            }
+        });
+    }
+</script>
 
 </body>
 </html>
