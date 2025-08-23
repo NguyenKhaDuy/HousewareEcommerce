@@ -77,9 +77,9 @@ public class ManagerUserController {
                 UserEntity user = userOpt.get();
                 model.addAttribute("user", user);
 
-                Integer role = (Integer) session.getAttribute("role");
+                String role = (String) session.getAttribute("role");
 
-                if (role != null && role == 2) {
+                if (role != null && role == "CUSTOMER") {
                     return "user/profile-edit";
                 } else {
                     List<StatusEntity> statuses = statusService.findByIdIn(Arrays.asList(37L, 38L));
@@ -92,7 +92,7 @@ public class ManagerUserController {
             System.err.println("Error finding user: " + e.getMessage());
             e.printStackTrace();
         }
-        return "redirect:/admin/user/getAll?message=Không%20tìm%20thấy%20người%20dùng&type=error";
+        return "redirect:/admin/user/getAll?message=Khong%20tim%20thay%20nguoi%20dung&type=error";
     }
 
 

@@ -6,6 +6,11 @@
   <title>Admin - Quản lý Đơn hàng</title>
   <link rel="icon" type="image/png" href="/image/logo.png">
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    #orderModal{
+      z-index: 2000;
+    }
+  </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
 
@@ -65,7 +70,7 @@
 </div>
 
 <!-- View / Edit Modal -->
-<div id="orderModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-50">
+<div id="orderModal" class="fixed inset-0 z-50  hidden items-center justify-center bg-black bg-opacity-50">
   <div class="bg-white w-full max-w-3xl rounded-lg shadow-lg p-6 max-h-[90vh] overflow-y-auto">
     <div class="flex justify-between items-center mb-4">
       <h2 id="modalTitle" class="text-xl font-semibold">Chi tiết Đơn hàng</h2>

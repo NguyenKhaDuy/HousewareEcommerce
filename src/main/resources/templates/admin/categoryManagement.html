@@ -195,7 +195,7 @@
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
+            z-index: 2000;
             left: 0;
             top: 0;
             width: 100%;
@@ -206,12 +206,14 @@
 
         .modal-content {
             background-color: white;
-            margin: 5% auto;
+            margin: 2% auto;
             padding: 0;
             border-radius: 16px;
-            width: 90%;
+            width: 80%;
             max-width: 500px;
+            max-height: 90%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow-y: auto;
             animation: modalSlideIn 0.3s ease-out;
         }
 
@@ -455,6 +457,7 @@
                 <tr>
                     <th>ID</th>
                     <th>Tên Danh Mục</th>
+                    <th>Ảnh</th>
                     <th>Mô Tả</th>
                     <th>Ngày Tạo</th>
                     <th>Thao Tác</th>
@@ -494,6 +497,14 @@
                 <div class="form-group">
                     <label for="description">Mô Tả</label>
                     <textarea id="description" name="description" class="form-control" rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Ảnh Danh Mục</label>
+                    <input type="file" id="image" name="image" class="form-control" accept="image/*" onchange="previewImage(event)">
+                    <div id="preview-container" style="margin-top:10px;">
+                        <img id="preview" src="" alt="Ảnh danh mục" style="max-width: 120px; display:none; border:1px solid #ccc; padding:4px;">
+                    </div>
                 </div>
             </form>
         </div>
@@ -600,10 +611,22 @@
             return;
         }
 
-        tbody.innerHTML = categoriesToShow.map(category => `
+        categoriesToShow.map(category =>{
+           console.log(category) ;
+        });
+
+            tbody.innerHTML = categoriesToShow.map(category => `
             <tr>
                 <td>${category.id}</td>
                 <td><strong>${category.nameCategory}</strong></td>
+                <td>
+            ${category.base64Image
+                ? `<img src="data:image/jpeg;base64,${category.base64Image}"
+                         alt="Category Image" width="80" height="80"/>`
+                : 'Không có ảnh'}
+        </td>
+
+
                 <td>${category.description || 'Không có mô tả'}</td>
                 <td>${formatDateTime(category.created)}</td>
                 <td>
@@ -674,6 +697,19 @@
         });
     }
 
+    function previewImage(event) {
+        const preview = document.getElementById('preview');
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
     // Open modal for add/edit
     function openModal(mode, categoryData = null) {
         const modal = document.getElementById('categoryModal');
@@ -686,8 +722,16 @@
             document.getElementById('categoryId').value = '';
             currentCategoryId = null;
         } else if (mode === 'edit' && categoryData) {
+            console.log(categoryData);
             modalTitle.textContent = 'Chỉnh Sửa Danh Mục';
             document.getElementById('categoryId').value = categoryData.id;
+            // Set preview ảnh cũ
+            if (categoryData.base64Image) {
+                document.getElementById('preview').src = "data:image/jpeg;base64," + categoryData.base64Image;
+                document.getElementById('preview').style.display = 'block';
+            } else {
+                document.getElementById('preview').style.display = 'none';
+            }
             document.getElementById('nameCategory').value = categoryData.nameCategory;
             document.getElementById('description').value = categoryData.description || '';
             currentCategoryId = categoryData.id;
@@ -725,17 +769,17 @@
     async function saveCategory() {
         const form = document.getElementById('categoryForm');
         const formData = new FormData(form);
+        console.log(formData);
+        // const categoryData = {
+        //     id: formData.get('id') || null,
+        //     nameCategory: formData.get('nameCategory').trim(),
+        //     description: formData.get('description').trim(),
+        // };
 
-        const categoryData = {
-            id: formData.get('id') || null,
-            nameCategory: formData.get('nameCategory').trim(),
-            description: formData.get('description').trim()
-        };
-
-        if (!categoryData.nameCategory) {
-            showAlert('Tên danh mục không được để trống', 'danger');
-            return;
-        }
+        // if (!categoryData.nameCategory) {
+        //     showAlert('Tên danh mục không được để trống', 'danger');
+        //     return;
+        // }
 
         try {
             const url = '/admin/category';
@@ -743,8 +787,8 @@
 
             const response = await fetch(url, {
                 method: method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(categoryData)
+                // headers: { 'Content-Type': 'application/json' },
+                body: formData
             });
 
             const result = await response.json();

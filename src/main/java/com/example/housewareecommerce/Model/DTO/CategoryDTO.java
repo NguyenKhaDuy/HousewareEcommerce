@@ -2,6 +2,7 @@ package com.example.housewareecommerce.Model.DTO;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Transient;
 
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -15,16 +16,19 @@ public class CategoryDTO {
     
     private byte[] image;
 
-    public byte[] getImage() {
-        return image;
-    }
-
+    @Transient
     public String getBase64Image() {
         if (image != null) {
             return Base64.getEncoder().encodeToString(image);
         }
         return null;
     }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+
 
     public void setImage(byte[] image) {
         this.image = image;
